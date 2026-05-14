@@ -1,0 +1,1236 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- ════════════════════════════════════════════════════════════
+     TÍTULO DE LA PESTAÑA DEL NAVEGADOR
+     Cambia el texto entre las etiquetas <title> </title>
+     ════════════════════════════════════════════════════════════ -->
+<title>OMH Estudio</title>
+<link rel="icon" type="image/png" href="assets/logos/favicon_omh.png">
+
+<!-- ════════════════════════════════════════════════════════════
+     FUENTES — vienen de Google Fonts (internet)
+     Para cambiar una fuente:
+       1. Ve a fonts.google.com
+       2. Elige una fuente → clic en "Get font" → "Get embed code"
+       3. Reemplaza el <link href="..."> de abajo con el nuevo
+       4. Luego busca el nombre de la fuente en el CSS y reemplázalo
+
+     Fuentes actuales:
+       Títulos grandes   → Lexend Tera
+       Subtítulos        → Playfair Display
+       Textos generales  → Raleway
+     ════════════════════════════════════════════════════════════ -->
+<link href="https://fonts.googleapis.com/css2?family=Lexend+Tera:wght@400;700;900&family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Raleway:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  /* ════════════════════════════════════════════════════════════
+     COLORES PRINCIPALES — cambia solo aquí y se actualiza TODO
+     Formato: #RRGGBB (código hexadecimal de color)
+     Puedes buscar "color picker" en Google para elegir colores
+     ════════════════════════════════════════════════════════════ */
+  :root {
+    --rojo:       #cc0000;   /* Color rojo principal */
+    --amarillo:   #f4d431;   /* Color amarillo/dorado de acento */
+    --negro:      #000000;   /* Fondo negro puro */
+    --blanco:     #ffffff;   /* Texto blanco */
+    --gris-oscuro:#0a0a0a;   /* Fondo de secciones alternas */
+    --gris-medio: #111111;   /* Fondo de tarjetas de proyectos */
+    --gris-suave: #1a1a1a;   /* Color hover en tarjetas */
+    --gris-texto: #888888;   /* Color de textos secundarios/descriptivos */
+    --gris-borde: #222222;   /* Color de líneas y bordes */
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--negro);
+    color: var(--blanco);
+    font-family: 'Raleway', sans-serif; /* ← fuente general */
+    font-weight: 400;
+    overflow-x: hidden;
+    cursor: none; /* oculta cursor normal, se reemplaza por cursor personalizado */
+  }
+
+  /* ─── CURSOR PERSONALIZADO ─── */
+  #cursor {
+    position: fixed;
+    width: 10px; height: 10px;
+    background: var(--rojo);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%, -50%);
+    transition: transform 0.1s, background 0.2s;
+  }
+  #cursor-ring {
+    position: fixed;
+    width: 36px; height: 36px;
+    border: 1px solid rgba(204,0,0,0.4);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9998;
+    transform: translate(-50%, -50%);
+    transition: transform 0.15s ease, border-color 0.2s;
+  }
+
+  /* ─── BARRA DE NAVEGACIÓN (menú superior) ─── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.5rem 4rem;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.9), transparent);
+    transition: background 0.3s;
+  }
+  nav.scrolled {
+    background: rgba(0,0,0,0.95);
+    border-bottom: 1px solid var(--gris-borde);
+  }
+  .nav-logo { display: flex; align-items: center; gap: 0.75rem; text-decoration: none; }
+  .nav-logo img { height: 36px; object-fit: contain; }
+  .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+  .nav-links a {
+    color: rgba(255,255,255,0.7);
+    text-decoration: none;
+    font-family: 'Raleway', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--amarillo); }
+  .nav-cta {
+    background: transparent;
+    border: 1px solid var(--rojo);
+    color: var(--blanco);
+    padding: 0.6rem 1.5rem;
+    font-family: 'Raleway', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: background 0.2s, color 0.2s;
+    cursor: none;
+  }
+  .nav-cta:hover { background: var(--rojo); }
+
+  /* ─── HERO (pantalla de inicio con video) ─── */
+  #hero {
+    position: relative;
+    height: 100vh;
+    min-height: 700px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  /* Contenedor del video de fondo */
+  .hero-video-bg {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background: var(--negro);
+  }
+  .hero-video-bg video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;   /* el video llena toda la pantalla sin deformarse */
+    opacity: 0.95;       /* ← ajusta la transparencia del video: 0=invisible, 1=opaco */
+  }
+  /* Capa oscura encima del video para que el texto sea legible */
+  .hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.35); /* ← ajusta el 0.35 para más o menos oscuridad */
+    z-index: 1;
+  }
+  /* Viñeta (bordes más oscuros, efecto cinematográfico) */
+  .hero-vignette {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,0.7) 100%);
+    z-index: 2;
+  }
+  /* Contenido del hero (texto y botones) encima del video */
+  .hero-content {
+    position: relative;
+    z-index: 3;
+    text-align: center;
+    max-width: 900px;
+    padding: 0 2rem;
+    animation: hero-in 1.4s cubic-bezier(0.16,1,0.3,1) both;
+    animation-delay: 0.3s;
+  }
+  @keyframes hero-in {
+    from { opacity: 0; transform: translateY(30px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ════════════════════════════════════════════════════════════
+     TEXTOS DEL HERO — para editar los textos busca la sección
+     <!-- HERO --> más abajo en el HTML
+     ════════════════════════════════════════════════════════════ */
+  .hero-label {
+    font-family: 'Raleway', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--rojo);
+    margin-bottom: 18rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+  }
+  .hero-label::before, .hero-label::after {
+    content: ''; display: block; width: 40px; height: 1px; background: var(--rojo);
+  }
+  .hero-tagline {
+    font-family: 'Raleway', sans-serif;
+    font-size: clamp(1rem, 2.5vw, 1.5rem);
+    font-weight: 400;
+    font-style: italic;
+    color: rgba(255,255,255,0.8);
+    line-height: 1.6;
+    max-width: 600px;
+    margin: 0 auto 3rem;
+    text-shadow: 0 2px 20px rgba(0,0,0,0.8);
+    text-align: center
+  }
+  .hero-tagline em { color: var(--amarillo); font-style: normal; }
+
+  /* Botones del hero */
+  .hero-ctas { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+  .btn-primary {
+    background: var(--rojo);
+    color: var(--blanco);
+    padding: 0.9rem 2.5rem;
+    text-decoration: none;
+    font-family: 'Raleway', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    transition: transform 0.2s, box-shadow 0.2s;
+    cursor: none;
+  }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(204,0,0,0.4); }
+  .btn-secondary {
+    background: transparent;
+    color: var(--blanco);
+    padding: 0.9rem 2.5rem;
+    text-decoration: none;
+    font-family: 'Raleway', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    border: 1px solid rgba(255,255,255,0.3);
+    transition: border-color 0.2s, color 0.2s;
+    cursor: none;
+  }
+  .btn-secondary:hover { border-color: var(--amarillo); color: var(--amarillo); }
+
+  /* Indicador de scroll */
+  .hero-scroll {
+    position: absolute;
+    bottom: 2.5rem; left: 50%;
+    transform: translateX(-50%);
+    z-index: 3;
+    display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+    opacity: 0.5;
+  }
+  .hero-scroll span { font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; }
+  .scroll-line {
+    width: 1px; height: 40px;
+    background: linear-gradient(to bottom, var(--blanco), transparent);
+    animation: scroll-drop 1.5s ease-in-out infinite;
+  }
+  @keyframes scroll-drop {
+    0%, 100% { opacity: 0.4; transform: translateY(0); }
+    50% { opacity: 1; transform: translateY(6px); }
+  }
+
+  /* ─── SECCIONES GENERALES ─── */
+  section { padding: 7rem 0; }
+  .container { max-width: 1200px; margin: 0 auto; padding: 0 4rem; }
+  .section-label {
+    font-family: 'Raleway', sans-serif;
+    font-size: 0.65rem; font-weight: 700;
+    letter-spacing: 0.3em; text-transform: uppercase;
+    color: var(--rojo); margin-bottom: 1.5rem;
+    display: flex; align-items: center; gap: 1rem;
+  }
+  .section-label::before { content: ''; display: block; width: 24px; height: 1px; background: var(--rojo); }
+  .section-title {
+    font-family: 'Lexend Tera', sans-serif; /* ← fuente de títulos grandes */
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 900; line-height: 0.95;
+    letter-spacing: -0.02em; text-transform: uppercase;
+    margin-bottom: 1.5rem;
+  }
+  .section-title em { color: var(--rojo); font-style: normal; }
+  .section-title .amarillo { color: var(--amarillo); }
+  .section-sub {
+    font-family: 'Playfair Display', serif; /* ← fuente de subtítulos */
+    font-size: 1.15rem; font-style: italic;
+    color: rgba(255,255,255,0.5); line-height: 1.7; max-width: 560px;
+  }
+
+  /* ─── SHOWREEL ─── */
+  #showreel { background: var(--negro); padding: 5rem 0; }
+  .showreel-wrapper { position: relative; max-width: 1100px; margin: 3rem auto 0; padding: 0 4rem; }
+  .video-frame {
+    position: relative; aspect-ratio: 16/9;
+    background: var(--gris-suave); border: 1px solid var(--gris-borde); overflow: hidden;
+  }
+  .video-frame .bracket { position: absolute; width: 24px; height: 24px; z-index: 3; pointer-events: none; }
+  .video-frame .bracket.tl { top:12px; left:12px; border-top:2px solid var(--rojo); border-left:2px solid var(--rojo); }
+  .video-frame .bracket.tr { top:12px; right:12px; border-top:2px solid var(--rojo); border-right:2px solid var(--rojo); }
+  .video-frame .bracket.bl { bottom:12px; left:12px; border-bottom:2px solid var(--rojo); border-left:2px solid var(--rojo); }
+  .video-frame .bracket.br { bottom:12px; right:12px; border-bottom:2px solid var(--rojo); border-right:2px solid var(--rojo); }
+  .video-frame iframe { width:100%; height:100%; border:none; display:block; }
+  .video-placeholder {
+    position:absolute; inset:0;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1.5rem;
+  }
+  .play-btn {
+    width:80px; height:80px; border:2px solid var(--rojo); border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    transition:background 0.2s, transform 0.2s; cursor:none;
+  }
+  .play-btn:hover { background:rgba(204,0,0,0.15); transform:scale(1.1); }
+  .play-btn svg { width:28px; height:28px; fill:var(--blanco); margin-left:4px; }
+  .video-placeholder p { font-size:0.75rem; letter-spacing:0.2em; text-transform:uppercase; color:rgba(255,255,255,0.3); }
+
+  /* ─── SERVICIOS ─── */
+  #servicios { background: var(--gris-oscuro); }
+  .servicios-header { display:grid; grid-template-columns:1fr 1fr; gap:4rem; margin-bottom:5rem; align-items:end; }
+  .servicios-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:var(--gris-borde); border:1px solid var(--gris-borde); }
+  .servicio-card { background:var(--negro); padding:2.5rem 2rem; position:relative; overflow:hidden; transition:background 0.3s; }
+  .servicio-card::before {
+    content:''; position:absolute; top:0; left:0; width:100%; height:2px;
+    background:var(--rojo); transform:scaleX(0); transform-origin:left; transition:transform 0.3s;
+  }
+  .servicio-card:hover { background: var(--gris-suave); }
+  .servicio-card:hover::before { transform: scaleX(1); }
+  .servicio-num { font-family:'Lexend Tera',sans-serif; font-size:0.6rem; letter-spacing:0.2em; color:var(--rojo); margin-bottom:1.5rem; opacity:0.8; }
+  .servicio-icon { font-size:2rem; margin-bottom:1.2rem; display:block; }
+  .servicio-titulo { font-family:'Lexend Tera',sans-serif; font-size:0.85rem; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:0.75rem; line-height:1.3; }
+  .servicio-desc { font-family:'Raleway',sans-serif; font-size:0.85rem; color:var(--gris-texto); line-height:1.7; }
+  .servicio-tags { margin-top:1.2rem; display:flex; flex-wrap:wrap; gap:0.4rem; }
+  .tag { font-size:0.6rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--amarillo); border:1px solid rgba(244,212,49,0.2); padding:0.2rem 0.5rem; }
+
+  /* ─── PROYECTOS ─── */
+  #proyectos { background: var(--negro); }
+  .proyectos-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:var(--gris-borde); margin-top:4rem; border:1px solid var(--gris-borde); }
+  .proyecto-card { position:relative; aspect-ratio:4/3; overflow:hidden; background:var(--gris-medio); cursor:none; }
+  .proyecto-card:first-child { grid-column:span 2; aspect-ratio:8/5; }
+  .proyecto-bg {
+    position:absolute; inset:0;
+    background-size:cover; background-position:center;
+    transition:transform 0.5s cubic-bezier(0.16,1,0.3,1);
+  }
+  .proyecto-card:hover .proyecto-bg { transform:scale(1.05); }
+  .proyecto-placeholder { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; opacity:0.06; }
+  .proyecto-placeholder svg { width:70px; height:70px; }
+  .proyecto-add-label {
+    position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+    flex-direction:column; gap:0.5rem; opacity:0.12;
+    font-family:'Raleway',sans-serif; font-size:0.7rem; letter-spacing:0.2em; text-transform:uppercase; z-index:1;
+  }
+  .proyecto-overlay {
+    position:absolute; inset:0;
+    background:linear-gradient(to top, rgba(0,0,0,0.92) 0%, transparent 60%);
+    z-index:2; display:flex; flex-direction:column; justify-content:flex-end; padding:2rem;
+    transform:translateY(8px); opacity:0; transition:opacity 0.3s, transform 0.3s;
+  }
+  .proyecto-card:hover .proyecto-overlay { opacity:1; transform:translateY(0); }
+  .proyecto-cat { font-size:0.6rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--amarillo); margin-bottom:0.4rem; }
+  .proyecto-nombre { font-family:'Lexend Tera',sans-serif; font-size:0.9rem; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; }
+  .proyecto-label-static { position:absolute; bottom:1.5rem; left:1.5rem; z-index:3; pointer-events:none; }
+  .proyecto-cat-static { font-size:0.55rem; letter-spacing:0.2em; text-transform:uppercase; color:rgba(244,212,49,0.5); margin-bottom:0.3rem; }
+  .proyecto-nombre-static { font-family:'Lexend Tera',sans-serif; font-size:0.75rem; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; color:rgba(255,255,255,0.4); }
+
+  /* ─── FILOSOFÍA ─── */
+  #filosofia { background:var(--gris-oscuro); position:relative; overflow:hidden; }
+  .filosofia-bg-text {
+    position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+    font-family:'Lexend Tera',sans-serif; font-size:clamp(6rem,14vw,14rem); font-weight:900;
+    text-transform:uppercase; letter-spacing:-0.05em; color:rgba(255,255,255,0.018);
+    white-space:nowrap; pointer-events:none; user-select:none; z-index:0;
+  }
+  .filosofia-content { position:relative; z-index:1; display:grid; grid-template-columns:1fr 1fr; gap:6rem; align-items:center; }
+  .filosofia-quote {
+    font-family:'Playfair Display',serif; font-size:clamp(1.5rem,3vw,2.2rem);
+    font-weight:400; font-style:italic; line-height:1.4; color:var(--blanco);
+    border-left:2px solid var(--rojo); padding-left:2rem;
+  }
+  .filosofia-quote em { color:var(--amarillo); font-style:italic; }
+  .filosofia-pilares { display:flex; flex-direction:column; gap:1.5rem; }
+  .pilar { display:flex; gap:1.2rem; align-items:flex-start; }
+  .pilar-num { font-family:'Lexend Tera',sans-serif; font-size:0.6rem; font-weight:700; color:var(--rojo); margin-top:0.15rem; min-width:2rem; }
+  .pilar-txt h4 { font-family:'Raleway',sans-serif; font-size:0.85rem; font-weight:700; text-transform:uppercase; letter-spacing:0.1em; margin-bottom:0.3rem; }
+  .pilar-txt p { font-size:0.85rem; color:var(--gris-texto); line-height:1.6; }
+
+  /* ─── TECNOLOGÍA ─── */
+  #tecnologia { background:var(--negro); }
+  .tech-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:var(--gris-borde); border:1px solid var(--gris-borde); margin-top:4rem; }
+  .tech-item { background:var(--negro); padding:2.5rem 1.5rem; text-align:center; transition:background 0.25s; }
+  .tech-item:hover { background:var(--gris-suave); }
+  .tech-icon { font-size:2.2rem; margin-bottom:1rem; display:block; }
+  .tech-name { font-family:'Lexend Tera',sans-serif; font-size:0.65rem; font-weight:700; text-transform:uppercase; letter-spacing:0.1em; color:var(--blanco); margin-bottom:0.4rem; }
+  .tech-desc { font-size:0.8rem; color:var(--gris-texto); line-height:1.5; }
+
+  /* ─── CTA FINAL ─── */
+  #cta { background:var(--negro); padding:8rem 0; position:relative; overflow:hidden; }
+  .cta-bg { position:absolute; inset:0; background:radial-gradient(ellipse 60% 50% at 50% 50%, rgba(204,0,0,0.06) 0%, transparent 70%); z-index:0; }
+  .cta-content { position:relative; z-index:1; text-align:center; max-width:700px; margin:0 auto; padding:0 2rem; }
+  .cta-title { font-family:'Lexend Tera',sans-serif; font-size:clamp(2rem,5vw,3.5rem); font-weight:900; text-transform:uppercase; letter-spacing:-0.02em; line-height:0.95; margin-bottom:1.5rem; }
+  .cta-title span { color:var(--rojo); }
+  .cta-sub { font-family:'Playfair Display',serif; font-size:1.1rem; font-style:italic; color:rgba(255,255,255,0.45); margin-bottom:3rem; line-height:1.7; }
+  .cta-sub em { color:var(--amarillo); font-style:normal; }
+  .cta-btns { display:flex; gap:1rem; justify-content:center; flex-wrap:wrap; }
+
+  /* ─── BARRA DE REDES SOCIALES ─── */
+  .social-strip {
+    background:var(--gris-oscuro);
+    border-top:1px solid var(--gris-borde); border-bottom:1px solid var(--gris-borde);
+    padding:2rem 4rem; display:flex; align-items:center; justify-content:center; gap:2rem; flex-wrap:wrap;
+  }
+  .social-strip p { font-size:0.65rem; letter-spacing:0.2em; text-transform:uppercase; color:rgba(255,255,255,0.3); }
+  .social-links { display:flex; gap:1.5rem; align-items:center; flex-wrap:wrap; justify-content:center; }
+  .social-link {
+    display:flex; align-items:center; gap:0.5rem;
+    color:rgba(255,255,255,0.4); text-decoration:none;
+    font-size:0.7rem; letter-spacing:0.1em; text-transform:uppercase; font-weight:600;
+    transition:color 0.2s; cursor:none;
+  }
+  .social-link:hover { color:var(--amarillo); }
+  .social-link svg { width:18px; height:18px; fill:currentColor; }
+
+  /* ─── FOOTER ─── */
+  footer { background:var(--negro); padding:4rem; border-top:1px solid var(--gris-borde); }
+  .footer-inner { max-width:1200px; margin:0 auto; display:grid; grid-template-columns:2fr 1fr 1fr; gap:4rem; align-items:start; margin-bottom:4rem; }
+  .footer-logo img { height:32px; margin-bottom:1.2rem; display:block; }
+  .footer-desc { font-size:0.85rem; color:var(--gris-texto); line-height:1.8; max-width:300px; }
+  .footer-col h5 { font-family:'Lexend Tera',sans-serif; font-size:0.6rem; font-weight:700; letter-spacing:0.2em; text-transform:uppercase; color:rgba(255,255,255,0.3); margin-bottom:1.2rem; }
+  .footer-col ul { list-style:none; }
+  .footer-col ul li { margin-bottom:0.7rem; }
+  .footer-col ul li a { font-size:0.85rem; color:var(--gris-texto); text-decoration:none; transition:color 0.2s; cursor:none; }
+  .footer-col ul li a:hover { color:var(--blanco); }
+  .footer-bottom { max-width:1200px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; border-top:1px solid var(--gris-borde); padding-top:2rem; flex-wrap:wrap; gap:1rem; }
+  .footer-copy { font-size:0.75rem; color:rgba(255,255,255,0.2); letter-spacing:0.05em; }
+  .footer-copy span { color:var(--rojo); }
+  .footer-brand { font-family:'Lexend Tera',sans-serif; font-size:0.6rem; font-weight:700; letter-spacing:0.2em; text-transform:uppercase; color:rgba(255,255,255,0.15); }
+
+  /* ─── ANIMACIONES DE APARICIÓN AL HACER SCROLL ─── */
+  .reveal { opacity:0; transform:translateY(30px); transition:opacity 0.7s cubic-bezier(0.16,1,0.3,1), transform 0.7s cubic-bezier(0.16,1,0.3,1); }
+  .reveal.visible { opacity:1; transform:translateY(0); }
+  .reveal-delay-1 { transition-delay:0.1s; }
+  .reveal-delay-2 { transition-delay:0.2s; }
+  .reveal-delay-3 { transition-delay:0.3s; }
+
+  /* ════════════════════════════════════════════════════════════
+     RESPONSIVE — adaptaciones automáticas por tamaño de pantalla
+     @media (max-width: 900px) = tablets
+     @media (max-width: 600px) = smartphones
+     No necesitas editar esto a menos que quieras cambiar
+     cómo se ven las secciones en móvil.
+     ════════════════════════════════════════════════════════════ */
+  @media (max-width: 900px) {
+    nav { padding:1.2rem 1.5rem; }
+    .nav-links { display:none; }
+    .container { padding:0 1.5rem; }
+    .servicios-header { grid-template-columns:1fr; gap:2rem; }
+    .servicios-grid { grid-template-columns:1fr 1fr; }
+    .proyectos-grid { grid-template-columns:1fr 1fr; }
+    .proyecto-card:first-child { grid-column:span 2; }
+    .filosofia-content { grid-template-columns:1fr; gap:3rem; }
+    .tech-grid { grid-template-columns:repeat(2,1fr); }
+    .footer-inner { grid-template-columns:1fr; gap:2.5rem; }
+    .footer-bottom { flex-direction:column; text-align:center; }
+    .social-strip { padding:1.5rem; }
+    footer { padding:3rem 1.5rem; }
+  }
+  @media (max-width: 600px) {
+    section { padding:5rem 0; }
+    .servicios-grid { grid-template-columns:1fr; }
+    .proyectos-grid { grid-template-columns:1fr; }
+    .proyecto-card:first-child { grid-column:span 1; aspect-ratio:4/3; }
+    .tech-grid { grid-template-columns:repeat(2,1fr); }
+    .hero-ctas { flex-direction:column; align-items:center; }
+    .showreel-wrapper { padding:0 1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     CURSORES PERSONALIZADOS — no editar
+     ═══════════════════════════════════════════════════════════════ -->
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+
+
+<!-- ═══════════════════════════════════════════════════════════════
+     BARRA DE NAVEGACIÓN SUPERIOR
+     Para cambiar los textos del menú: edita el texto entre <a> </a>
+     Para cambiar a dónde lleva cada enlace: cambia el href="#nombre"
+       (el # apunta a la sección con ese id más abajo en la página)
+     ═══════════════════════════════════════════════════════════════ -->
+<nav id="navbar">
+
+  <!-- Logo en el menú — apunta al archivo en assets/logos/ -->
+  <a href="#hero" class="nav-logo">
+    <img
+      src="assets/logos/logo_s_b.png"
+      alt="OMH Estudio"
+      onerror="this.style.display='none'; this.nextElementSibling.style.display='block'">
+    <!-- Texto de respaldo si el logo no carga -->
+    <span style="display:none; font-family:'Lexend Tera',sans-serif; font-weight:900; font-size:1rem; color:#fff;">
+      OMH<span style="color:#cc0000;">.</span>
+    </span>
+  </a>
+
+  <!-- Elementos del menú — cambia los textos si quieres otros nombres -->
+  <ul class="nav-links">
+    <li><a href="#servicios">Servicios</a></li>
+    <li><a href="#proyectos">Showcase</a></li>
+    <li><a href="#filosofia">Filosofía</a></li>
+    <li><a href="#tecnologia">Tecnología</a></li>
+  </ul>
+
+  <!-- Botón de contacto en la nav — cambia el href si quieres otro destino -->
+  <a href="https://api.whatsapp.com/send/?phone=524461328102&text&type=phone_number&app_absent=0"
+     class="nav-cta" target="_blank">Contacto</a>
+
+</nav>
+
+
+<!-- ═══════════════════════════════════════════════════════════════
+     SECCIÓN HERO — PANTALLA DE INICIO CON VIDEO EN LOOP
+     El video llena toda la pantalla como fondo.
+     ─────────────────────────────────────────────────────────────
+     PARA CAMBIAR EL VIDEO:
+       Reemplaza "assets/videos/OMH_Introloop.mp4" con la ruta
+       a tu nuevo archivo de video.
+
+     PARA AJUSTAR LA OPACIDAD DEL VIDEO:
+       En el CSS busca: opacity: 0.85
+       Sube el número (máx 1.0) para más brillo, bájalo para más oscuro.
+
+     PARA AJUSTAR EL OVERLAY OSCURO ENCIMA DEL VIDEO:
+       En el CSS busca: background: rgba(0,0,0,0.35)
+       Sube el último número para más oscuridad, bájalo para menos.
+     ═══════════════════════════════════════════════════════════════ -->
+<section id="hero">
+
+  <!-- VIDEO DE FONDO EN LOOP -->
+  <div class="hero-video-bg">
+    <video autoplay muted loop playsinline>
+      <!--
+        src = ruta al video
+        Si el video no carga, el navegador muestra el fondo negro
+        autoplay = empieza solo
+        muted = sin sonido (requerido para autoplay en navegadores)
+        loop = se repite indefinidamente
+        playsinline = funciona en iPhone sin pantalla completa
+      -->
+      <source src="assets/videos/OMH_Introloop.mp4" type="video/mp4">
+    </video>
+  </div>
+
+  <!-- Capa oscura sobre el video (mejora legibilidad del texto) -->
+  <div class="hero-overlay"></div>
+  <!-- Efecto de viñeta en los bordes -->
+  <div class="hero-vignette"></div>
+
+  <!-- CONTENIDO DEL HERO (texto y botones) -->
+  <div class="hero-content">
+
+    <!-- ── Etiqueta pequeña arriba del eslogan ──────────────────
+         Cambia el texto si quieres otra descripción corta       -->
+    <div class="hero-label">Estudio Creativo · Producción Visual</div>
+
+    <!-- ── Botones de acción ─────────────────────────────────────
+         href="#servicios" → scroll a la sección de servicios
+         href="#showreel"  → scroll al showreel
+         Puedes cambiar el texto de los botones libremente        -->
+    <div class="hero-ctas">
+      <a href="#servicios" class="btn-primary">Ver servicios</a>
+      <a href="#showreel" class="btn-secondary">▶&nbsp; Showreel</a>
+    </div>
+
+  </div>
+
+  <!-- Indicador de scroll (flecha animada abajo) -->
+  <div class="hero-scroll">
+    <span>Scroll</span>
+    <div class="scroll-line"></div>
+  </div>
+
+</section>
+
+    <!-- ── Frase principal / tagline ────────────────────────────
+         El texto entre <em> aparece en color amarillo          -->
+    <p class="hero-tagline">
+      "Transformamos ideas, experiencias y conceptos en
+      <em>contenido visual de alto impacto</em>.
+      Narrativa, diseño y tecnología al servicio de tu marca"
+    </p>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     SECCIÓN SHOWREEL
+     ─────────────────────────────────────────────────────────────
+     OPCIÓN A — Video de YouTube (recomendado):
+       1. Abre tu video en YouTube
+       2. Clic en "Compartir" → "Insertar" → copia solo el ID del video
+          (la parte después de "embed/" en el código que te da YouTube)
+       3. Reemplaza  TU_ID_DE_YOUTUBE  abajo con ese ID
+
+     OPCIÓN B — Video de Vimeo:
+       Reemplaza el src del iframe con:
+       https://player.vimeo.com/video/TU_ID_VIMEO
+     ═══════════════════════════════════════════════════════════════ -->
+<section id="showreel">
+  <div class="container">
+    <div class="section-label reveal">Showreel</div>
+    <!-- Cambia "Nuestro trabajo" si quieres otro título -->
+    <h2 class="section-title reveal reveal-delay-1">Nuestro <em>trabajo</em></h2>
+  </div>
+  <div class="showreel-wrapper">
+    <div class="video-frame reveal reveal-delay-2">
+      <div class="bracket tl"></div>
+      <div class="bracket tr"></div>
+      <div class="bracket bl"></div>
+      <div class="bracket br"></div>
+
+      <!-- ══ CUANDO TENGAS TU VIDEO EN YOUTUBE, REEMPLAZA ESTE BLOQUE:
+           Borra el div class="video-placeholder" y agrega esto:
+
+           <iframe
+             src="https://www.youtube.com/embed/TU_ID_DE_YOUTUBE?rel=0&color=white"
+             allow="autoplay; fullscreen; picture-in-picture"
+             allowfullscreen>
+           </iframe>
+           ══ -->
+
+      <!-- Placeholder temporal — borra esto cuando agregues el iframe -->
+      <iframe
+        src="https://www.youtube.com/embed/qUj9q0LFO7g?rel=0&color=white"
+        allow="autoplay; fullscreen; picture-in-picture"
+        allowfullscreen
+        style="width: 100%; height: 100%; border: none; display: block;">
+      </iframe>
+      <!-- fin placeholder -->
+
+    </div>
+    <!-- Texto pequeño abajo del video — cámbialo si quieres -->
+    <p style="text-align:right; font-size:0.65rem; letter-spacing:0.15em; text-transform:uppercase; color:rgba(255,255,255,0.15); margin-top:0.75rem;">
+      PRODUCTION REEL 2024
+    </p>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════════════════
+     SECCIÓN SERVICIOS
+     Para editar cada tarjeta de servicio busca los bloques
+     <div class="servicio-card"> ... </div>
+     Dentro de cada uno puedes cambiar:
+       - El emoji del ícono (servicio-icon)
+       - El título (servicio-titulo)
+       - La descripción (servicio-desc)
+       - Las etiquetas/tags al final
+     ═══════════════════════════════════════════════════════════════ -->
+<section id="servicios">
+  <div class="container">
+    <div class="servicios-header">
+      <div>
+        <div class="section-label reveal">Lo que hacemos</div>
+        <h2 class="section-title reveal reveal-delay-1">Nuestros<br><em>Servicios</em></h2>
+      </div>
+      <div>
+        <!-- Subtítulo de la sección — cámbialo libremente -->
+        <p class="section-sub reveal reveal-delay-2">
+          Producción visual de alto impacto para marcas, espacios y proyectos que exigen excelencia creativa.
+        </p>
+      </div>
+    </div>
+
+    <div class="servicios-grid reveal">
+
+      <!-- ── SERVICIO 01 ── cambia emoji, título, descripción y tags -->
+      <div class="servicio-card">
+        <div class="servicio-num">01</div>
+        <span class="servicio-icon">🏛️</span>
+        <h3 class="servicio-titulo">Visualización Arquitectónica</h3>
+        <p class="servicio-desc">Renders hiperrealistas, animaciones y recorridos que transforman planos en experiencias visuales memorables.</p>
+        <div class="servicio-tags">
+          <span class="tag">Renders 3D</span>
+          <span class="tag">Animación</span>
+          <span class="tag">CGI</span>
+        </div>
+      </div>
+
+      <!-- ── SERVICIO 02 ── -->
+      <div class="servicio-card">
+        <div class="servicio-num">02</div>
+        <span class="servicio-icon">🎬</span>
+        <h3 class="servicio-titulo">Producción Audiovisual</h3>
+        <p class="servicio-desc">Video comercial, fotografía de producto, motion graphics y dirección visual para marcas con identidad.</p>
+        <div class="servicio-tags">
+          <span class="tag">Video</span>
+          <span class="tag">Fotografía</span>
+          <span class="tag">Motion</span>
+        </div>
+      </div>
+
+      <!-- ── SERVICIO 03 ── -->
+      <div class="servicio-card">
+        <div class="servicio-num">03</div>
+        <span class="servicio-icon">🥽</span>
+        <h3 class="servicio-titulo">Experiencias Inmersivas</h3>
+        <p class="servicio-desc">Realidad aumentada, realidad virtual y recorridos 360° que sumergen al usuario en tus espacios y productos.</p>
+        <div class="servicio-tags">
+          <span class="tag">AR / VR</span>
+          <span class="tag">XR</span>
+          <span class="tag">360°</span>
+        </div>
+      </div>
+
+      <!-- ── SERVICIO 04 ── -->
+      <div class="servicio-card">
+        <div class="servicio-num">04</div>
+        <span class="servicio-icon">📡</span>
+        <h3 class="servicio-titulo">Escaneo 3D</h3>
+        <p class="servicio-desc">Escaneos tridimensionales de alta precisión para documentación, prop tech y gemelos digitales de espacios reales.</p>
+        <div class="servicio-tags">
+          <span class="tag">3D Scan</span>
+          <span class="tag">Prop Tech</span>
+          <span class="tag">Matterport</span>
+        </div>
+      </div>
+
+      <!-- ── SERVICIO 05 ── -->
+      <div class="servicio-card">
+        <div class="servicio-num">05</div>
+        <span class="servicio-icon">✦</span>
+        <h3 class="servicio-titulo">Contenido Digital para Marcas</h3>
+        <p class="servicio-desc">Estrategia y producción de contenido visual B2B: desde identidad hasta campañas digitales completas.</p>
+        <div class="servicio-tags">
+          <span class="tag">Branding</span>
+          <span class="tag">B2B</span>
+          <span class="tag">Digital</span>
+        </div>
+      </div>
+
+      <!-- ── SERVICIO 06 ── -->
+      <div class="servicio-card">
+        <div class="servicio-num">06</div>
+        <span class="servicio-icon">🤖</span>
+        <h3 class="servicio-titulo">IA Aplicada a Visual</h3>
+        <p class="servicio-desc">Exploración e integración de herramientas de inteligencia artificial para acelerar y expandir la producción visual.</p>
+        <div class="servicio-tags">
+          <span class="tag">Generative AI</span>
+          <span class="tag">Workflow</span>
+          <span class="tag">Innovation</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════════════════
+     SECCIÓN PROYECTOS / PORTAFOLIO
+     ─────────────────────────────────────────────────────────────
+     Para agregar una imagen de proyecto:
+       1. Copia la imagen a la carpeta  assets/images/
+       2. En el div class="proyecto-bg" cambia el style así:
+
+          ANTES (placeholder):
+          style="background: linear-gradient(135deg, #1a0000, #0d0d0d);"
+
+          DESPUÉS (con tu imagen):
+          style="background-image: url('assets/images/tu-imagen.jpg');
+                 background-size: cover; background-position: center;"
+
+       3. Cambia también el texto de categoria y nombre en:
+          - .proyecto-cat-static (categoría, siempre visible)
+          - .proyecto-nombre-static (nombre, siempre visible)
+          - .proyecto-cat (categoría en hover)
+          - .proyecto-nombre (nombre en hover)
+
+     Para agregar más tarjetas, duplica un bloque <div class="proyecto-card">
+     ═══════════════════════════════════════════════════════════════ -->
+<section id="proyectos">
+  <div class="container">
+    <div class="section-label reveal">Portafolio</div>
+    <h2 class="section-title reveal reveal-delay-1">Showcase <span class="amarillo">OMH</span></h2>
+  </div>
+  <div class="container" style="padding-top:0;">
+    <div class="proyectos-grid reveal">
+
+      <!-- ── PROYECTO 01 — tarjeta GRANDE (ocupa 2 columnas) ──
+           Reemplaza el background gradient con tu imagen       -->
+      <div class="proyecto-card">
+        <div class="proyecto-bg"
+             style="background: linear-gradient(135deg, #1a0000 0%, #0d0d0d 100%);">
+          <!--
+            PARA PONER TU IMAGEN aquí:
+            Borra las dos líneas de arriba y pon esto:
+            <div class="proyecto-bg"
+                 style="background-image: url('assets/images/proyecto-01.jpg');
+                        background-size: cover; background-position: center;">
+          -->
+          
+          <!-- AQUI AGREGUE EL VIDEO DEL PRIMER RECUADRO-->
+           <video autoplay muted loop playsinline class="proyecto-bg" style="object-fit: cover; width: 100%; height: 100%; position: absolute; inset: 0;">
+           <source src="assets/videos/vid_gallery01.mp4" type="video/mp4">
+            </video>             
+        </div>
+        
+        <!-- Texto siempre visible — cámbialo con el nombre real -->
+        <div class="proyecto-label-static">
+          <div class="proyecto-cat-static"></div>
+          <div class="proyecto-nombre-static"></div>
+        </div>
+        <!-- Texto en hover -->
+        <div class="proyecto-overlay">
+          <div class="proyecto-cat">Contenido digital e interactivo</div>
+          <div class="proyecto-nombre">Experiencias memorables</div>
+        </div>
+      </div>
+
+      <!-- ── PROYECTO 02 ── -->
+      <div class="proyecto-card" style="aspect-ratio: 4/5;">
+        
+        <video autoplay muted loop playsinline class="proyecto-bg" style="object-fit: cover; width: 100%; height: 100%; position: absolute; inset: 0;">
+          <source src="assets/videos/vid_gallery02.mp4" type="video/mp4">
+        </video>
+
+        <div class="proyecto-label-static">
+          <div class="proyecto-cat-static"></div>
+          <div class="proyecto-nombre-static"></div>
+        </div>
+
+        <div class="proyecto-overlay">
+          <div class="proyecto-cat">Ver Trailer</div>
+          <div class="proyecto-nombre">DAWN OF THE CAN | Animated Shortfilm</div>
+        </div>
+
+      </div>
+
+      <!-- ── PROYECTO 03 ── -->
+      <div class="proyecto-card">
+        <video autoplay muted loop playsinline class="proyecto-bg" style="object-fit: cover; width: 100%; height: 100%; position: absolute; inset: 0;">
+          <source src="assets/videos/vid_gallery03.mp4" type="video/mp4">
+        </video>
+        <div class="proyecto-label-static">
+          <div class="proyecto-cat-static"></div>
+          <div class="proyecto-nombre-static"></div>
+        </div>
+        <div class="proyecto-overlay">
+          <div class="proyecto-cat">Producción Audiovisual e IA aplicada</div>
+          <div class="proyecto-nombre">Documentación para situaciones reales</div>
+        </div>
+      </div>
+
+      <!-- ── PROYECTO 04 ── -->
+      <div class="proyecto-card" >
+        <video autoplay muted loop playsinline class="proyecto-bg" style="object-fit: cover; width: 100%; height: 100%; position: absolute; inset: 0;">
+          <source src="assets/videos/vid_gallery04.mp4" type="video/mp4">
+        </video>
+        <div class="proyecto-label-static">
+          <div class="proyecto-cat-static"></div>
+          <div class="proyecto-nombre-static"></div>
+        </div>
+        <div class="proyecto-overlay">
+          <div class="proyecto-cat">Documentación y Captura 3D</div>
+          <div class="proyecto-nombre">Tecnología y perspectiva</div>
+        </div>
+      </div>
+
+      <!-- ── PROYECTO 05 ── -->
+      <div class="proyecto-card">
+        <video autoplay muted loop playsinline class="proyecto-bg" style="object-fit: cover; width: 100%; height: 100%; position: absolute; inset: 0;">
+          <source src="assets/videos/vid_gallery05.mp4" type="video/mp4">
+        </video>
+        <div class="proyecto-label-static">
+          <div class="proyecto-cat-static"></div>
+          <div class="proyecto-nombre-static"></div>
+        </div>
+        <div class="proyecto-overlay">
+          <div class="proyecto-cat">Categoría 05</div>
+          <div class="proyecto-nombre">Nombre Proyecto 05</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Botón para ver más — cambia el href si tienes una galería aparte -->
+    <div style="text-align:center; margin-top:3rem;">
+      <a href="https://www.instagram.com/omh_estudio/" target="_blank" class="btn-secondary">
+        Ver más en Instagram
+      </a>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════════════════
+     SECCIÓN FILOSOFÍA
+     Edita la cita y los 4 pilares libremente.
+     El texto entre <em> aparece en color amarillo.
+     ═══════════════════════════════════════════════════════════════ -->
+<section id="filosofia">
+  <div class="filosofia-bg-text">OMH</div>
+  <div class="container">
+    <div class="section-label reveal">Nuestra Esencia</div>
+    <div class="filosofia-content">
+
+      <!-- Columna izquierda: cita y descripción -->
+      <div class="reveal reveal-delay-1">
+        <blockquote class="filosofia-quote">
+          Creemos que cada imagen tiene el poder de
+          <em>contar una historia</em>,
+          transformar una percepción y generar una conexión real.
+        </blockquote>
+        <!-- Párrafo descriptivo — edítalo libremente -->
+        <p style="margin-top:2rem; font-size:0.85rem; color:var(--gris-texto); line-height:1.8; max-width:420px;">
+          En OMH no solo producimos contenido: construimos experiencias visuales que posicionan marcas,
+          venden espacios y dejan huella. Somos un estudio creativo emergente con visión internacional y raíces en lo local.
+        </p>
+        <div style="margin-top:2rem;">
+          <!-- Botón CTA — cambia el href si quieres otro destino -->
+          <a href="https://api.whatsapp.com/send/?phone=524461328102&text&type=phone_number&app_absent=0"
+             class="btn-primary" target="_blank">Hablemos de tu proyecto</a>
+        </div>
+      </div>
+
+      <!-- Columna derecha: 4 pilares — cambia títulos y descripciones -->
+      <div class="filosofia-pilares reveal reveal-delay-2">
+
+        <div class="pilar">
+          <span class="pilar-num">—</span>
+          <div class="pilar-txt">
+            <h4>Impacto visual primero</h4>
+            <p>Cada entregable debe poder comunicar sin palabras. La imagen lo es todo.</p>
+          </div>
+        </div>
+
+        <div class="pilar">
+          <span class="pilar-num">—</span>
+          <div class="pilar-txt">
+            <h4>Tecnología al servicio de la narrativa</h4>
+            <p>Usamos las herramientas más avanzadas, siempre al servicio de la historia a contar.</p>
+          </div>
+        </div>
+
+        <div class="pilar">
+          <span class="pilar-num">—</span>
+          <div class="pilar-txt">
+            <h4>Calidad sin concesiones</h4>
+            <p>Detalle, precisión y excelencia en cada píxel, fotograma y polígono.</p>
+          </div>
+        </div>
+
+        <div class="pilar">
+          <span class="pilar-num">—</span>
+          <div class="pilar-txt">
+            <h4>Colaboración real</h4>
+            <p>Nos involucramos desde la idea hasta la entrega. Somos tu equipo creativo.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════════════════
+     SECCIÓN TECNOLOGÍA / STACK
+     Edita nombre y descripción de cada tech-item.
+     ═══════════════════════════════════════════════════════════════ -->
+<section id="tecnologia">
+  <div class="container">
+    <div class="section-label reveal">Stack Creativo</div>
+    <h2 class="section-title reveal reveal-delay-1">Tecnología &<br><em>Herramientas</em></h2>
+    <div class="tech-grid reveal reveal-delay-2">
+
+      <div class="tech-item">
+        <span class="tech-icon">🎯</span>
+        <div class="tech-name">CGI & 3D</div>
+        <div class="tech-desc">Blender, 3ds Max, Cinema 4D, renders hiperrealistas</div>
+      </div>
+      <div class="tech-item">
+        <span class="tech-icon">🥽</span>
+        <div class="tech-name">XR & Inmersivo</div>
+        <div class="tech-desc">AR, VR, recorridos 360°, Unity, Unreal Engine</div>
+      </div>
+      <div class="tech-item">
+        <span class="tech-icon">📡</span>
+        <div class="tech-name">Escaneo 3D</div>
+        <div class="tech-desc">Matterport, LiDAR, fotogrametría y digital twins</div>
+      </div>
+      <div class="tech-item">
+        <span class="tech-icon">🎬</span>
+        <div class="tech-name">Post Producción</div>
+        <div class="tech-desc">After Effects, DaVinci Resolve, Premiere, Nuke</div>
+      </div>
+      <div class="tech-item">
+        <span class="tech-icon">✦</span>
+        <div class="tech-name">Motion Design</div>
+        <div class="tech-desc">Animation, motion graphics, video mapping</div>
+      </div>
+      <div class="tech-item">
+        <span class="tech-icon">🤖</span>
+        <div class="tech-name">IA Generativa</div>
+        <div class="tech-desc">Midjourney, Stable Diffusion, Runway, Sora</div>
+      </div>
+      <div class="tech-item">
+        <span class="tech-icon">📸</span>
+        <div class="tech-name">Fotografía</div>
+        <div class="tech-desc">Comercial, arquitectónica, producto y dron</div>
+      </div>
+      <div class="tech-item">
+        <span class="tech-icon">🏗️</span>
+        <div class="tech-name">Prop Tech</div>
+        <div class="tech-desc">Soluciones visuales para inmobiliario y arquitectura</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════════════════
+     SECCIÓN CTA FINAL (llamada a la acción)
+     Edita el título, subtítulo y botones.
+     ═══════════════════════════════════════════════════════════════ -->
+<section id="cta">
+  <div class="cta-bg"></div>
+  <div class="cta-content">
+    <div class="section-label reveal" style="justify-content:center;">Trabajemos juntos</div>
+    <!-- Título — el texto entre <span> aparece en rojo -->
+    <h2 class="cta-title reveal reveal-delay-1">
+      ¿Listo para<br><span>crear algo</span><br>extraordinario?
+    </h2>
+    <!-- Subtítulo — el texto entre <em> aparece en amarillo -->
+    <p class="cta-sub reveal reveal-delay-2">
+      Cuéntanos tu proyecto. Nosotros nos encargamos de <em>hacerlo visual.</em>
+    </p>
+    <div class="cta-btns reveal reveal-delay-3">
+      <!-- Botón WhatsApp — ya tiene tu número -->
+      <a href="https://api.whatsapp.com/send/?phone=524461328102&text&type=phone_number&app_absent=0"
+         class="btn-primary" target="_blank">WhatsApp</a>
+      <!-- Botón Email — ya tiene tu correo -->
+      <a href="mailto:omh.visualization@gmail.com" class="btn-secondary">Enviar email</a>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════════════════
+     BARRA DE REDES SOCIALES
+     ─────────────────────────────────────────────────────────────
+     Para agregar YouTube u otra red:
+       1. Copia uno de los bloques <a class="social-link"> ... </a>
+       2. Cambia el href con el URL de la red
+       3. Reemplaza el SVG con el ícono de la red (busca en simpleicons.org)
+       4. Cambia el texto del enlace
+
+     Los href ya tienen todos tus links configurados.
+     ═══════════════════════════════════════════════════════════════ -->
+<div class="social-strip">
+  <p>Síguenos</p>
+  <div class="social-links">
+
+    <!-- INSTAGRAM -->
+    <a href="https://www.instagram.com/omh_estudio/" class="social-link" target="_blank">
+      <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+      Instagram
+    </a>
+
+    <!-- TIKTOK -->
+    <a href="https://www.tiktok.com/@omh.studios" class="social-link" target="_blank">
+      <svg viewBox="0 0 24 24"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/></svg>
+      TikTok
+    </a>
+
+    <!-- YOUTUBE — agrega tu URL cuando tengas canal -->
+    <a href="https://www.youtube.com/@omhestudio" class="social-link" target="_blank">
+      <svg viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+      YouTube
+    </a>
+
+    <!-- FACEBOOK -->
+    <a href="https://www.facebook.com/omhstudioarq" class="social-link" target="_blank">
+      <svg viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+      Facebook
+    </a>
+
+    <!-- LINKEDIN -->
+    <a href="https://www.linkedin.com/company/omh-estudio/" class="social-link" target="_blank">
+      <svg viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+      LinkedIn
+    </a>
+
+    <!-- EMAIL -->
+    <a href="mailto:omh.visualization@gmail.com" class="social-link">
+      <svg viewBox="0 0 24 24"><path d="M24 5.457v13.909c0 .904-.732 1.636-1.636 1.636h-3.819V11.73L12 16.64l-6.545-4.91v9.273H1.636A1.636 1.636 0 010 19.366V5.457c0-2.023 2.309-3.178 3.927-1.964L5.455 4.64 12 9.548l6.545-4.909 1.528-1.145C21.69 2.28 24 3.434 24 5.457z"/></svg>
+      Email
+    </a>
+
+    <!-- WHATSAPP -->
+    <a href="https://api.whatsapp.com/send/?phone=524461328102&text&type=phone_number&app_absent=0"
+       class="social-link" target="_blank">
+      <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+      WhatsApp
+    </a>
+
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════════
+     FOOTER
+     ─────────────────────────────────────────────────────────────
+     Edita los textos y enlaces del pie de página.
+     El logo del footer apunta a assets/logos/
+     ═══════════════════════════════════════════════════════════════ -->
+<footer>
+  <div class="footer-inner">
+
+    <!-- Columna izquierda: logo y descripción -->
+    <div class="footer-logo">
+      <img src="assets/logos/LogoOMH_white_Mesa_de_trabajo_1.png"
+           alt="OMH Estudio"
+           onerror="this.style.display='none'">
+      <!-- Descripción breve — edítala si quieres -->
+      <p class="footer-desc">
+        Estudio creativo de producción visual y experiencias digitales.
+        Transformamos ideas en contenido de alto impacto para marcas, espacios y proyectos.
+      </p>
+      <!-- Íconos de redes en el footer — cambia los href si necesitas -->
+      <div style="margin-top:1.5rem; display:flex; gap:1rem; flex-wrap:wrap;">
+        <a href="https://www.instagram.com/omh_estudio/" target="_blank" style="color:rgba(255,255,255,0.3); font-size:0.7rem; text-decoration:none;" onmouseover="this.style.color='#f4d431'" onmouseout="this.style.color='rgba(255,255,255,0.3)'">IG</a>
+        <a href="https://www.tiktok.com/@omh.studios" target="_blank" style="color:rgba(255,255,255,0.3); font-size:0.7rem; text-decoration:none;" onmouseover="this.style.color='#f4d431'" onmouseout="this.style.color='rgba(255,255,255,0.3)'">TK</a>
+        <a href="https://www.facebook.com/omhstudioarq" target="_blank" style="color:rgba(255,255,255,0.3); font-size:0.7rem; text-decoration:none;" onmouseover="this.style.color='#f4d431'" onmouseout="this.style.color='rgba(255,255,255,0.3)'">FB</a>
+        <a href="https://www.linkedin.com/company/omh-estudio/" target="_blank" style="color:rgba(255,255,255,0.3); font-size:0.7rem; text-decoration:none;" onmouseover="this.style.color='#f4d431'" onmouseout="this.style.color='rgba(255,255,255,0.3)'">LI</a>
+        <a href="https://www.youtube.com/@omhestudio" target="_blank" style="color:rgba(255,255,255,0.3); font-size:0.7rem; text-decoration:none;" onmouseover="this.style.color='#f4d431'" onmouseout="this.style.color='rgba(255,255,255,0.3)'">YT</a>
+      </div>
+    </div>
+
+    <!-- Columna centro: servicios -->
+    <div class="footer-col">
+      <h5>Servicios</h5>
+      <ul>
+        <li><a href="#servicios">Visualización Arquitectónica</a></li>
+        <li><a href="#servicios">Producción Audiovisual</a></li>
+        <li><a href="#servicios">Experiencias XR / AR / VR</a></li>
+        <li><a href="#servicios">Escaneo 3D & Prop Tech</a></li>
+        <li><a href="#servicios">Motion Graphics</a></li>
+        <li><a href="#servicios">IA Aplicada a Visual</a></li>
+      </ul>
+    </div>
+
+    <!-- Columna derecha: contacto -->
+    <div class="footer-col">
+      <h5>Contacto</h5>
+      <ul>
+        <li><a href="https://api.whatsapp.com/send/?phone=524461328102&text&type=phone_number&app_absent=0" target="_blank">WhatsApp</a></li>
+        <li><a href="mailto:omh.visualization@gmail.com">omh.visualization@gmail.com</a></li>
+        <li><a href="https://www.instagram.com/omh_estudio/" target="_blank">@omh_estudio</a></li>
+        <li><a href="https://www.linkedin.com/company/omh-estudio/" target="_blank">LinkedIn</a></li>
+        <li><a href="https://www.tiktok.com/@omh.studios" target="_blank">TikTok</a></li>
+        <li><a href="https://www.facebook.com/omhstudioarq" target="_blank">Facebook</a></li>
+        <li><a href="https://www.youtube.com/@omhestudio" target="_blank">YouTube</a></li>
+      </ul>
+    </div>
+
+  </div>
+
+  <!-- Barra inferior del footer -->
+  <div class="footer-bottom">
+    <!-- Texto de copyright — cambia el año si quieres -->
+    <p class="footer-copy">
+      © 2024 OMH Estudio — Todos los derechos reservados. Hecho con <span>♥</span> en México.
+    </p>
+    <p class="footer-brand">Visuales que capturan</p>
+  </div>
+</footer>
+
+
+<!-- ═══════════════════════════════════════════════════════════════
+     JAVASCRIPT — no editar a menos que sepas lo que haces
+     Controla: cursor personalizado, navbar al scroll, animaciones
+     ═══════════════════════════════════════════════════════════════ -->
+<script>
+  /* Cursor personalizado */
+  const cursor = document.getElementById('cursor');
+  const ring   = document.getElementById('cursor-ring');
+  let mx = 0, my = 0, rx = 0, ry = 0;
+
+  document.addEventListener('mousemove', e => {
+    mx = e.clientX; my = e.clientY;
+    cursor.style.left = mx + 'px';
+    cursor.style.top  = my + 'px';
+  });
+
+  (function animRing() {
+    rx += (mx - rx) * 0.12;
+    ry += (my - ry) * 0.12;
+    ring.style.left = rx + 'px';
+    ring.style.top  = ry + 'px';
+    requestAnimationFrame(animRing);
+  })();
+
+  document.querySelectorAll('a, button, .servicio-card, .tech-item, .proyecto-card').forEach(el => {
+    el.addEventListener('mouseenter', () => {
+      cursor.style.transform = 'translate(-50%,-50%) scale(2)';
+      ring.style.borderColor = 'rgba(244,212,49,0.5)';
+    });
+    el.addEventListener('mouseleave', () => {
+      cursor.style.transform = 'translate(-50%,-50%) scale(1)';
+      ring.style.borderColor = 'rgba(204,0,0,0.4)';
+    });
+  });
+
+  /* Navbar: se vuelve opaco al hacer scroll */
+  const nav = document.getElementById('navbar');
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled', window.scrollY > 60);
+  });
+
+  /* Animaciones de aparición al hacer scroll */
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.12 });
+  reveals.forEach(el => observer.observe(el));
+</script>
+
+</body>
+</html>
