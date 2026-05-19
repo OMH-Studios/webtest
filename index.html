@@ -56,6 +56,75 @@
     cursor: none; /* oculta cursor normal, se reemplaza por cursor personalizado */
   }
 
+  /* ─── ESTILOS DEL BOTÓN HAMBURGUESA ─── */
+  .menu-hamburger {
+      background: transparent; border: none; cursor: none;
+      display: flex; flex-direction: column; justify-content: space-between;
+      width: 25px; height: 18px; padding: 0; position: relative; z-index: 3001;
+  }
+  .menu-hamburger span {
+      width: 100%; height: 2px; background-color: var(--blanco);
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); transform-origin: left center;
+  }
+  .menu-hamburger.open span:nth-child(1) { transform: rotate(45deg) translate(2px, -1px); background-color: var(--rojo); }
+  .menu-hamburger.open span:nth-child(2) { width: 0%; opacity: 0; }
+  .menu-hamburger.open span:nth-child(3) { transform: rotate(-45deg) translate(2px, 1px); background-color: var(--rojo); }
+
+  /* ─── ESTILOS DEL MENÚ DESPLEGABLE (CAJA) ─── */
+  .menu-dropdown {
+      position: fixed;
+      top: 90px; /* Queda justo debajo de la navbar */
+      right: 4rem; /* Alineado al padding derecho de tu navbar */
+      background-color: var(--gris-oscuro);
+      border: 1px solid var(--gris-borde);
+      border-radius: 12px;
+      padding: 2rem;
+      z-index: 3000;
+      min-width: 340px;
+      box-shadow: 0 15px 40px rgba(0,0,0,0.9);
+      
+      /* Animación de entrada de arriba hacia abajo */
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-20px);
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .menu-dropdown.active {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+  }
+
+  .menu-subtitle { 
+      font-family: 'Raleway', sans-serif; font-size: 0.65rem; font-weight: 700; 
+      letter-spacing: 0.2em; text-transform: uppercase; color: var(--rojo); 
+      margin-bottom: 1.5rem; border-bottom: 1px solid var(--gris-borde); padding-bottom: 1rem;
+  }
+  .menu-nav-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 1.2rem; }
+  
+  .menu-link { 
+      font-family: 'Lexend Tera', sans-serif; font-size: 0.75rem; font-weight: 700; 
+      color: var(--blanco); text-decoration: none; text-transform: uppercase; 
+      display: flex; align-items: center; gap: 1rem; 
+      transition: color 0.3s, transform 0.3s; cursor: none; letter-spacing: 0.05em;
+  }
+  
+  /* Efecto al pasar el cursor: Cambia a amarillo y se desliza ligeramente a la derecha */
+  .menu-link:hover { color: var(--amarillo); transform: translateX(8px); }
+  .menu-link span { font-size: 1.1rem; } /* Tamaño del emoji */
+
+  /* ─── RESPONSIVE: ADAPTACIÓN A CELULARES ─── */
+  @media (max-width: 900px) {
+    .nav-links { display: none !important; }
+    .menu-dropdown {
+        right: 1.5rem; /* Márgenes para móvil */
+        left: 1.5rem;
+        top: 80px;
+        min-width: auto;
+    }
+  }
+
   /* ─── CURSOR PERSONALIZADO ─── */
   #cursor {
     position: fixed;
@@ -492,31 +561,50 @@
      ═══════════════════════════════════════════════════════════════ -->
 <nav id="navbar">
 
-  <!-- Logo en el menú — apunta al archivo en assets/logos/ -->
   <a href="#hero" class="nav-logo">
-    <img
-      src="assets/logos/logo_s_b.png"
-      alt="OMH Estudio"
-      onerror="this.style.display='none'; this.nextElementSibling.style.display='block'">
-    <!-- Texto de respaldo si el logo no carga -->
+    <img src="assets/logos/logo_s_b.png" alt="OMH Estudio" onerror="this.style.display='none'; this.nextElementSibling.style.display='block'">
     <span style="display:none; font-family:'Lexend Tera',sans-serif; font-weight:900; font-size:1rem; color:#fff;">
       OMH<span style="color:#cc0000;">.</span>
     </span>
   </a>
 
-  <!-- Elementos del menú — cambia los textos si quieres otros nombres -->
   <ul class="nav-links">
     <li><a href="#servicios">Servicios</a></li>
     <li><a href="#proyectos">Showcase</a></li>
     <li><a href="#filosofia">Filosofía</a></li>
     <li><a href="#tecnologia">Tecnología</a></li>
+    <li><a href="#faq">FAQ</a></li>
   </ul>
 
-  <!-- Botón de contacto en la nav — cambia el href si quieres otro destino -->
-  <a href="https://api.whatsapp.com/send/?phone=524461328102&text&type=phone_number&app_absent=0"
-     class="nav-cta" target="_blank">Contacto</a>
+  <div style="display: flex; align-items: center; gap: 1.5rem;">
+    
+    <button id="menu-toggle" class="menu-hamburger" aria-label="Abrir menú" style="flex-shrink: 0;">
+        <span></span>
+        <span></span>
+        <span></span>
+    </button>
+
+    <a href="https://api.whatsapp.com/send/?phone=524461328102&text&type=phone_number&app_absent=0" class="nav-cta" target="_blank">Contacto</a>
+    
+  </div>
 
 </nav>
+
+<div id="extended-menu" class="menu-dropdown">
+    <div class="menu-dropdown-content">
+        <p class="menu-subtitle">Explora nuestras disciplinas</p>
+        <ul class="menu-nav-list">
+            <li><a href="pages/nosotros.html" class="menu-link"><span>👥</span> Nosotros / Estudio</a></li>
+            
+            <li><a href="pages/archviz.html" class="menu-link"><span>🏛️</span> Visualización Arquitectónica</a></li>
+            <li><a href="pages/anim_vfx.html" class="menu-link"><span>🎬</span> Animación & VFX</a></li>
+            <li><a href="pages/ar_vr.html" class="menu-link"><span>🥽</span> Experiencias Inmersivas</a></li>
+            <li><a href="pages/escaneos.html" class="menu-link"><span>📡</span> Escaneo 3D & PropTech</a></li>
+            <li><a href="pages/mkt.html" class="menu-link"><span>✦</span> Contenido Digital / MKT</a></li>
+            <li><a href="pages/ia.html" class="menu-link"><span>🤖</span> IA Aplicada</a></li>
+        </ul>
+    </div>
+</div>
 
 
 <!-- ═══════════════════════════════════════════════════════════════
@@ -892,77 +980,198 @@
   </div>
 </section>
 
+<!--===================================================================
+    SECCIÓN DE NUESTROS ALIADOS / CLIENTES
+    Agregar logos para que la barra se esté moviendo
+    continuamente, los logos se nombran como
+    logo1.png , logo2.png, etc
+    ===================================================================-->
 
-<!-- ═══════════════════════════════════════════════════════════════
-     SECCIÓN FILOSOFÍA
-     Edita la cita y los 4 pilares libremente.
-     El texto entre <em> aparece en color amarillo.
-     ═══════════════════════════════════════════════════════════════ -->
-<section id="filosofia">
-  <div class="filosofia-bg-text">OMH</div>
-  <div class="container">
-    <div class="section-label reveal">Nuestra Esencia</div>
-    <div class="filosofia-content">
+<section style="background: var(--gris-oscuro); padding: 5rem 0; overflow: hidden; border-top: 1px solid var(--gris-borde); border-bottom: 1px solid var(--gris-borde);">
+    <p style="color: var(--rojo); font-family: 'Raleway', sans-serif; font-size: 0.65rem; font-weight: 700; letter-spacing: 0.3em; text-align: center; margin-bottom: 2.5rem; text-transform: uppercase;">
+      Empresas que confían en nosotros
+    </p>
+    
+    <div class="marquee">
+        <div class="marquee-content">
+            <img src="assets/logos/logo1.png" alt="Logo Empresa" style="height: 40px; margin: 0 40px; filter: grayscale(100%) brightness(200%); opacity: 0.6;">
+            <img src="assets/logos/logo2.png" alt="Logo Empresa" style="height: 40px; margin: 0 40px; filter: grayscale(100%) brightness(200%); opacity: 0.6;">
+            <img src="assets/logos/logo3.png" alt="Logo Empresa" style="height: 40px; margin: 0 40px; filter: grayscale(100%) brightness(200%); opacity: 0.6;">
+            <img src="assets/logos/logo4.png" alt="Logo Empresa" style="height: 40px; margin: 0 40px; filter: grayscale(100%) brightness(200%); opacity: 0.6;">
+            <img src="assets/logos/logo5.png" alt="Logo Empresa" style="height: 40px; margin: 0 40px; filter: grayscale(100%) brightness(200%); opacity: 0.6;">
+            <img src="assets/logos/logo6.png" alt="Logo Empresa" style="height: 40px; margin: 0 40px; filter: grayscale(100%) brightness(200%); opacity: 0.6;">
+            
+            <img src="assets/logos/logo1.png" alt="Logo Empresa" style="height: 40px; margin: 0 40px; filter: grayscale(100%) brightness(200%); opacity: 0.6;">
+            <img src="assets/logos/logo2.png" alt="Logo Empresa" style="height: 40px; margin: 0 40px; filter: grayscale(100%) brightness(200%); opacity: 0.6;">
+            <img src="assets/logos/logo3.png" alt="Logo Empresa" style="height: 40px; margin: 0 40px; filter: grayscale(100%) brightness(200%); opacity: 0.6;">
+            <img src="assets/logos/logo4.png" alt="Logo Empresa" style="height: 40px; margin: 0 40px; filter: grayscale(100%) brightness(200%); opacity: 0.6;">
+            <img src="assets/logos/logo5.png" alt="Logo Empresa" style="height: 40px; margin: 0 40px; filter: grayscale(100%) brightness(200%); opacity: 0.6;">
+            <img src="assets/logos/logo6.png" alt="Logo Empresa" style="height: 40px; margin: 0 40px; filter: grayscale(100%) brightness(200%); opacity: 0.6;">
 
-      <!-- Columna izquierda: cita y descripción -->
-      <div class="reveal reveal-delay-1">
-        <blockquote class="filosofia-quote">
-          Creemos que cada imagen tiene el poder de
-          <em>contar una historia</em>,
-          transformar una percepción y generar una conexión real.
-        </blockquote>
-        <!-- Párrafo descriptivo — edítalo libremente -->
-        <p style="margin-top:2rem; font-size:0.85rem; color:var(--gris-texto); line-height:1.8; max-width:420px;">
-          En OMH no solo producimos contenido: construimos experiencias visuales que posicionan marcas,
-          venden espacios y dejan huella. Somos un estudio creativo emergente con visión internacional y raíces en lo local.
-        </p>
-        <div style="margin-top:2rem;">
-          <!-- Botón CTA — cambia el href si quieres otro destino -->
-          <a href="https://api.whatsapp.com/send/?phone=524461328102&text&type=phone_number&app_absent=0"
-             class="btn-primary" target="_blank">Hablemos de tu proyecto</a>
+
+            <img src="assets/logos/logo1.png" alt="Logo Empresa" style="height: 40px; margin: 0 40px; filter: grayscale(100%) brightness(200%); opacity: 0.6;">
+            <img src="assets/logos/logo2.png" alt="Logo Empresa" style="height: 40px; margin: 0 40px; filter: grayscale(100%) brightness(200%); opacity: 0.6;">
+            <img src="assets/logos/logo3.png" alt="Logo Empresa" style="height: 40px; margin: 0 40px; filter: grayscale(100%) brightness(200%); opacity: 0.6;">
+            <img src="assets/logos/logo4.png" alt="Logo Empresa" style="height: 40px; margin: 0 40px; filter: grayscale(100%) brightness(200%); opacity: 0.6;">
+            <img src="assets/logos/logo5.png" alt="Logo Empresa" style="height: 40px; margin: 0 40px; filter: grayscale(100%) brightness(200%); opacity: 0.6;">
+            <img src="assets/logos/logo6.png" alt="Logo Empresa" style="height: 40px; margin: 0 40px; filter: grayscale(100%) brightness(200%); opacity: 0.6;">
+
         </div>
-      </div>
+    </div>
+</section>
 
-      <!-- Columna derecha: 4 pilares — cambia títulos y descripciones -->
-      <div class="filosofia-pilares reveal reveal-delay-2">
+<style>
+.marquee {
+    display: flex;
+    width: 100%;
+    overflow: hidden;
+}
+.marquee-content {
+    display: flex;
+    animation: marqueeAnimation 25s linear infinite;
+    white-space: nowrap;
+}
+@keyframes marqueeAnimation {
+    0% { transform: translateX(0%); }
+    100% { transform: translateX(-33.333%); }
+}
+</style>   
 
-        <div class="pilar">
-          <span class="pilar-num">—</span>
-          <div class="pilar-txt">
-            <h4>Impacto visual primero</h4>
-            <p>Cada entregable debe poder comunicar sin palabras. La imagen lo es todo.</p>
-          </div>
+<!-- ===================================================================
+ SECCIÓN DE FAQ 
+ revisar las preguntas frecuentes
+ =======================================================================-->
+
+<section id="faq" class="faq-fade-in" style="background: var(--negro); padding: 7rem 0;">
+  <div class="container" style="max-width: 1100px; margin: 0 auto;">
+    
+    <div style="font-family: 'Raleway', sans-serif; font-size: 0.65rem; font-weight: 700; letter-spacing: 0.3em; text-transform: uppercase; color: var(--gris-texto); text-align: center; margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: center; gap: 1rem;">
+      <span style="width: 24px; height: 1px; background: var(--rojo);"></span>¿Dudas? ¡Tenemos la respuesta!<span style="width: 24px; height: 1px; background: var(--rojo);"></span>
+    </div>
+    
+    <h2 style="font-family: 'Lexend Tera', sans-serif; font-size: clamp(1.8rem, 4vw, 2.8rem); font-weight: 900; letter-spacing: -0.02em; text-align: center; margin-bottom: 1.5rem; text-transform: uppercase; line-height: 1.1;">
+        TRAEMOS TUS IDEAS <span style="color: var(--rojo);">A LA VIDA</span>
+    </h2>
+    
+    <p style="font-family: 'Playfair Display', serif; font-size: 1.1rem; font-style: italic; color: rgba(255,255,255,0.5); text-align: center; max-width: 700px; margin: 0 auto 5rem auto; line-height: 1.6;">
+        ¿Te preguntas cómo hacemos magia? Descubre información sobre plazos, revisiones y cómo transformar tu visión en imágenes cautivadoras.
+    </p>
+    
+    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px 30px; margin-bottom: 5rem;">
+        
+        <div class="faq-card" style="border-left: 1px solid var(--gris-borde); padding-left: 20px; transition: transform 0.3s cubic-bezier(0.16,1,0.3,1), border-color 0.3s ease;">
+            <h4 style="font-family: 'Raleway', sans-serif; color: var(--blanco); font-size: 0.85rem; font-weight: 700; margin-top: 0; margin-bottom: 15px; letter-spacing: 0.1em; text-transform: uppercase; transition: color 0.3s ease;">¿QUÉ REALIZAN?</h4>
+            <p style="font-family: 'Raleway', sans-serif; color: var(--gris-texto); font-size: 0.85rem; line-height: 1.7; text-align: justify; margin: 0;">
+                Creamos representaciones fotorrealistas, animaciones 3D, tomas con dron, recorridos de 360° y contenido de video profesional: todo para que tu proyecto destaque.
+            </p>
         </div>
 
-        <div class="pilar">
-          <span class="pilar-num">—</span>
-          <div class="pilar-txt">
-            <h4>Tecnología al servicio de la narrativa</h4>
-            <p>Usamos las herramientas más avanzadas, siempre al servicio de la historia a contar.</p>
-          </div>
+        <div class="faq-card" style="border-left: 1px solid var(--gris-borde); padding-left: 20px; transition: transform 0.3s cubic-bezier(0.16,1,0.3,1), border-color 0.3s ease;">
+            <h4 style="font-family: 'Raleway', sans-serif; color: var(--blanco); font-size: 0.85rem; font-weight: 700; margin-top: 0; margin-bottom: 15px; letter-spacing: 0.1em; text-transform: uppercase; transition: color 0.3s ease;">¿QUÉ TAN RÁPIDO ENTREGAN?</h4>
+            <p style="font-family: 'Raleway', sans-serif; color: var(--gris-texto); font-size: 0.85rem; line-height: 1.7; text-align: justify; margin: 0;">
+                La mayoría de los proyectos se realizan en 1 a 3 semanas. ¿Tienes un plazo ajustado? Hablemos y aceleremos el proceso.
+            </p>
         </div>
 
-        <div class="pilar">
-          <span class="pilar-num">—</span>
-          <div class="pilar-txt">
-            <h4>Calidad sin concesiones</h4>
-            <p>Detalle, precisión y excelencia en cada píxel, fotograma y polígono.</p>
-          </div>
+        <div class="faq-card" style="border-left: 1px solid var(--gris-borde); padding-left: 20px; transition: transform 0.3s cubic-bezier(0.16,1,0.3,1), border-color 0.3s ease;">
+            <h4 style="font-family: 'Raleway', sans-serif; color: var(--blanco); font-size: 0.85rem; font-weight: 700; margin-top: 0; margin-bottom: 15px; letter-spacing: 0.1em; text-transform: uppercase; transition: color 0.3s ease;">¿PUEDO MODIFICAR MIS ENTREGABLES?</h4>
+            <p style="font-family: 'Raleway', sans-serif; color: var(--gris-texto); font-size: 0.85rem; line-height: 1.7; text-align: justify; margin: 0;">
+                ¡Claro! Incluimos rondas de revisión para que tus visuales queden perfectos.
+            </p>
         </div>
 
-        <div class="pilar">
-          <span class="pilar-num">—</span>
-          <div class="pilar-txt">
-            <h4>Colaboración real</h4>
-            <p>Nos involucramos desde la idea hasta la entrega. Somos tu equipo creativo.</p>
-          </div>
+        <div class="faq-card" style="border-left: 1px solid var(--gris-borde); padding-left: 20px; transition: transform 0.3s cubic-bezier(0.16,1,0.3,1), border-color 0.3s ease;">
+            <h4 style="font-family: 'Raleway', sans-serif; color: var(--blanco); font-size: 0.85rem; font-weight: 700; margin-top: 0; margin-bottom: 15px; letter-spacing: 0.1em; text-transform: uppercase; transition: color 0.3s ease;">¿QUÉ ARCHIVOS OBTENGO?</h4>
+            <p style="font-family: 'Raleway', sans-serif; color: var(--gris-texto); font-size: 0.85rem; line-height: 1.7; text-align: justify; margin: 0;">
+                Recibirás imágenes, vídeos o archivos interactivos de alta resolución, listos para la web, la impresión o presentaciones. Formatos a tu medida.
+            </p>
         </div>
 
-      </div>
+        <div class="faq-card" style="border-left: 1px solid var(--gris-borde); padding-left: 20px; transition: transform 0.3s cubic-bezier(0.16,1,0.3,1), border-color 0.3s ease;">
+            <h4 style="font-family: 'Raleway', sans-serif; color: var(--blanco); font-size: 0.85rem; font-weight: 700; margin-top: 0; margin-bottom: 15px; letter-spacing: 0.1em; text-transform: uppercase; transition: color 0.3s ease;">¿TRABAJAS CON CLIENTES EN EL EXTRANJERO?</h4>
+            <p style="font-family: 'Raleway', sans-serif; color: var(--gris-texto); font-size: 0.85rem; line-height: 1.7; text-align: justify; margin: 0;">
+                ¡Por supuesto! Colaboramos a nivel mundial. Nuestro proceso remoto hace que la distancia no sea un problema.
+            </p>
+        </div>
+
+        <div class="faq-card" style="border-left: 1px solid var(--gris-borde); padding-left: 20px; transition: transform 0.3s cubic-bezier(0.16,1,0.3,1), border-color 0.3s ease;">
+            <h4 style="font-family: 'Raleway', sans-serif; color: var(--blanco); font-size: 0.85rem; font-weight: 700; margin-top: 0; margin-bottom: 15px; letter-spacing: 0.1em; text-transform: uppercase; transition: color 0.3s ease;">¿CÓMO EMPIEZO?</h4>
+            <p style="font-family: 'Raleway', sans-serif; color: var(--gris-texto); font-size: 0.85rem; line-height: 1.7; text-align: justify; margin: 0;">
+                Envíanos tus ideas o planes. Te guiaremos desde el primer boceto hasta el wow final.
+            </p>
+        </div>
+
+    </div>
+
+    <div style="text-align: center;">
+        <a href="https://wa.me/524461328102?text=Hola%20OMH%20Estudio,%20me%20interesa%20solicitar%20un%20servicio." 
+           target="_blank" 
+           class="btn-primary">
+            ¡COMENCEMOS!
+        </a>
     </div>
   </div>
 </section>
 
+<style>
+/* Efecto de zoom y cambio de color del borde al pasar el cursor */
+.faq-card:hover {
+    transform: scale(1.03);
+    border-color: var(--rojo) !important;
+}
+
+/* AQUÍ SE HACE LA MAGIA: Al pasar el cursor sobre la tarjeta, la pregunta h4 cambia a Amarillo */
+.faq-card:hover h4 {
+    color: var(--amarillo) !important;
+}
+
+/* Configuración de scroll */
+.faq-fade-in {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    visibility: hidden;
+}
+.faq-fade-in.visible {
+    opacity: 1;
+    transform: translateY(0);
+    visibility: visible;
+}
+</style>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const faqSection = document.getElementById("faq");
+
+    // 1. Detector de Scroll
+    const scrollObserver = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                faqSection.classList.add("visible");
+                scrollObserver.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.12 });
+    scrollObserver.observe(faqSection);
+
+    // 2. INTEGRACIÓN CON TU CURSOR ROJO: Hace crecer el anillo al pasar por el FAQ
+    const cursorCustom = document.getElementById('cursor');
+    const ringCustom   = document.getElementById('cursor-ring');
+    
+    if (cursorCustom && ringCustom) {
+        document.querySelectorAll('.faq-card').forEach(el => {
+            el.addEventListener('mouseenter', () => {
+                cursorCustom.style.transform = 'translate(-50%,-50%) scale(2)';
+                ringCustom.style.borderColor = 'rgba(244,212,49,0.5)';
+            });
+            el.addEventListener('mouseleave', () => {
+                cursorCustom.style.transform = 'translate(-50%,-50%) scale(1)';
+                ringCustom.style.borderColor = 'rgba(204,0,0,0.4)';
+            });
+        });
+    }
+});
+</script>
 
 <!-- ═══════════════════════════════════════════════════════════════
      SECCIÓN TECNOLOGÍA / STACK
@@ -1173,12 +1382,12 @@
     <div class="footer-col">
       <h5>Servicios</h5>
       <ul>
-        <li><a href="#servicios">Visualización Arquitectónica</a></li>
-        <li><a href="#servicios">Producción Audiovisual</a></li>
-        <li><a href="#servicios">Experiencias XR / AR / VR</a></li>
-        <li><a href="#servicios">Escaneo 3D & Prop Tech</a></li>
-        <li><a href="#servicios">Motion Graphics</a></li>
-        <li><a href="#servicios">IA Aplicada a Visual</a></li>
+        <li><a href="pages/archviz.html">Visualización Arquitectónica</a></li>
+        <li><a href="pages/anim_vfx.html">Producción Audiovisual & VFX</a></li>
+        <li><a href="pages/ar_vr.html">Experiencias XR / AR / VR</a></li>
+        <li><a href="pages/escaneos.html">Escaneo 3D & Prop Tech</a></li>
+        <li><a href="pages/mkt.html">Marketing Digital (MKT)</a></li>
+       <li><a href="pages/ia.html">IA Aplicada a Visual</a></li>
       </ul>
     </div>
 
@@ -1260,6 +1469,40 @@
     });
   }, { threshold: 0.12 });
   reveals.forEach(el => observer.observe(el));
+
+/* ─── 5. LÓGICA DEL MENÚ HAMBURGUESA Y DESPLEGABLE ─── */
+  const menuToggle = document.getElementById("menu-toggle");
+  const extendedMenu = document.getElementById("extended-menu");
+
+  if (menuToggle && extendedMenu) {
+      // Abrir/Cerrar al dar clic en la hamburguesa
+      menuToggle.addEventListener("click", function(event) {
+          menuToggle.classList.toggle("open");
+          extendedMenu.classList.toggle("active");
+          event.stopPropagation(); // Evita que el clic se propague al documento
+      });
+
+      // Cerrar si se da clic en un enlace
+      document.querySelectorAll(".menu-link").forEach(link => {
+          link.addEventListener("click", () => {
+              menuToggle.classList.remove("open");
+              extendedMenu.classList.remove("active");
+          });
+      });
+
+      // ¡NUEVO!: Cerrar el menú si haces clic en cualquier parte fuera de él
+      document.addEventListener("click", function(event) {
+          const isClickInsideMenu = extendedMenu.contains(event.target);
+          const isClickOnToggle = menuToggle.contains(event.target);
+
+          // Si el menú está abierto y no hiciste clic dentro del menú ni en el botón...
+          if (extendedMenu.classList.contains("active") && !isClickInsideMenu && !isClickOnToggle) {
+              menuToggle.classList.remove("open");
+              extendedMenu.classList.remove("active");
+          }
+      });
+  }
+
 </script>
 
 </body>
