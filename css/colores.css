@@ -1,0 +1,59 @@
+/* Archivo: css/colores.css */
+/* 🎨 CENTRO DE CONTROL MAESTRO DE COLOR - OMH ESTUDIO */
+
+:root {
+  /* 1. PALETA BASE INMUTABLE */
+  --rojo:         #cc0000;   
+  --amarillo:     #f4d431;   
+  --negro:        #000000;   
+  --blanco:       #ffffff;   
+  --gris-oscuro:  #0a0a0a;   
+  --gris-medio:   #111111;
+  --gris-borde:   #222222;   
+  --gris-texto:   #888888;   
+
+  /* 2. COLOR POR DEFECTO (Si una página no tiene clase asignada) */
+  --color-seccion: var(--blanco); 
+}
+
+/* 3. ASIGNACIÓN ASOCIATIVA POR PÁGINA (¡Aquí controlas todo!) */
+
+/* Nosotros: Ahora configurado con tu Rojo OMH institucional */
+body.page-nosotros {
+  --color-seccion: var(--rojo);
+}
+
+/* Visualización Arquitectónica */
+body.page-archviz {
+  --color-seccion: #00f0ff; /* Ejemplo: Cyan */
+}
+
+/* Producción Audiovisual (La nueva página) */
+body.page-audiovisual {
+  --color-seccion: var(--amarillo); /* Tu amarillo de set de filmación */
+}
+
+/* Animación & VFX */
+body.page-anim-vfx {
+  --color-seccion: #b600ff; /* Ejemplo: Morado eléctrico */
+}
+
+/* Experiencias Inmersivas (XR) */
+body.page-ar-vr {
+  --color-seccion: #00ff22; /* Ejemplo: Verde Matrix/VR */
+}
+
+/* Escaneo 3D & PropTech */
+body.page-escaneos {
+  --color-seccion: #ff6c00; /* Ejemplo: Naranja láser */
+}
+
+/* Contenido Digital / MKT */
+body.page-mkt {
+  --color-seccion: #ff007c; /* Ejemplo: Magenta digital */
+}
+
+/* IA Aplicada */
+body.page-ia {
+  --color-seccion: #70a1ff; /* Ejemplo: Azul tecnológico */
+}
