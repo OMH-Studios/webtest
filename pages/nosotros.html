@@ -8,22 +8,9 @@
 
 <link rel="icon" type="image/png" href="../assets/logos/favicon_omh.png">
 <link href="https://fonts.googleapis.com/css2?family=Lexend+Tera:wght@400;700;900&family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Raleway:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/colores.css">
 
 <style>
-  :root {
-    /* Paleta Base OMH */
-    --rojo:       #cc0000;   
-    --amarillo:   #f4d431;   
-    --negro:      #000000;   
-    --blanco:     #ffffff;   
-    --gris-oscuro:#0a0a0a;   
-    --gris-medio: #111111;
-    --gris-borde: #222222;   
-    --gris-texto: #888888;   
-
-    /* 💡 MODIFICABLE: Color maestro de la subpágina */
-    --color-seccion: #ffffff; 
-  }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
   html { scroll-behavior: smooth; }
@@ -99,7 +86,7 @@
   @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
 
   /* ─── SECCIÓN CONTENIDO ─── */
-  .main-content-section { padding: 6rem 0; background: var(--negro); }
+  .main-content-section { padding: 1rem 0 6rem 0; background: var(--negro); }
   .container { max-width: 1200px; margin: 0 auto; padding: 0 4rem; }
   
   .intro-text-layout { max-width: 850px; margin: 0 auto 5rem auto; text-align: center; }
@@ -121,7 +108,7 @@
   .media-title-text { font-family: 'Lexend Tera', sans-serif; font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--blanco); margin: 0; }
 
   /* ─── BOTÓN REGRESAR ─── */
-  .back-box { text-align: center; margin-top: 2rem; margin-bottom: 6rem; }
+  .back-box { text-align: center; margin-top: 1rem; margin-bottom: 1rem; }
   .btn-back { display: inline-block; padding: 1.1rem 2.5rem; border: 1px solid var(--gris-borde); color: var(--blanco); font-family: 'Raleway', sans-serif; text-decoration: none; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; background: transparent; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); cursor: none; }
   .btn-back:hover { border-color: var(--color-seccion); background-color: var(--color-seccion); color: var(--negro); transform: translateY(-3px); box-shadow: 0 10px 30px rgba(255, 255, 255, 0.1); }
 
@@ -162,7 +149,12 @@
   }
 </style>
 </head>
+
 <body>
+  <!-- =======================================================================
+   CLASIFICACIÓN DE LA PÁGINA PARA OBTENER EL CODIGO DE COLOR DEL ARCHIVO COLORES.CSS
+   =========================================================================== -->
+  <body class="page-nosotros"></body>
 
 <div id="cursor"></div>
 <div id="cursor-ring"></div>

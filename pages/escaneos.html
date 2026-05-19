@@ -4,26 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>OMH Estudio | Nosotros</title>
+<title>OMH Estudio | Prod. Audiovisual</title>
 
 <link rel="icon" type="image/png" href="../assets/logos/favicon_omh.png">
 <link href="https://fonts.googleapis.com/css2?family=Lexend+Tera:wght@400;700;900&family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Raleway:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/colores.css">
 
 <style>
-  :root {
-    /* Paleta Base OMH */
-    --rojo:       #cc0000;   
-    --amarillo:   #f4d431;   
-    --negro:      #000000;   
-    --blanco:     #ffffff;   
-    --gris-oscuro:#0a0a0a;   
-    --gris-medio: #111111;
-    --gris-borde: #222222;   
-    --gris-texto: #888888;   
-
-    /* 💡 MODIFICABLE: Color maestro de la subpágina */
-    --color-seccion: #FF6600; 
-  }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
   html { scroll-behavior: smooth; }
@@ -86,8 +73,7 @@
   /* ─── HERO SUBPÁGINA ─── */
   #hero-sub { position: relative; height: 75vh; width: 100%; display: flex; align-items: center; justify-content: center; overflow: hidden; border-bottom: 1px solid var(--gris-borde); background-color: var(--negro); margin-bottom: 4rem; }
   .hero-bg { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 1; }
-  .hero-bg img { width: 100%; height: 100%; object-fit: cover; opacity: 0.85; display: block; }
-  .hero-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.4) 100%); z-index: 2; }
+  .hero-bg img, .hero-bg .hero-video-bg { width: 100%; height: 100%; object-fit: cover; opacity: 0.85; display: block; pointer-events: none; }  .hero-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.4) 100%); z-index: 2; }
   .hero-vignette { position: absolute; inset: 0; background: radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.5) 100%); z-index: 3; pointer-events: none; }
   
   .hero-content { position: relative; z-index: 10; text-align: center; padding: 0 2rem; margin-top: 60px; }
@@ -100,7 +86,7 @@
   @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
 
   /* ─── SECCIÓN CONTENIDO ─── */
-  .main-content-section { padding: 6rem 0; background: var(--negro); }
+  .main-content-section { padding: 1rem 0 6rem 0; background: var(--negro); }
   .container { max-width: 1200px; margin: 0 auto; padding: 0 4rem; }
   
   .intro-text-layout { max-width: 850px; margin: 0 auto 5rem auto; text-align: center; }
@@ -122,7 +108,7 @@
   .media-title-text { font-family: 'Lexend Tera', sans-serif; font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--blanco); margin: 0; }
 
   /* ─── BOTÓN REGRESAR ─── */
-  .back-box { text-align: center; margin-top: 2rem; margin-bottom: 6rem; }
+  .back-box { text-align: center; margin-top: 1rem; margin-bottom: 1rem; }
   .btn-back { display: inline-block; padding: 1.1rem 2.5rem; border: 1px solid var(--gris-borde); color: var(--blanco); font-family: 'Raleway', sans-serif; text-decoration: none; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; background: transparent; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); cursor: none; }
   .btn-back:hover { border-color: var(--color-seccion); background-color: var(--color-seccion); color: var(--negro); transform: translateY(-3px); box-shadow: 0 10px 30px rgba(255, 255, 255, 0.1); }
 
@@ -163,7 +149,12 @@
   }
 </style>
 </head>
+
 <body>
+  <!-- =======================================================================
+   CLASIFICACIÓN DE LA PÁGINA PARA OBTENER EL CODIGO DE COLOR DEL ARCHIVO COLORES.CSS
+   =========================================================================== -->
+  <body class="page-escaneos"></body>
 
 <div id="cursor"></div>
 <div id="cursor-ring"></div>
@@ -171,42 +162,44 @@
 <!-- LLAMADA AL CODIGO DE JS PARA QUE EL MENU SUPERIOR SEA PARAMETRICO-->
 <div id="navbar-dinamico"></div>
 
-<section id="hero-sub">
-  <div class="hero-bg">
-    <img src="../assets/nosotros/hero_nosotros.jpg" alt="OMH Estudio Historia y Filosofía">
-  </div>
-  <div class="hero-overlay"></div>
-  <div class="hero-vignette"></div>
-  <div class="hero-content">
-    <div class="subpage-label anim-fade-up delay-1">Mentes Creativas</div>
-    <h1 class="subpage-title anim-fade-up delay-2">HISTORIA &<br>FILOSOFÍA</h1>
-  </div>
-</section>
+<!-- LLAMADA A CODIGO JS PARA EL HERO, VIDEO Y TITULOS-->
+ <div id="navbar-dinamico"></div>
+
+<div id="hero-dinamico"></div>
+<script>
+  window.heroConfig = {
+    label: "DIGITALIZACIÓN Y PROP-TECH", 
+    title: "ESCANEO 3D &<br>DIGITALIZACIÓN", // Nota: Puedes usar <br> para los saltos de línea
+    videoPath: "../assets/escaneos/escaneos_bg.mp4" // 🟢 Cambia esto por la ruta de tu video
+  };
+</script>
+
+<section class="main-content-section">
 
 <section class="main-content-section">
   <div class="container reveal">
     
     <div class="intro-text-layout">
-      <h2>"Impulsamos la <span class="text-accent">evolución visual</span> combinando arte y tecnología de vanguardia."</h2>
+      <h2>"Trabajamos en esta <span class="text-accent">sección para ti</span><br> Muy pronto"</h2>
       <div class="divider"></div>
-      <p>Aquí puedes redactar de manera extendida la visión del estudio, quiénes forman parte de la dirección creativa y el trayecto recorrido a lo largo de estos años desarrollando experiencias impactantes.</p>
-      <p>Menciona tu versatilidad técnica y la constante búsqueda por actualizarse con herramientas innovadoras, logrando conectar emocionalmente con las personas y superando los estándares tradicionales de la industria.</p>
+      <p>Cargando</p>
+      <p>contenido...<p>
     </div>
 
     <div class="media-grid">
       <div class="media-card">
-        <img src="../assets/nosotros/grid_nosotros_01.jpg" class="card-img-bg" alt="Muestra de Estudio 01">
+        <img src="../assets/images/img_01.jpg" class="card-img-bg" alt="Muestra de Estudio 01">
         <div class="media-overlay-info">
-          <div class="media-cat-text">Co-Founder</div>
-          <h3 class="media-title-text">Ing. Oscar Muñoz H.</h3>
+          <div class="media-cat-text">Aproximandose</div>
+          <h3 class="media-title-text">Está muy cerca</h3>
         </div>
       </div>
 
       <div class="media-card">
-        <img src="../assets/nosotros/grid_nosotros_02.jpg" class="card-img-bg" alt="Muestra de Estudio 02">
+        <img src="../assets/images/img_02.jpg" class="card-img-bg" alt="Muestra de Estudio 02">
         <div class="media-overlay-info">
-          <div class="media-cat-text">Co-Founder</div>
-          <h3 class="media-title-text">Arq. Miriam Elizabeth Cuevas H.</h3>
+          <div class="media-cat-text">Ya casi</div>
+          <h3 class="media-title-text">Muy pronto</h3>
         </div>
       </div>
     </div>
@@ -249,6 +242,7 @@
 </script>
 
 <script src="../js/navbar.js"></script>
+<script src="../js/hero.js"></script>
 <script src="../js/footer.js"></script>
 
 </body>
