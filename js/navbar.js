@@ -1,25 +1,85 @@
 // Archivo: js/navbar.js
-// Componente inteligente para la barra de navegación de OMH Estudio
+// Componente inteligente y autónomo para la barra de navegación y cursor global de OMH Estudio
 
 document.addEventListener("DOMContentLoaded", () => {
     const navbarContainer = document.getElementById("navbar-dinamico");
     
     if (navbarContainer) {
-        // 1. Detección inteligente de rutas
-        // Revisa si estamos en la carpeta 'pages' o en la raíz
         const isSubpage = window.location.pathname.includes('/pages/');
         const rootPath = isSubpage ? '../' : './';
         const pagesPath = isSubpage ? './' : './pages/';
 
-        // 2. Inyección del código HTML paramétrico
+        const indexLinks = !isSubpage ? `
+            <ul class="nav-links">
+                <li><a href="#servicios">Servicios</a></li>
+                <li><a href="#proyectos">Showcase</a></li>
+                <li><a href="#filosofia">Filosofía</a></li>
+                <li><a href="#tecnologia">Tecnología</a></li>
+                <li><a href="#faq">FAQ</a></li>
+            </ul>
+        ` : '';
+
         navbarContainer.innerHTML = `
+            <style>
+                /* ─── ESTILOS ENCAPSULADOS DEL CURSOR INTERACTIVO GLOBAL ─── */
+                #cursor { 
+                    position: fixed; width: 10px; height: 10px; 
+                    background: var(--color-seccion, #cc0000); border-radius: 50%; 
+                    pointer-events: none; z-index: 9999; transform: translate(-50%, -50%); 
+                    transition: transform 0.1s, background 0.2s; 
+                }
+                #cursor-ring { 
+                    position: fixed; width: 36px; height: 36px; 
+                    border: 1px solid var(--color-seccion, #cc0000); border-radius: 50%; 
+                    pointer-events: none; z-index: 9998; transform: translate(-50%, -50%); 
+                    transition: transform 0.15s ease, border-color 0.2s; opacity: 0.5;
+                }
+
+                /* ─── ESTILOS ENCAPSULADOS DE NAVBAR Y COMPONENTES DE MENÚ ─── */
+                nav { position: fixed; top: 0; left: 0; right: 0; z-index: 3000; display: flex; align-items: center; justify-content: space-between; padding: 1.5rem 4rem; background: linear-gradient(to bottom, rgba(0,0,0,0.9), transparent); transition: background 0.3s; }
+                nav.scrolled { background: rgba(0,0,0,0.95); border-bottom: 1px solid var(--gris-borde); }
+                .nav-logo { display: flex; align-items: center; gap: 0.75rem; text-decoration: none; cursor: none; }
+                .nav-logo svg { transition: color 0.3s ease, transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+                .nav-logo:hover svg { transform: scale(1.05); }
+                .nav-right-container { display: flex; align-items: center; gap: 1.5rem; }
+
+                /* Botón CTA Contacto */
+                .nav-cta { background: transparent; border: 1px solid var(--color-seccion, #ffffff); color: var(--blanco, #ffffff); padding: 0.6rem 1.5rem; font-family: 'Raleway', sans-serif; font-size: 0.7rem; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; text-decoration: none; transition: background 0.2s, color 0.2s, border-color 0.2s; cursor: none; display: inline-block; }
+                .nav-cta:hover { background: var(--color-seccion, #ffffff); border-color: var(--color-seccion, #ffffff); color: var(--negro, #000000); }
+
+                /* Menú Hamburguesa */
+                .menu-hamburger { background: transparent; border: none; cursor: none; display: flex; flex-direction: column; justify-content: space-between; width: 25px; height: 18px; position: relative; z-index: 3001; transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+                .menu-hamburger span { width: 100%; height: 2px; background-color: var(--blanco, #ffffff); transition: all 0.3s; transform-origin: left center; }
+                .menu-hamburger.open span:nth-child(1) { transform: rotate(45deg) translate(2px, -1px); background-color: var(--rojo, #cc0000); }
+                .menu-hamburger.open span:nth-child(2) { width: 0%; opacity: 0; }
+                .menu-hamburger.open span:nth-child(3) { transform: rotate(-45deg) translate(2px, 1px); background-color: var(--rojo, #cc0000); }
+                .menu-hamburger:hover { transform: scale(1.15); }
+                .menu-hamburger:hover span { background-color: var(--color-seccion, #cc0000) !important; }
+
+                /* Desplegable Dropdown */
+                .menu-dropdown { position: fixed; top: 90px; right: 4rem; background-color: var(--gris-oscuro, #0a0a0a); border: 1px solid var(--gris-borde, #222222); border-radius: 12px; padding: 2rem; z-index: 3000; min-width: 340px; box-shadow: 0 15px 40px rgba(0,0,0,0.9); opacity: 0; visibility: hidden; transform: translateY(-20px); transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+                .menu-dropdown.active { opacity: 1; visibility: visible; transform: translateY(0); }
+                .menu-subtitle { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: var(--rojo, #cc0000); margin-bottom: 1.5rem; border-bottom: 1px solid var(--gris-borde, #222222); padding-bottom: 1rem; }
+                .menu-nav-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 1.2rem; }
+                .menu-link { font-family: 'Lexend Tera', sans-serif; font-size: 0.75rem; color: var(--blanco, #ffffff); text-decoration: none; text-transform: uppercase; display: flex; align-items: center; gap: 1rem; transition: 0.3s; cursor: none; }
+                .menu-link:hover { color: var(--color-seccion, #ffffff); transform: translateX(8px); }
+
+                @media (max-width: 900px) {
+                    nav { padding: 1.2rem 1.5rem; }
+                    .menu-dropdown { right: 1.5rem; left: 1.5rem; top: 80px; min-width: auto; }
+                }
+            </style>
+
+            <div id="cursor"></div>
+            <div id="cursor-ring"></div>
+
             <nav id="navbar">
               <a href="${rootPath}index.html" class="nav-logo" aria-label="OMH Estudio Inicio">
-                <svg viewBox="0 0 971.46 201.96" width="165" height="34" style="color: var(--color-seccion); display: block;">
+                <svg viewBox="0 0 971.46 201.96" width="165" height="34" style="color: var(--color-seccion, #ffffff); display: block;">
                   <use href="${rootPath}assets/logos/logo_omh_vector.svg#omh-logo-library"></use>
                 </svg>
               </a>
-
+              ${indexLinks}
               <div class="nav-right-container">
                 <button id="menu-toggle" class="menu-hamburger" aria-label="Abrir menú" style="flex-shrink: 0;">
                     <span></span><span></span><span></span>
@@ -37,6 +97,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         <li><a href="${pagesPath}audiovisual.html" class="menu-link"><span>🎥</span> Producción Audiovisual</a></li>
                         <li><a href="${pagesPath}anim_vfx.html" class="menu-link"><span>🎬</span> Animación & VFX</a></li>
                         <li><a href="${pagesPath}ar_vr.html" class="menu-link"><span>🥽</span> Experiencias Inmersivas</a></li>
+                        <li><a href="${pagesPath}tours_360.html" class="menu-link"><span>📷</span> Fotografía & Tours 360</a></li>
                         <li><a href="${pagesPath}escaneos.html" class="menu-link"><span>📡</span> Escaneo 3D & PropTech</a></li>
                         <li><a href="${pagesPath}mkt.html" class="menu-link"><span>✦</span> Contenido Digital / MKT</a></li>
                         <li><a href="${pagesPath}ia.html" class="menu-link"><span>🤖</span> IA Aplicada</a></li>
@@ -45,52 +106,64 @@ document.addEventListener("DOMContentLoaded", () => {
             </div>
         `;
 
-        // 3. Lógica del Menú Hamburguesa
+        // ─── LÓGICA DE MOVIMIENTO DEL CURSOR GLOBAL ───
+        const cursor = document.getElementById('cursor');
+        const ring = document.getElementById('cursor-ring');
+        let mx = 0, my = 0, rx = 0, ry = 0;
+
+        document.addEventListener('mousemove', e => { 
+            mx = e.clientX; my = e.clientY; 
+            if(cursor) { cursor.style.left = mx + 'px'; cursor.style.top = my + 'px'; }
+        });
+        
+        (function animRing() { 
+            rx += (mx - rx) * 0.12; ry += (my - ry) * 0.12; 
+            if(ring) { ring.style.left = rx + 'px'; ring.style.top = ry + 'px'; }
+            requestAnimationFrame(animRing); 
+        })();
+
+        // ─── LOGICA DEL INTERACTIVO (HOVERS DE LA NAVBAR Y GLOBALES) ───
+        // Escucha eventos del mouse en toda la página para hacer crecer el cursor al tocar enlaces o botones
+        document.addEventListener('mouseover', e => {
+            const target = e.target.closest('a, button, .menu-hamburger, .menu-link, .media-card, .tech-item, .servicio-card, .faq-card');
+            if (target && cursor && ring) {
+                cursor.style.transform = 'translate(-50%,-50%) scale(2)';
+                ring.style.transform = 'translate(-50%,-50%) scale(1.2)';
+            }
+        });
+
+        document.addEventListener('mouseout', e => {
+            const target = e.target.closest('a, button, .menu-hamburger, .menu-link, .media-card, .tech-item, .servicio-card, .faq-card');
+            if (target && cursor && ring) {
+                cursor.style.transform = 'translate(-50%,-50%) scale(1)';
+                ring.style.transform = 'translate(-50%,-50%) scale(1)';
+            }
+        });
+
+        // Lógica del Menú Hamburguesa y Scroll
         const nav = document.getElementById('navbar');
         const menuToggle = document.getElementById("menu-toggle");
         const extendedMenu = document.getElementById("extended-menu");
 
-        // Efecto de fondo oscuro al hacer scroll
-        window.addEventListener('scroll', () => { 
-            if(nav) nav.classList.toggle('scrolled', window.scrollY > 60); 
-        });
+        window.addEventListener('scroll', () => { if(nav) nav.classList.toggle('scrolled', window.scrollY > 60); });
 
-        // Abrir/Cerrar menú
         if (menuToggle && extendedMenu) {
             menuToggle.addEventListener("click", function(event) {
                 menuToggle.classList.toggle("open");
                 extendedMenu.classList.toggle("active");
                 event.stopPropagation();
             });
-
             document.querySelectorAll(".menu-link").forEach(link => {
                 link.addEventListener("click", () => {
                     menuToggle.classList.remove("open");
                     extendedMenu.classList.remove("active");
                 });
             });
-
             document.addEventListener("click", function(event) {
                 if (extendedMenu.classList.contains("active") && !extendedMenu.contains(event.target) && !menuToggle.contains(event.target)) {
                     menuToggle.classList.remove("open");
                     extendedMenu.classList.remove("active");
                 }
-            });
-        }
-
-        // 4. Reactivador del Cursor Personalizado para la Navbar
-        const cursor = document.getElementById('cursor');
-        const ring = document.getElementById('cursor-ring');
-        if (cursor && ring) {
-            navbarContainer.querySelectorAll('a, button, .menu-hamburger, .menu-link').forEach(el => {
-                el.addEventListener('mouseenter', () => {
-                    cursor.style.transform = 'translate(-50%,-50%) scale(2)';
-                    ring.style.borderColor = 'var(--color-seccion)';
-                });
-                el.addEventListener('mouseleave', () => {
-                    cursor.style.transform = 'translate(-50%,-50%) scale(1)';
-                    ring.style.borderColor = 'var(--color-seccion)';
-                });
             });
         }
     }

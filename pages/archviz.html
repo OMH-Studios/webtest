@@ -4,246 +4,221 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>OMH Estudio | Nosotros</title>
+<title>OMH Estudio | Archviz</title>
 
 <link rel="icon" type="image/png" href="../assets/logos/favicon_omh.png">
 <link href="https://fonts.googleapis.com/css2?family=Lexend+Tera:wght@400;700;900&family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Raleway:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../css/colores.css">
 
 <style>
-
+  /* ─── ESTILOS EXCLUSIVOS DE LA SUBPÁGINA ─── */
   * { margin: 0; padding: 0; box-sizing: border-box; }
   html { scroll-behavior: smooth; }
   body { background: var(--negro); color: var(--blanco); font-family: 'Raleway', sans-serif; cursor: none; overflow-x: hidden;}
 
-  /* ─── CURSORES INTERACTIVOS ─── */
-  #cursor { position: fixed; width: 10px; height: 10px; background: var(--color-seccion); border-radius: 50%; pointer-events: none; z-index: 9999; transform: translate(-50%, -50%); transition: transform 0.1s; }
-  #cursor-ring { position: fixed; width: 36px; height: 36px; border: 1px solid var(--color-seccion); border-radius: 50%; pointer-events: none; z-index: 9998; transform: translate(-50%, -50%); transition: transform 0.15s; opacity: 0.5;}
-
-  /* ─── ANIMACIÓN DE ZOOM EN EL LOGO DE LA NAVBAR SVG ─── */
-  .nav-logo svg { 
-      transition: color 0.3s ease, transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); 
-  }
-  .nav-logo:hover svg { 
-      transform: scale(1.05);
-  }
-
-  /* ─── NAVBAR ─── */
-  nav { position: fixed; top: 0; left: 0; right: 0; z-index: 3000; display: flex; align-items: center; justify-content: space-between; padding: 1.5rem 4rem; background: linear-gradient(to bottom, rgba(0,0,0,0.9), transparent); transition: background 0.3s; }
-  nav.scrolled { background: rgba(0,0,0,0.95); border-bottom: 1px solid var(--gris-borde); }
-  .nav-logo { display: flex; align-items: center; gap: 0.75rem; text-decoration: none; cursor: none;}
-  .nav-right-container { display: flex; align-items: center; gap: 2rem; }
-
-  /* ─── BOTÓN DE CONTACTO ─── */
-  .nav-cta {
-      background: transparent;
-      border: 1px solid var(--color-seccion);
-      color: var(--blanco);
-      padding: 0.6rem 1.5rem;
-      font-family: 'Raleway', sans-serif;
-      font-size: 0.7rem;
-      font-weight: 600;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      text-decoration: none;
-      transition: background 0.2s, color 0.2s, border-color 0.2s;
-      cursor: none;
-      display: inline-block;
-  }
-  .nav-cta:hover { 
-      background: var(--color-seccion);
-      border-color: var(--color-seccion);
-      color: var(--negro);
-  }
-
-  /* ─── MENÚ HAMBURGUESA ─── */
-  .menu-hamburger { background: transparent; border: none; cursor: none; display: flex; flex-direction: column; justify-content: space-between; width: 25px; height: 18px; position: relative; z-index: 3001; }
-  .menu-hamburger span { width: 100%; height: 2px; background-color: var(--blanco); transition: all 0.3s; transform-origin: left center; }
-  .menu-hamburger.open span:nth-child(1) { transform: rotate(45deg) translate(2px, -1px); background-color: var(--rojo); }
-  .menu-hamburger.open span:nth-child(2) { width: 0%; opacity: 0; }
-  .menu-hamburger.open span:nth-child(3) { transform: rotate(-45deg) translate(2px, 1px); background-color: var(--rojo); }
-  
-  .menu-dropdown { position: fixed; top: 90px; right: 4rem; background-color: var(--gris-oscuro); border: 1px solid var(--gris-borde); border-radius: 12px; padding: 2rem; z-index: 3000; min-width: 340px; box-shadow: 0 15px 40px rgba(0,0,0,0.9); opacity: 0; visibility: hidden; transform: translateY(-20px); transition: all 0.4s; }
-  .menu-dropdown.active { opacity: 1; visibility: visible; transform: translateY(0); }
-  .menu-subtitle { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: var(--rojo); margin-bottom: 1.5rem; border-bottom: 1px solid var(--gris-borde); padding-bottom: 1rem; }
-  .menu-nav-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 1.2rem; }
-  .menu-link { font-family: 'Lexend Tera', sans-serif; font-size: 0.75rem; color: var(--blanco); text-decoration: none; text-transform: uppercase; display: flex; align-items: center; gap: 1rem; transition: 0.3s; cursor: none; }
-  .menu-link:hover { color: var(--color-seccion); transform: translateX(8px); }
-
-  /* ─── HERO SUBPÁGINA ─── */
-  #hero-sub { position: relative; height: 75vh; width: 100%; display: flex; align-items: center; justify-content: center; overflow: hidden; border-bottom: 1px solid var(--gris-borde); background-color: var(--negro); margin-bottom: 4rem; }
-  .hero-bg { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 1; }
-  .hero-bg img, .hero-bg .hero-video-bg { width: 100%; height: 100%; object-fit: cover; opacity: 0.85; display: block; pointer-events: none; }  .hero-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.4) 100%); z-index: 2; }
-  .hero-vignette { position: absolute; inset: 0; background: radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.5) 100%); z-index: 3; pointer-events: none; }
-  
-  .hero-content { position: relative; z-index: 10; text-align: center; padding: 0 2rem; margin-top: 60px; }
-  .hero-content .subpage-label { font-family: 'Raleway', sans-serif; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.3em; text-transform: uppercase; color: var(--color-seccion); margin-bottom: 1.2rem; }
-  .hero-content .subpage-title { font-family: 'Lexend Tera', sans-serif; font-weight: 900; font-size: clamp(2.2rem, 5vw, 4.5rem); text-transform: uppercase; letter-spacing: -0.02em; line-height: 1.1; color: var(--blanco); }
-
-  .anim-fade-up { opacity: 0; transform: translateY(30px); animation: fadeInUp 1s cubic-bezier(0.215, 0.610, 0.355, 1) forwards; }
-  .delay-1 { animation-delay: 0.2s; }
-  .delay-2 { animation-delay: 0.5s; }
-  @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
-
-  /* ─── SECCIÓN CONTENIDO ─── */
-  .main-content-section { padding: 1rem 0 6rem 0; background: var(--negro); }
-  .container { max-width: 1200px; margin: 0 auto; padding: 0 4rem; }
-  
-  .intro-text-layout { max-width: 850px; margin: 0 auto 5rem auto; text-align: center; }
-  .intro-text-layout h2 { font-family: 'Playfair Display', serif; font-size: clamp(1.8rem, 3vw, 2.8rem); font-style: italic; font-weight: 400; margin-bottom: 2.5rem; color: var(--blanco); line-height: 1.4; }
-  .text-accent { color: var(--color-seccion); font-weight: 600; font-style: normal; }
-  .intro-text-layout p { font-family: 'Raleway', sans-serif; font-size: 1.05rem; color: var(--gris-texto); line-height: 1.8; margin-bottom: 1.5rem; font-weight: 400; }
-  .divider { width: 60px; height: 2px; background: var(--color-seccion); margin: 0 auto 3rem auto; }
-
-  /* ─── GRID DE IMÁGENES ─── */
-  .media-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 2.5rem; margin-bottom: 5rem; }
-  .media-card { background: var(--gris-medio); aspect-ratio: 16/10; border: 1px solid var(--gris-borde); overflow: hidden; position: relative; display: flex; flex-direction: column; justify-content: flex-end; transition: border-color 0.4s ease; }
-  .media-card .card-img-bg { width: 100%; height: 100%; object-fit: cover; opacity: 0.7; position: absolute; inset: 0; z-index: 1; transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s; }
-  .media-card:hover { border-color: var(--color-seccion); }
-  .media-card:hover .card-img-bg { transform: scale(1.05); opacity: 0.9; }
-
-  .media-overlay-info { position: relative; z-index: 2; width: 100%; padding: 2.5rem 2rem; box-sizing: border-box; background: linear-gradient(to top, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.4) 70%, transparent 100%); opacity: 0; transform: translateY(15px); transition: opacity 0.35s ease, transform 0.35s cubic-bezier(0.16, 1, 0.3, 1); text-align: left; }
-  .media-card:hover .media-overlay-info { opacity: 1; transform: translateY(0); }
-  .media-cat-text { font-family: 'Raleway', sans-serif; font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--color-seccion); margin-bottom: 0.4rem; font-weight: 700; }
-  .media-title-text { font-family: 'Lexend Tera', sans-serif; font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--blanco); margin: 0; }
-
-  /* ─── BOTÓN REGRESAR ─── */
-  .back-box { text-align: center; margin-top: 1rem; margin-bottom: 1rem; }
-  .btn-back { display: inline-block; padding: 1.1rem 2.5rem; border: 1px solid var(--gris-borde); color: var(--blanco); font-family: 'Raleway', sans-serif; text-decoration: none; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; background: transparent; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); cursor: none; }
-  .btn-back:hover { border-color: var(--color-seccion); background-color: var(--color-seccion); color: var(--negro); transform: translateY(-3px); box-shadow: 0 10px 30px rgba(255, 255, 255, 0.1); }
-
-  /* ─── ESTILOS GLOBALES DE FOOTER (PARA QUE EL SCRIPT LOS LEA) ─── */
-  .social-strip { background: var(--gris-oscuro); border-top: 1px solid var(--gris-borde); border-bottom: 1px solid var(--gris-borde); padding: 2rem 4rem; display: flex; align-items: center; justify-content: center; gap: 2rem; flex-wrap: wrap; }
-  .social-strip p { font-family: 'Raleway', sans-serif; font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,255,255,0.3); font-weight: 700; }
-  .social-links { display: flex; gap: 1.5rem; align-items: center; flex-wrap: wrap; justify-content: center; }
-  .social-link { display: flex; align-items: center; gap: 0.5rem; color: rgba(255,255,255,0.4); text-decoration: none; font-family: 'Raleway', sans-serif; font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 600; transition: color 0.2s; cursor: none; }
-  .social-link:hover { color: var(--color-seccion); }
-  .social-link svg { width: 18px; height: 18px; fill: currentColor; }
-
-  footer { background: var(--negro); padding: 4rem; border-top: 1px solid var(--gris-borde); }
-  .footer-inner { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 4rem; align-items: start; margin-bottom: 4rem; }
-  .footer-logo img { height: 32px; margin-bottom: 1.2rem; display: block; }
-  .footer-desc { font-family: 'Raleway', sans-serif; font-size: 0.85rem; color: var(--gris-texto); line-height: 1.8; max-width: 300px; }
-  .footer-col h5 { font-family: 'Lexend Tera', sans-serif; font-size: 0.6rem; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,255,255,0.3); margin-bottom: 1.2rem; }
-  .footer-col ul { list-style: none; padding: 0; margin: 0; }
-  .footer-col ul li { margin-bottom: 0.7rem; }
-  .footer-col ul li a { font-family: 'Raleway', sans-serif; font-size: 0.85rem; color: var(--gris-texto); text-decoration: none; transition: color 0.2s; cursor: none; }
-  .footer-col ul li a:hover { color: var(--color-seccion); }
-  
-  .footer-bottom { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; border-top: 1px solid var(--gris-borde); padding-top: 2rem; flex-wrap: wrap; gap: 1rem; }
-  .footer-copy { font-family: 'Raleway', sans-serif; font-size: 0.75rem; color: rgba(255,255,255,0.2); letter-spacing: 0.05em; }
-  .footer-copy span { color: var(--color-seccion); }
-  .footer-brand { font-family: 'Lexend Tera', sans-serif; font-size: 0.6rem; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,255,255,0.15); }
-
+  /* Animaciones heredadas para elementos nativos */
   .reveal { opacity: 0; transform: translateY(30px); transition: opacity 0.8s ease, transform 0.8s ease; }
   .reveal.visible { opacity: 1; transform: translateY(0); }
-
-  @media (max-width: 900px) {
-    nav { padding: 1.2rem 1.5rem; }
-    .menu-dropdown { right: 1.5rem; left: 1.5rem; top: 80px; min-width: auto; }
-    .container { padding: 0 1.5rem; }
-    .media-grid { grid-template-columns: 1fr; gap: 1.5rem; }
-    .footer-inner { grid-template-columns: 1fr; gap: 2.5rem; }
-    .footer-bottom { flex-direction: column; text-align: center; }
-    .social-strip { padding: 1.5rem; }
-  }
 </style>
 </head>
 
-<body>
-  <!-- =======================================================================
-   CLASIFICACIÓN DE LA PÁGINA PARA OBTENER EL CODIGO DE COLOR DEL ARCHIVO COLORES.CSS
-   =========================================================================== -->
-  <body class="page-archviz"></body>
+<!-- ===================================================================
+    DEFINIR LA CATEGORÍA DE LA PAGINA PARA QUE SE SELECCIONE EL COLOR
+    Para editar los colores:
+    -Revisar el archivo .../css/colores.css
+    -Modificar el color correspondiente a la página
+     ===================================================================-->
 
-<div id="cursor"></div>
-<div id="cursor-ring"></div>
+<body class="page-archviz page-sub">
 
-<!-- LLAMADA AL CODIGO DE JS PARA QUE EL MENU SUPERIOR SEA PARAMETRICO-->
+<!-- ===================================================================
+    BARRA DE NAVEGACIÓN, LLAMADA A ARCHIVO JS PARA INSERTARLO EN LA PÁGINA
+     ===================================================================-->
+
 <div id="navbar-dinamico"></div>
 
-<!-- LLAMADA A CODIGO JS PARA EL HERO, VIDEO Y TITULOS-->
- <div id="navbar-dinamico"></div>
+<!-- ===================================================================
+    ENCABEZADO O HERO, LLAMADA A ARCHIVO JS PARA INSERTARLO EN LA PÁGINA
+     ===================================================================-->
 
 <div id="hero-dinamico"></div>
+
+<!-- AQUÍ EDITAMOS LOS TEXTOS, EL VIDEO Y LA OPACIDAD EL OVERLAY-->
 <script>
   window.heroConfig = {
     label: "ARCHVIZ", 
-    title: "VISUALIZACIÓN<br>ARQUITECTÓNICA", // Nota: Puedes usar <br> para los saltos de línea
-    videoPath: "../assets/archviz/archviz_bg.mp4" // 🟢 Cambia esto por la ruta de tu video
+    title: "VISUALIZACIÓN<br>ARQUITECTÓNICA", 
+    videoPath: "../assets/archviz/archviz_bg.mp4", 
+    overlayOpacity: 0.4
   };
 </script>
 
-<section class="main-content-section">
+<!-- ===================================================================
+    VISOR TIPO FRAMER, LLAMADA A ARCHIVO JS PARA INSERTARLO EN LA PÁGINA
+     ===================================================================-->
 
-<section class="main-content-section">
-  <div class="container reveal">
+<div id="seccion-framer-dinamico"></div>
+
+<script>
+  window.framerConfig = {
+    titulo: "Proceso de <em>Alta Fidelidad</em>", 
+    subtitulo: "TECNOLOGÍA Y DETALLE",
+    bg: "negro",                
+    paddingSimetrico: "4rem 0",  
     
-    <div class="intro-text-layout">
-      <h2>"Trabajamos en esta <span class="text-accent">sección para ti</span><br> Muy pronto"</h2>
-      <div class="divider"></div>
-      <p>Cargando</p>
-      <p>contenido...<p>
-    </div>
+    bloques: [
+      {
+        title: "Modelado Ultra Preciso",
+        desc: "Convertimos tus planos CAD, archivos de Revit o bocetos en gemelos digitales con una fidelidad milimétrica estructural, listos para optimización de materiales.",
+        img: "../assets/archviz/archviz_01.jpg"
+      },
+      {
+        title: "Iluminación Fotorrealista",
+        desc: "Simulamos las condiciones lumínicas del mundo real mediante algoritmos avanzados de Path Tracing. Capturamos la calidez de los interiores y la crudeza de los entornos exteriores tal como se vivirán.",
+        img: "../assets/archviz/archviz_02.jpg"
+      },
+      {
+        title: "Optimización Inmersiva",
+        desc: "Preparamos los entornos interactivos para que fluyan en la web sin sacrificar texturas ni geometría, permitiendo que tus clientes exploren libremente en cualquier dispositivo.",
+        img: "../assets/archviz/archviz_03.jpg"
+      }
+    ]
+  };
+</script>
 
-    <div class="media-grid">
-      <div class="media-card">
-        <img src="../assets/images/img_01.jpg" class="card-img-bg" alt="Muestra de Estudio 01">
-        <div class="media-overlay-info">
-          <div class="media-cat-text">Aproximandose</div>
-          <h3 class="media-title-text">Está muy cerca</h3>
-        </div>
-      </div>
+<!-- ═══════════════════════════════════════════════════════════════
+     SECCIÓN YOUTUBE
+     ─────────────────────────────────────────────────────────────
+     SE SUSTITUYÓ POR UN MODULO DE JAVASCRIPT, AQUÍ LLAMAMOS A ESE MODULO PARA QUE SE ADAPTE A LOS COLORES DE LA PÁGINA Y
+     EDITAR LOS TEXTOS Y EL LINNK PARA QUE SEA PERSONALIZADO DE CADA PÁGINA
+     ═══════════════════════════════════════════════════════════════ -->
 
-      <div class="media-card">
-        <img src="../assets/images/img_02.jpg" class="card-img-bg" alt="Muestra de Estudio 02">
-        <div class="media-overlay-info">
-          <div class="media-cat-text">Ya casi</div>
-          <h3 class="media-title-text">Muy pronto</h3>
-        </div>
-      </div>
-    </div>
+  <div id="showreel-dinamico"></div>
 
-    <div class="back-box">
-      <a href="../index.html" class="btn-back">← Volver al inicio</a>
-    </div>
+<script>
+  window.showreelConfig = {
+    label: "RECORRIDO VIRTUAL",
+    titleHtml: "Hecho por <em>OMH</em>",
+    youtubeId: "QCRoTpb8EYw",
+    bottomText: "RECORRIDO PARA ATLAS DESARROLLOS QRO.",
+    bg: "gris-oscuro" // Aquí lo dejas en fondo puramente negro
+  };
+</script>
 
-  </div>
-</section> 
+<!-- ===================================================================
+    BEHANCE
+     ===================================================================-->
+
+<div id="portfolio-behance-dinamico"></div>
+
+<script>
+  window.behanceConfig = {
+    proyectoId: "247323241",             
+    titulo: "Galería de <em>Proyectos</em>", 
+    subtitulo: "PORTAFOLIO BEHANCE",
+    bg: "negro",
+    paddingTop: "2rem",
+    paddingBottom: "4rem",               // Espacio amplio hacia la botonera
+    embedHeight: "260px",                // <--- Altura ultra baja (Forza el look cinematográfico 18:6 en PC)
+    embedHeightMobile: "180px"           // <--- Alargado escalado a celulares
+  };
+</script>
+
+<!-- SECCIÓN DE COSTOS, LUEGO SUSTITUIR POR UN COTIZADOR AUTOMATICO, USA EL JS DE TECHGRID-->
+
+<div id="tecnologia-dinamica"></div>
+
+<script>
+  window.techGridConfig = {
+    label: "Tarifas Base",
+    titleHtml: "Planes &<br><em>Precios Desde</em>",
+    bg: "gris", 
+    padding: "4rem 0",
+    items: [
+      {
+        icon: "📸",
+        name: "Render Fijo Diurno",
+        desc: "Visualización fotorrealista de alta resolución para interiores o exteriores residenciales. Desde $150 USD."
+      },
+      {
+        icon: "🔄",
+        name: "Render 360° Inmersivo",
+        desc: "Panorámicas equirrectangulares interactivas listas para visores virtuales y WebAR. Desde $250 USD."
+      },
+      {
+        icon: "🗺️",
+        name: "Planta Arquitectónica 3D",
+        desc: "Cortes de planta amueblados y texturizados para comprensión espacial e inmobiliaria. Desde $200 USD."
+      },
+      {
+        icon: "🎬",
+        name: "Cinemática en Video",
+        desc: "Recorridos animados fluidos con iluminación y materiales dinámicos de alta fidelidad. Desde $450 USD."
+      }
+    ]
+  };
+</script>
+
+<!-- ===================================================================
+    BOTON DE REGRESAR AL INICIO
+     ===================================================================-->
+
+<div id="botonera-dinamica"></div>
+
+<script>
+  window.botoneraConfig = {
+    bg: "gris",                   
+    padding: "5rem 0 5rem 0",     
+    align: "center",              
+    
+    tituloText: "¡HABLANOS DE TU PROYECTO!",
+    subtituloText: "", 
+    
+    botones: [
+      { 
+        text: "COTIZAR AHORA →", 
+        url: "whatsapp",         // <--- Solo pones "whatsapp" y el JS jala el número de contacto.js
+        msj: "¡Hola OMH Estudio! Me interesa solicitar una cotización para un proyecto de Visualización Arquitectónica (Archviz).", // <--- Tu mensaje personalizado por subpágina
+        type: "solido",          
+        targetBlank: true 
+      },
+      { 
+        text: "← VOLVER AL INICIO", 
+        url: "../index.html", 
+        type: "outline",         
+        targetBlank: false 
+      }
+    ]
+  };
+</script>
+
+<!-- ===================================================================
+    FOOTER O PIE DE PAGINA (AQUÍ NO HAY QUE EDITAR NADA PERSONALIZADO
+    EL FOOTER SIEMPRE ES IGUAL EN TODAS LAS PAGINAS
+    Para cambiar un link: Editar el archivo footer.js) 
+    LLAMADA A ARCHIVO JS PARA INSERTARLO EN LA PÁGINA
+     ===================================================================-->
 
 <div id="footer-dinamico"></div>
 
-<script>
-  /* ─── CONTROLADORES JS LOCALES DE LA SUBPÁGINA ─── */
-  const cursor = document.getElementById('cursor');
-  const ring = document.getElementById('cursor-ring');
-  let mx = 0, my = 0, rx = 0, ry = 0;
-
-  document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; cursor.style.left = mx + 'px'; cursor.style.top = my + 'px'; });
-  (function animRing() { rx += (mx - rx) * 0.12; ry += (my - ry) * 0.12; ring.style.left = rx + 'px'; ring.style.top = ry + 'px'; requestAnimationFrame(animRing); })();
-
-  // Solo mantenemos los hovers de los elementos internos de la página (las tarjetas)
-  document.querySelectorAll('.media-card').forEach(el => {
-    el.addEventListener('mouseenter', () => { 
-      cursor.style.transform = 'translate(-50%,-50%) scale(2)'; 
-      ring.style.borderColor = 'var(--color-seccion)'; 
-    });
-    el.addEventListener('mouseleave', () => { 
-      cursor.style.transform = 'translate(-50%,-50%) scale(1)'; 
-      ring.style.borderColor = 'var(--color-seccion)'; 
-    });
-  });
-
-  const reveals = document.querySelectorAll('.reveal');
-  const observer = new IntersectionObserver(entries => {
-    entries.forEach(entry => { if (entry.isIntersecting) { entry.target.classList.add('visible'); } });
-  }, { threshold: 0.12 });
-  reveals.forEach(el => observer.observe(el));
-</script>
+<!-- ===================================================================
+    SECCIÓN PARA LA CARGA DE LOS ARCHIVOS JS
+    Si se agrega algun elemento JS o Widget:
+    -Primero colocar en el cuerpo donde queremos que aparezca
+    -Hacer la llamada al widget en esta sección
+     ===================================================================-->
 
 <script src="../js/navbar.js"></script>
 <script src="../js/hero.js"></script>
+<script src="../js/gridproyectos.js"></script>
+<script src="../js/seccion-framer.js"></script>
+<script src="../js/youtubelink.js"></script>
+<script src="../js/portfolio-behance.js"></script>
+<script src="../js/techgrid.js"></script>
+<script src="../js/botonera.js"></script>
+<script src="../data/contacto.js"></script>
 <script src="../js/footer.js"></script>
 
 </body>
 </html>
+

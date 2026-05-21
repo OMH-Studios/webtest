@@ -9,51 +9,56 @@
   --blanco:       #ffffff;   
   --gris-oscuro:  #0a0a0a;   
   --gris-medio:   #111111;
+  --gris-suave:   #1a1a1a;
   --gris-borde:   #222222;   
   --gris-texto:   #888888;   
 
-  /* 2. COLOR POR DEFECTO (Si una página no tiene clase asignada) */
+  /* 2. VALORES POR DEFECTO */
   --color-seccion: var(--blanco); 
+  
+  /* ✨ LA MAGIA: Por defecto, el secundario clona al primario */
+  --color-secundario: var(--color-seccion); 
 }
 
-/* 3. ASIGNACIÓN ASOCIATIVA POR PÁGINA (¡Aquí controlas todo!) */
+/* 3. CONFIGURACIÓN DUAL PARA EL INDEX (PÁGINA PRINCIPAL) */
+body.page-index {
+  --color-seccion: var(--rojo);       /* Logo e interactivos principales en Rojo */
+  --color-secundario: var(--amarillo); /* Acentos, hovers y detalles en Amarillo */
+}
 
-/* Nosotros: Ahora configurado con tu Rojo OMH institucional */
+/* 4. ASIGNACIÓN POR SUBPÁGINA (MONOCROMÁTICAS) */
 body.page-nosotros {
   --color-seccion: var(--rojo);
 }
 
-/* Visualización Arquitectónica */
 body.page-archviz {
-  --color-seccion: #00f0ff; /* Ejemplo: Cyan */
+  --color-seccion: #00f0ff; /* Cyan */
 }
 
-/* Producción Audiovisual (La nueva página) */
 body.page-audiovisual {
-  --color-seccion: var(--amarillo); /* Tu amarillo de set de filmación */
+  --color-seccion: var(--amarillo);
 }
 
-/* Animación & VFX */
 body.page-anim-vfx {
-  --color-seccion: #b600ff; /* Ejemplo: Morado eléctrico */
+  --color-seccion: #b600ff; /* Morado */
 }
 
-/* Experiencias Inmersivas (XR) */
 body.page-ar-vr {
-  --color-seccion: #00ff22; /* Ejemplo: Verde Matrix/VR */
+  --color-seccion: #00ff00; /* Verde VR */
 }
 
-/* Escaneo 3D & PropTech */
+body.page-tours-360 {
+  --color-seccion: #0026ff; /* Azul rey */
+}
+
 body.page-escaneos {
-  --color-seccion: #ff6c00; /* Ejemplo: Naranja láser */
+  --color-seccion: #ff6c00; /* Naranja */
 }
 
-/* Contenido Digital / MKT */
 body.page-mkt {
-  --color-seccion: #ff007c; /* Ejemplo: Magenta digital */
+  --color-seccion: #ff007c; /* Magenta */
 }
 
-/* IA Aplicada */
 body.page-ia {
-  --color-seccion: #70a1ff; /* Ejemplo: Azul tecnológico */
+  --color-seccion: #70a1ff; /* Azul IA */
 }

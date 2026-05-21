@@ -25,6 +25,7 @@
        Textos generales  → Raleway
      ════════════════════════════════════════════════════════════ -->
 <link href="https://fonts.googleapis.com/css2?family=Lexend+Tera:wght@400;700;900&family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Raleway:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/colores.css">
 
 <style>
   /* ════════════════════════════════════════════════════════════
@@ -32,17 +33,7 @@
      Formato: #RRGGBB (código hexadecimal de color)
      Puedes buscar "color picker" en Google para elegir colores
      ════════════════════════════════════════════════════════════ */
-  :root {
-    --rojo:       #cc0000;   /* Color rojo principal */
-    --amarillo:   #f4d431;   /* Color amarillo/dorado de acento */
-    --negro:      #000000;   /* Fondo negro puro */
-    --blanco:     #ffffff;   /* Texto blanco */
-    --gris-oscuro:#0a0a0a;   /* Fondo de secciones alternas */
-    --gris-medio: #111111;   /* Fondo de tarjetas de proyectos */
-    --gris-suave: #1a1a1a;   /* Color hover en tarjetas */
-    --gris-texto: #888888;   /* Color de textos secundarios/descriptivos */
-    --gris-borde: #222222;   /* Color de líneas y bordes */
-  }
+
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
   html { scroll-behavior: smooth; }
@@ -545,6 +536,7 @@
 </style>
 </head>
 <body>
+  <body class="page-index"></body>
 
 <!-- ═══════════════════════════════════════════════════════════════
      CURSORES PERSONALIZADOS — no editar
@@ -559,52 +551,9 @@
      Para cambiar a dónde lleva cada enlace: cambia el href="#nombre"
        (el # apunta a la sección con ese id más abajo en la página)
      ═══════════════════════════════════════════════════════════════ -->
-<nav id="navbar">
 
-  <a href="#hero" class="nav-logo">
-    <img src="assets/logos/logo_s_b.png" alt="OMH Estudio" onerror="this.style.display='none'; this.nextElementSibling.style.display='block'">
-    <span style="display:none; font-family:'Lexend Tera',sans-serif; font-weight:900; font-size:1rem; color:#fff;">
-      OMH<span style="color:#cc0000;">.</span>
-    </span>
-  </a>
-
-  <ul class="nav-links">
-    <li><a href="#servicios">Servicios</a></li>
-    <li><a href="#proyectos">Showcase</a></li>
-    <li><a href="#filosofia">Filosofía</a></li>
-    <li><a href="#tecnologia">Tecnología</a></li>
-    <li><a href="#faq">FAQ</a></li>
-  </ul>
-
-  <div style="display: flex; align-items: center; gap: 1.5rem;">
-    
-    <button id="menu-toggle" class="menu-hamburger" aria-label="Abrir menú" style="flex-shrink: 0;">
-        <span></span>
-        <span></span>
-        <span></span>
-    </button>
-
-    <a href="https://api.whatsapp.com/send/?phone=524461328102&text&type=phone_number&app_absent=0" class="nav-cta" target="_blank">Contacto</a>
-    
-  </div>
-
-</nav>
-
-<div id="extended-menu" class="menu-dropdown">
-    <div class="menu-dropdown-content">
-        <p class="menu-subtitle">Explora nuestras disciplinas</p>
-        <ul class="menu-nav-list">
-            <li><a href="pages/nosotros.html" class="menu-link"><span>👥</span> Nosotros / Estudio</a></li>
-            
-            <li><a href="pages/archviz.html" class="menu-link"><span>🏛️</span> Visualización Arquitectónica</a></li>
-            <li><a href="pages/anim_vfx.html" class="menu-link"><span>🎬</span> Animación & VFX</a></li>
-            <li><a href="pages/ar_vr.html" class="menu-link"><span>🥽</span> Experiencias Inmersivas</a></li>
-            <li><a href="pages/escaneos.html" class="menu-link"><span>📡</span> Escaneo 3D & PropTech</a></li>
-            <li><a href="pages/mkt.html" class="menu-link"><span>✦</span> Contenido Digital / MKT</a></li>
-            <li><a href="pages/ia.html" class="menu-link"><span>🤖</span> IA Aplicada</a></li>
-        </ul>
-    </div>
-</div>
+     <!-- LLAMADA AL CODIGO DE JS PARA QUE EL MENU SUPERIOR SEA PARAMETRICO-->
+<div id="navbar-dinamico"></div>
 
 
 <!-- ═══════════════════════════════════════════════════════════════
@@ -682,55 +631,20 @@
 <!-- ═══════════════════════════════════════════════════════════════
      SECCIÓN SHOWREEL
      ─────────────────────────────────────────────────────────────
-     OPCIÓN A — Video de YouTube (recomendado):
-       1. Abre tu video en YouTube
-       2. Clic en "Compartir" → "Insertar" → copia solo el ID del video
-          (la parte después de "embed/" en el código que te da YouTube)
-       3. Reemplaza  TU_ID_DE_YOUTUBE  abajo con ese ID
-
-     OPCIÓN B — Video de Vimeo:
-       Reemplaza el src del iframe con:
-       https://player.vimeo.com/video/TU_ID_VIMEO
+     SE SUSTITUYÓ POR UN MODULO DE JAVASCRIPT, AQUÍ LLAMAMOS A ESE MODULO PARA QUE SE ADAPTE A LOS COLORES DE LA PÁGINA Y
+     EDITAR LOS TEXTOS Y EL LINNK PARA QUE SEA PERSONALIZADO DE CADA PÁGINA
      ═══════════════════════════════════════════════════════════════ -->
-<section id="showreel">
-  <div class="container">
-    <div class="section-label reveal">Showreel</div>
-    <!-- Cambia "Nuestro trabajo" si quieres otro título -->
-    <h2 class="section-title reveal reveal-delay-1">Nuestro <em>trabajo</em></h2>
-  </div>
-  <div class="showreel-wrapper">
-    <div class="video-frame reveal reveal-delay-2">
-      <div class="bracket tl"></div>
-      <div class="bracket tr"></div>
-      <div class="bracket bl"></div>
-      <div class="bracket br"></div>
+<div id="showreel-dinamico"></div>
 
-      <!-- ══ CUANDO TENGAS TU VIDEO EN YOUTUBE, REEMPLAZA ESTE BLOQUE:
-           Borra el div class="video-placeholder" y agrega esto:
-
-           <iframe
-             src="https://www.youtube.com/embed/TU_ID_DE_YOUTUBE?rel=0&color=white"
-             allow="autoplay; fullscreen; picture-in-picture"
-             allowfullscreen>
-           </iframe>
-           ══ -->
-
-      <!-- Placeholder temporal — borra esto cuando agregues el iframe -->
-      <iframe
-        src="https://www.youtube.com/embed/qUj9q0LFO7g?rel=0&color=white"
-        allow="autoplay; fullscreen; picture-in-picture"
-        allowfullscreen
-        style="width: 100%; height: 100%; border: none; display: block;">
-      </iframe>
-      <!-- fin placeholder -->
-
-    </div>
-    <!-- Texto pequeño abajo del video — cámbialo si quieres -->
-    <p style="text-align:right; font-size:0.65rem; letter-spacing:0.15em; text-transform:uppercase; color:rgba(255,255,255,0.15); margin-top:0.75rem;">
-      PRODUCTION REEL 2024
-    </p>
-  </div>
-</section>
+<script>
+  window.showreelConfig = {
+    label: "Showreel",
+    titleHtml: "Nuestro <em>trabajo</em>",
+    youtubeId: "qUj9q0LFO7g",
+    bottomText: "PRODUCTION REEL 2026",
+    bg: "negro" // Aquí lo dejas en fondo puramente negro
+  };
+</script>
 
 
 <!-- ═══════════════════════════════════════════════════════════════
@@ -987,55 +901,16 @@
     logo1.png , logo2.png, etc
     ===================================================================-->
 
-<section style="background: var(--gris-oscuro); padding: 5rem 0; overflow: hidden; border-top: 1px solid var(--gris-borde); border-bottom: 1px solid var(--gris-borde);">
-    <p style="color: var(--rojo); font-family: 'Raleway', sans-serif; font-size: 0.65rem; font-weight: 700; letter-spacing: 0.3em; text-align: center; margin-bottom: 2.5rem; text-transform: uppercase;">
-      Empresas que confían en nosotros
-    </p>
-    
-    <div class="marquee">
-        <div class="marquee-content">
-            <img src="assets/logos/logo1.png" alt="Logo Empresa" style="height: 40px; margin: 0 40px; filter: grayscale(100%) brightness(200%); opacity: 0.6;">
-            <img src="assets/logos/logo2.png" alt="Logo Empresa" style="height: 40px; margin: 0 40px; filter: grayscale(100%) brightness(200%); opacity: 0.6;">
-            <img src="assets/logos/logo3.png" alt="Logo Empresa" style="height: 40px; margin: 0 40px; filter: grayscale(100%) brightness(200%); opacity: 0.6;">
-            <img src="assets/logos/logo4.png" alt="Logo Empresa" style="height: 40px; margin: 0 40px; filter: grayscale(100%) brightness(200%); opacity: 0.6;">
-            <img src="assets/logos/logo5.png" alt="Logo Empresa" style="height: 40px; margin: 0 40px; filter: grayscale(100%) brightness(200%); opacity: 0.6;">
-            <img src="assets/logos/logo6.png" alt="Logo Empresa" style="height: 40px; margin: 0 40px; filter: grayscale(100%) brightness(200%); opacity: 0.6;">
-            
-            <img src="assets/logos/logo1.png" alt="Logo Empresa" style="height: 40px; margin: 0 40px; filter: grayscale(100%) brightness(200%); opacity: 0.6;">
-            <img src="assets/logos/logo2.png" alt="Logo Empresa" style="height: 40px; margin: 0 40px; filter: grayscale(100%) brightness(200%); opacity: 0.6;">
-            <img src="assets/logos/logo3.png" alt="Logo Empresa" style="height: 40px; margin: 0 40px; filter: grayscale(100%) brightness(200%); opacity: 0.6;">
-            <img src="assets/logos/logo4.png" alt="Logo Empresa" style="height: 40px; margin: 0 40px; filter: grayscale(100%) brightness(200%); opacity: 0.6;">
-            <img src="assets/logos/logo5.png" alt="Logo Empresa" style="height: 40px; margin: 0 40px; filter: grayscale(100%) brightness(200%); opacity: 0.6;">
-            <img src="assets/logos/logo6.png" alt="Logo Empresa" style="height: 40px; margin: 0 40px; filter: grayscale(100%) brightness(200%); opacity: 0.6;">
+<div id="marquee-clientes-dinamico"></div>
 
-
-            <img src="assets/logos/logo1.png" alt="Logo Empresa" style="height: 40px; margin: 0 40px; filter: grayscale(100%) brightness(200%); opacity: 0.6;">
-            <img src="assets/logos/logo2.png" alt="Logo Empresa" style="height: 40px; margin: 0 40px; filter: grayscale(100%) brightness(200%); opacity: 0.6;">
-            <img src="assets/logos/logo3.png" alt="Logo Empresa" style="height: 40px; margin: 0 40px; filter: grayscale(100%) brightness(200%); opacity: 0.6;">
-            <img src="assets/logos/logo4.png" alt="Logo Empresa" style="height: 40px; margin: 0 40px; filter: grayscale(100%) brightness(200%); opacity: 0.6;">
-            <img src="assets/logos/logo5.png" alt="Logo Empresa" style="height: 40px; margin: 0 40px; filter: grayscale(100%) brightness(200%); opacity: 0.6;">
-            <img src="assets/logos/logo6.png" alt="Logo Empresa" style="height: 40px; margin: 0 40px; filter: grayscale(100%) brightness(200%); opacity: 0.6;">
-
-        </div>
-    </div>
-</section>
-
-<style>
-.marquee {
-    display: flex;
-    width: 100%;
-    overflow: hidden;
-}
-.marquee-content {
-    display: flex;
-    animation: marqueeAnimation 25s linear infinite;
-    white-space: nowrap;
-}
-@keyframes marqueeAnimation {
-    0% { transform: translateX(0%); }
-    100% { transform: translateX(-33.333%); }
-}
-</style>   
+<script>
+  window.clientesMarqConfig = {
+    title: "Empresas que confían en nosotros",
+    bg: "gris",
+    padding: "3rem 0",
+    mostrarBordes: true
+  };
+</script>
 
 <!-- ===================================================================
  SECCIÓN DE FAQ 
@@ -1177,57 +1052,25 @@ document.addEventListener("DOMContentLoaded", function() {
      SECCIÓN TECNOLOGÍA / STACK
      Edita nombre y descripción de cada tech-item.
      ═══════════════════════════════════════════════════════════════ -->
-<section id="tecnologia">
-  <div class="container">
-    <div class="section-label reveal">Stack Creativo</div>
-    <h2 class="section-title reveal reveal-delay-1">Tecnología &<br><em>Herramientas</em></h2>
-    <div class="tech-grid reveal reveal-delay-2">
+<div id="tecnologia-dinamica"></div>
 
-      <div class="tech-item">
-        <span class="tech-icon">🎯</span>
-        <div class="tech-name">CGI & 3D</div>
-        <div class="tech-desc">Blender, 3ds Max, Cinema 4D, renders hiperrealistas</div>
-      </div>
-      <div class="tech-item">
-        <span class="tech-icon">🥽</span>
-        <div class="tech-name">XR & Inmersivo</div>
-        <div class="tech-desc">AR, VR, recorridos 360°, Unity, Unreal Engine</div>
-      </div>
-      <div class="tech-item">
-        <span class="tech-icon">📡</span>
-        <div class="tech-name">Escaneo 3D</div>
-        <div class="tech-desc">Matterport, LiDAR, fotogrametría y digital twins</div>
-      </div>
-      <div class="tech-item">
-        <span class="tech-icon">🎬</span>
-        <div class="tech-name">Post Producción</div>
-        <div class="tech-desc">After Effects, DaVinci Resolve, Premiere, Nuke</div>
-      </div>
-      <div class="tech-item">
-        <span class="tech-icon">✦</span>
-        <div class="tech-name">Motion Design</div>
-        <div class="tech-desc">Animation, motion graphics, video mapping</div>
-      </div>
-      <div class="tech-item">
-        <span class="tech-icon">🤖</span>
-        <div class="tech-name">IA Generativa</div>
-        <div class="tech-desc">Midjourney, Stable Diffusion, Runway, Sora</div>
-      </div>
-      <div class="tech-item">
-        <span class="tech-icon">📸</span>
-        <div class="tech-name">Fotografía</div>
-        <div class="tech-desc">Comercial, arquitectónica, producto y dron</div>
-      </div>
-      <div class="tech-item">
-        <span class="tech-icon">🏗️</span>
-        <div class="tech-name">Prop Tech</div>
-        <div class="tech-desc">Soluciones visuales para inmobiliario y arquitectura</div>
-      </div>
-
-    </div>
-  </div>
-</section>
-
+<script>
+  window.techGridConfig = {
+    label: "Stack Creativo",
+    titleHtml: "Tecnología &<br><em>Herramientas</em>",
+    bg: "gris", // Alterna entre "negro" y "gris" para cambiar el fondo de la sección
+    items: [
+      { icon: "🎯", name: "CGI & 3D", desc: "Blender, 3ds Max, Cinema 4D, renders hiperrealistas" },
+      { icon: "🥽", name: "XR & Inmersivo", desc: "AR, VR, recorridos 360°, Unity, Unreal Engine" },
+      { icon: "📡", name: "Escaneo 3D", desc: "Matterport, LiDAR, fotogrametría y digital twins" },
+      { icon: "🎬", name: "Post Producción", desc: "After Effects, DaVinci Resolve, Premiere, Nuke" },
+      { icon: "✦", name: "Motion Design", desc: "Animation, motion graphics, video mapping" },
+      { icon: "🤖", name: "IA Generativa", desc: "Midjourney, Stable Diffusion, Runway, Sora" },
+      { icon: "📸", name: "Fotografía", desc: "Comercial, arquitectónica, producto y dron" },
+      { icon: "🏗️", name: "Prop Tech", desc: "Soluciones visuales para inmobiliario y arquitectura" }
+    ]
+  };
+</script>
 
 <!-- ═══════════════════════════════════════════════════════════════
      SECCIÓN CTA FINAL (llamada a la acción)
@@ -1299,123 +1142,8 @@ document.addEventListener("DOMContentLoaded", function() {
 
      Los href ya tienen todos tus links configurados.
      ═══════════════════════════════════════════════════════════════ -->
-<div class="social-strip">
-  <p>Síguenos</p>
-  <div class="social-links">
 
-    <!-- INSTAGRAM -->
-    <a href="https://www.instagram.com/omh_estudio/" class="social-link" target="_blank">
-      <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
-      Instagram
-    </a>
-
-    <!-- TIKTOK -->
-    <a href="https://www.tiktok.com/@omh.studios" class="social-link" target="_blank">
-      <svg viewBox="0 0 24 24"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/></svg>
-      TikTok
-    </a>
-
-    <!-- YOUTUBE — agrega tu URL cuando tengas canal -->
-    <a href="https://www.youtube.com/@omhestudio" class="social-link" target="_blank">
-      <svg viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
-      YouTube
-    </a>
-
-    <!-- FACEBOOK -->
-    <a href="https://www.facebook.com/omhstudioarq" class="social-link" target="_blank">
-      <svg viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
-      Facebook
-    </a>
-
-    <!-- LINKEDIN -->
-    <a href="https://www.linkedin.com/company/omh-estudio/" class="social-link" target="_blank">
-      <svg viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
-      LinkedIn
-    </a>
-
-    <!-- EMAIL -->
-    <a href="mailto:omh.visualization@gmail.com" class="social-link">
-      <svg viewBox="0 0 24 24"><path d="M24 5.457v13.909c0 .904-.732 1.636-1.636 1.636h-3.819V11.73L12 16.64l-6.545-4.91v9.273H1.636A1.636 1.636 0 010 19.366V5.457c0-2.023 2.309-3.178 3.927-1.964L5.455 4.64 12 9.548l6.545-4.909 1.528-1.145C21.69 2.28 24 3.434 24 5.457z"/></svg>
-      Email
-    </a>
-
-    <!-- WHATSAPP -->
-    <a href="https://api.whatsapp.com/send/?phone=524461328102&text&type=phone_number&app_absent=0"
-       class="social-link" target="_blank">
-      <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-      WhatsApp
-    </a>
-
-  </div>
-</div>
-
-<!-- ═══════════════════════════════════════════════════════════════
-     FOOTER
-     ─────────────────────────────────────────────────────────────
-     Edita los textos y enlaces del pie de página.
-     El logo del footer apunta a assets/logos/
-     ═══════════════════════════════════════════════════════════════ -->
-<footer>
-  <div class="footer-inner">
-
-    <!-- Columna izquierda: logo y descripción -->
-    <div class="footer-logo">
-      <img src="assets/logos/LogoOMH_white_Mesa_de_trabajo_1.png"
-           alt="OMH Estudio"
-           onerror="this.style.display='none'">
-      <!-- Descripción breve — edítala si quieres -->
-      <p class="footer-desc">
-        Estudio creativo de producción visual y experiencias digitales.
-        Transformamos ideas en contenido de alto impacto para marcas, espacios y proyectos.
-      </p>
-      <!-- Íconos de redes en el footer — cambia los href si necesitas -->
-      <div style="margin-top:1.5rem; display:flex; gap:1rem; flex-wrap:wrap;">
-        <a href="https://www.instagram.com/omh_estudio/" target="_blank" style="color:rgba(255,255,255,0.3); font-size:0.7rem; text-decoration:none;" onmouseover="this.style.color='#f4d431'" onmouseout="this.style.color='rgba(255,255,255,0.3)'">IG</a>
-        <a href="https://www.tiktok.com/@omh.studios" target="_blank" style="color:rgba(255,255,255,0.3); font-size:0.7rem; text-decoration:none;" onmouseover="this.style.color='#f4d431'" onmouseout="this.style.color='rgba(255,255,255,0.3)'">TK</a>
-        <a href="https://www.facebook.com/omhstudioarq" target="_blank" style="color:rgba(255,255,255,0.3); font-size:0.7rem; text-decoration:none;" onmouseover="this.style.color='#f4d431'" onmouseout="this.style.color='rgba(255,255,255,0.3)'">FB</a>
-        <a href="https://www.linkedin.com/company/omh-estudio/" target="_blank" style="color:rgba(255,255,255,0.3); font-size:0.7rem; text-decoration:none;" onmouseover="this.style.color='#f4d431'" onmouseout="this.style.color='rgba(255,255,255,0.3)'">LI</a>
-        <a href="https://www.youtube.com/@omhestudio" target="_blank" style="color:rgba(255,255,255,0.3); font-size:0.7rem; text-decoration:none;" onmouseover="this.style.color='#f4d431'" onmouseout="this.style.color='rgba(255,255,255,0.3)'">YT</a>
-      </div>
-    </div>
-
-    <!-- Columna centro: servicios -->
-    <div class="footer-col">
-      <h5>Servicios</h5>
-      <ul>
-        <li><a href="pages/archviz.html">Visualización Arquitectónica</a></li>
-        <li><a href="pages/anim_vfx.html">Producción Audiovisual & VFX</a></li>
-        <li><a href="pages/ar_vr.html">Experiencias XR / AR / VR</a></li>
-        <li><a href="pages/escaneos.html">Escaneo 3D & Prop Tech</a></li>
-        <li><a href="pages/mkt.html">Marketing Digital (MKT)</a></li>
-       <li><a href="pages/ia.html">IA Aplicada a Visual</a></li>
-      </ul>
-    </div>
-
-    <!-- Columna derecha: contacto -->
-    <div class="footer-col">
-      <h5>Contacto</h5>
-      <ul>
-        <li><a href="https://api.whatsapp.com/send/?phone=524461328102&text&type=phone_number&app_absent=0" target="_blank">WhatsApp</a></li>
-        <li><a href="mailto:contacto@omhestudio.com">contacto@omhestudio.com</a></li>
-        <li><a href="https://www.instagram.com/omh_estudio/" target="_blank">@omh_estudio</a></li>
-        <li><a href="https://www.linkedin.com/company/omh-estudio/" target="_blank">LinkedIn</a></li>
-        <li><a href="https://www.tiktok.com/@omh.studios" target="_blank">TikTok</a></li>
-        <li><a href="https://www.facebook.com/omhstudioarq" target="_blank">Facebook</a></li>
-        <li><a href="https://www.youtube.com/@omhestudio" target="_blank">YouTube</a></li>
-      </ul>
-    </div>
-
-  </div>
-
-  <!-- Barra inferior del footer -->
-  <div class="footer-bottom">
-    <!-- Texto de copyright — cambia el año si quieres -->
-    <p class="footer-copy">
-      © 2024 OMH Estudio — Todos los derechos reservados. Hecho con <span>♥</span> en México.
-    </p>
-    <p class="footer-brand">Visuales que capturan</p>
-  </div>
-</footer>
+     <div id="footer-dinamico"></div>
 
 <!-- ═══════════════════════════════════════════════════════════════
      JAVASCRIPT — no editar a menos que sepas lo que haces
@@ -1470,40 +1198,13 @@ document.addEventListener("DOMContentLoaded", function() {
   }, { threshold: 0.12 });
   reveals.forEach(el => observer.observe(el));
 
-/* ─── 5. LÓGICA DEL MENÚ HAMBURGUESA Y DESPLEGABLE ─── */
-  const menuToggle = document.getElementById("menu-toggle");
-  const extendedMenu = document.getElementById("extended-menu");
-
-  if (menuToggle && extendedMenu) {
-      // Abrir/Cerrar al dar clic en la hamburguesa
-      menuToggle.addEventListener("click", function(event) {
-          menuToggle.classList.toggle("open");
-          extendedMenu.classList.toggle("active");
-          event.stopPropagation(); // Evita que el clic se propague al documento
-      });
-
-      // Cerrar si se da clic en un enlace
-      document.querySelectorAll(".menu-link").forEach(link => {
-          link.addEventListener("click", () => {
-              menuToggle.classList.remove("open");
-              extendedMenu.classList.remove("active");
-          });
-      });
-
-      // ¡NUEVO!: Cerrar el menú si haces clic en cualquier parte fuera de él
-      document.addEventListener("click", function(event) {
-          const isClickInsideMenu = extendedMenu.contains(event.target);
-          const isClickOnToggle = menuToggle.contains(event.target);
-
-          // Si el menú está abierto y no hiciste clic dentro del menú ni en el botón...
-          if (extendedMenu.classList.contains("active") && !isClickInsideMenu && !isClickOnToggle) {
-              menuToggle.classList.remove("open");
-              extendedMenu.classList.remove("active");
-          }
-      });
-  }
-
 </script>
+
+<script src="js/navbar.js"></script>
+<script src="js/youtubelink.js"></script>
+<script src="js/techgrid.js"></script>
+<script src="js/clientesmarq.js"></script>
+<script src="js/footer.js"></script>
 
 </body>
 </html>

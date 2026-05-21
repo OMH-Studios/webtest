@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>OMH Estudio | Foto 360</title>
+
+<link rel="icon" type="image/png" href="../assets/logos/favicon_omh.png">
+<link href="https://fonts.googleapis.com/css2?family=Lexend+Tera:wght@400;700;900&family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Raleway:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/colores.css">
+
+<style>
+  /* ─── ESTILOS EXCLUSIVOS DE LA SUBPÁGINA ─── */
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--negro); color: var(--blanco); font-family: 'Raleway', sans-serif; cursor: none; overflow-x: hidden;}
+
+  /* Animaciones heredadas para elementos nativos */
+  .reveal { opacity: 0; transform: translateY(30px); transition: opacity 0.8s ease, transform 0.8s ease; }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+</style>
+</head>
+
+<body class="page-tours-360">
+
+<div id="navbar-dinamico"></div>
+
+<div id="hero-dinamico"></div>
+<script>
+  window.heroConfig = {
+    label: "Conoce cada rincón", 
+    title: "Tours 360 &<br>Fotografía", 
+    videoPath: "../assets/tours_360/tours360_bg.mp4", 
+    overlayOpacity: 0.4
+  };
+</script>
+
+<div id="grid-proyectos-dinamico"></div>
+<script>
+  window.gridProyectosConfig = {
+    introTitle: "Espacios Reales, <em>Experiencias Virtuales</em>", 
+    introSubtitle: "Capturamos el mundo físico con precisión milimétrica para crear gemelos digitales interactivos y recorridos envolventes de alta fidelidad.",
+    
+    proyectos: [
+      {
+        category: "Showroom Virtual",
+        title: "Paseo Pitahaya - Atlas Desarrollos",
+        mediaPath: "../assets/images/img_02.jpg"
+      },
+      {
+        category: "Google Street View",
+        title: "Recorrido Comercial OMH",
+        mediaPath: "../assets/images/img_01.jpg"
+      }
+    ]
+  };
+</script>
+
+<div class="back-box reveal">
+  <a href="../index.html" class="btn-back">← Volver al inicio</a>
+</div>
+
+<div id="footer-dinamico"></div>
+
+<script src="../js/navbar.js"></script>
+<script src="../js/hero.js"></script>
+<script src="../js/gridproyectos.js"></script>
+<script src="../js/footer.js"></script>
+
+<script>
+  /* Controlador local exclusivo para animar el botón de regreso */
+  const localReveal = document.querySelector('.back-box.reveal');
+  if (localReveal) {
+    const localObserver = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          localObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1 });
+    localObserver.observe(localReveal);
+  }
+</script>
+
+</body>
+</html>

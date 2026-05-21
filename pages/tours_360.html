@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>OMH Estudio | PROP-TECH</title>
+<title>OMH Estudio | Foto 360</title>
 
 <link rel="icon" type="image/png" href="../assets/logos/favicon_omh.png">
 <link href="https://fonts.googleapis.com/css2?family=Lexend+Tera:wght@400;700;900&family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Raleway:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -29,7 +29,7 @@
     -Modificar el color correspondiente a la página
      ===================================================================-->
 
-<body class="page-escaneos page-sub">
+<body class="page-tours-360 page-sub">
 
 <!-- ===================================================================
     BARRA DE NAVEGACIÓN, LLAMADA A ARCHIVO JS PARA INSERTARLO EN LA PÁGINA
@@ -46,9 +46,9 @@
 <!-- AQUÍ EDITAMOS LOS TEXTOS, EL VIDEO Y LA OPACIDAD EL OVERLAY-->
 <script>
   window.heroConfig = {
-    label: "PROP TECH", 
-    title: "ESCANEOS &<br>DIGITALIZACIÓN", 
-    videoPath: "../assets/escaneos/escaneos_bg.mp4", 
+    label: "Conoce cada rincón", 
+    title: "Tours 360 &<br>Fotografía", 
+    videoPath: "../assets/tours_360/tours360_bg.mp4", 
     overlayOpacity: 0.4
   };
 </script>
@@ -61,24 +61,33 @@
 
 <script>
   window.gridProyectosConfig = {
-    introTitle: "Trabajamos en esta <em>sección para ti</em> <br>Muy pronto", 
-    introSubtitle: "Trabajando en algo asombroso",
+    introTitle: "Espacios Reales, <em>Experiencias Virtuales</em>", 
+    introSubtitle: "Llevamos el mundo físico al digital para que veas cada rincon de tu espacio con gemelos digitales interactivos y recorridos envolventes de alta fidelidad.",
     
     proyectos: [
       {
-        category: "Ahorita no...",
-        title: "Estoy programando",
-        mediaPath: "../assets/images/img_02.jpg"
+        category: "Showroom Virtual",
+        title: "Paseo Pitahaya - Atlas Desarrollos",
+        mediaPath: "../assets/tours_360/360_01.jpg"
       },
       {
-        category: "Sacando la basura",
-        title: "Le-gen-dario",
-        mediaPath: "../assets/images/img_01.jpg"
+        category: "Google Street View",
+        title: "Recorrido Comercial OMH",
+        mediaPath: "../assets/tours_360/360_02.jpg"
       }
     ]
   };
 </script>
 
+<!-- ===================================================================
+    VISOR 360, WIDGET DE RECORRIDO INCRUSTADO, LLAMADA A ARCHIVO JS PARA INSERTARLO EN LA PÁGINA
+    -Hay que especificar en "data-config=" la ruta del TOUR que se va a visualizar
+     ===================================================================-->
+
+<div class="omh-360-widget" 
+     data-config="../js/tours/tour-demo.js" 
+     style="position: relative; display: block; width: 100%; max-width: 1100px; aspect-ratio: 16/9; margin: 0 auto 4rem auto; overflow: hidden; border-radius: 8px; border: 1px solid var(--gris-borde); background: #000;">
+</div>
 
 <!-- ===================================================================
     BOTON DE REGRESAR AL INICIO
@@ -99,7 +108,7 @@
       { 
         text: "COTIZAR AHORA →", 
         url: "whatsapp",         // <--- Solo pones "whatsapp" y el JS jala el número de contacto.js
-        msj: "¡Hola OMH Estudio! Me interesa solicitar una cotización para servicios de escaneo y digitalización", // <--- Tu mensaje personalizado por subpágina
+        msj: "¡Hola OMH Estudio! Me interesa solicitar una cotización para un Tour 360 Interactivo.", // <--- Tu mensaje personalizado por subpágina
         type: "solido",          
         targetBlank: true 
       },
@@ -132,6 +141,7 @@
 <script src="../js/navbar.js"></script>
 <script src="../js/hero.js"></script>
 <script src="../js/gridproyectos.js"></script>
+<script src="../js/viewer360.js"></script>
 <script src="../js/botonera.js"></script>
 <script src="../js/footer.js"></script>
 
