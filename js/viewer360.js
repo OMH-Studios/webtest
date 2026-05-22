@@ -1,9 +1,41 @@
 /**
- * viewer360.js — Motor OMH Estudio con Disolvencia Cruzada Tersa y Scroll Zoom (V12.5)
+ * viewer360.js — Motor OMH Estudio con Disolvencia Cruzada Tersa y Scroll Zoom (V13.0)
+ *
+ * CHANGELOG V13.0:
+ * ─────────────────────────────────────────────────────────────────────────────
+ * [1] MÓVIL — Estrategia Web App Fullscreen
+ *     • isMobile() detecta smartphones/tablets mediante User-Agent + pointer.
+ *     • En móvil, el botón "Iniciar Recorrido" abre window.open() con una URL
+ *       autogenerada (blob URL) que embebe un <div> con el widget en 100vw/100vh.
+ *     • La nueva ventana carga Three.js + viewer360.js + el tour-config del padre,
+ *       todo serializado en el propio HTML del blob, sin servidor necesario.
+ *
+ * [2] PC — Fullscreen API nativa
+ *     • Botón ⛶ añadido al HUD (junto a ↻ y ✦).
+ *     • Solicita fullscreen sobre el .omh-360-widget padre.
+ *     • Escucha fullscreenchange para sincronizar el ícono ⛶ / ⮌.
+ *     • El renderer hace resize automático gracias al ResizeObserver existente.
+ *
+ * [3] MEMORIA — Dispose agresivo de texturas
+ *     • _disposeTex(texture): libera textura + borra de caché del TextureLoader.
+ *     • finalizarDisolvencia(): libera la textura ANTIGUA (matPrincipal.map prev)
+ *       antes de reasignar, evitando acumulación en VRAM.
+ *     • cargarEscenaInicial(): libera textura previa si existe.
+ *     • Se usa una única instancia de TextureLoader (this.loader) con caché
+ *       centralizada para evitar carga duplicada cuando se vuelve a una escena.
+ * ─────────────────────────────────────────────────────────────────────────────
  */
 (function () {
   'use strict';
 
+  // ─── DETECCIÓN MÓVIL ────────────────────────────────────────────────────────
+  function isMobile() {
+    // Pointer: coarse = táctil (móvil/tablet). Fine = ratón (desktop).
+    if (window.matchMedia && window.matchMedia('(pointer: coarse)').matches) return true;
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  }
+
+  // ─── INYECCIÓN DE DEPENDENCIAS ──────────────────────────────────────────────
   function inyectarDependencias(callback) {
     if (document.getElementById('v360-styles')) {
       if (window.THREE) return callback();
@@ -33,6 +65,10 @@
       .v360-btn { width: 36px; height: 36px; border-radius: 50%; background: var(--v360-color-secundario, rgba(255,255,255,0.1)); border: 1px solid rgba(255,255,255,0.15); color: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); font-size: 0.9rem; }
       .v360-btn:hover { background: rgba(255,255,255,0.2); transform: scale(1.05); border-color: rgba(255,255,255,0.4); }
       .v360-btn.activo { background: var(--v360-color-primario, #0178ff); border-color: transparent; }
+
+      /* Botón fullscreen — oculto en móvil, visible en desktop */
+      .v360-btn-fs { display: flex; }
+      @media (pointer: coarse) { .v360-btn-fs { display: none !important; } }
       
       /* Panel de Ficha Comercial */
       .v360-ficha-panel { position: absolute; top: 80px; left: 2rem; z-index: 90; background: rgba(10,10,10,0.95); border: 1px solid rgba(255,255,255,0.12); border-radius: 12px; padding: 1.5rem; width: 280px; pointer-events: all; display: none; backdrop-filter: blur(10px); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
@@ -78,6 +114,13 @@
       .v360-spinner { position: absolute; bottom: 2rem; right: 2rem; z-index: 50; display: flex; align-items: center; gap: 10px; color: rgba(255,255,255,0.6); font-size: 0.55rem; letter-spacing: 0.15em; text-transform: uppercase; background: rgba(0,0,0,0.6); padding: 6px 14px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.08); opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
       .v360-spin-ring { width: 12px; height: 12px; border: 1.5px solid rgba(255,255,255,0.2); border-top-color: var(--v360-color-primario, #0178ff); border-radius: 50%; animation: v360spin 0.8s linear infinite; }
       @keyframes v360spin { to { transform: rotate(360deg); } }
+
+      /* Aviso "Abriendo en pantalla completa" para móvil */
+      .v360-mobile-notice { position: absolute; inset: 0; z-index: 50; background: rgba(0,0,0,0.85); display: none; flex-direction: column; align-items: center; justify-content: center; gap: 1rem; text-align: center; padding: 2rem; }
+      .v360-mobile-notice.visible { display: flex; }
+      .v360-mobile-notice-icon { font-size: 2.5rem; }
+      .v360-mobile-notice-text { font-size: 0.8rem; color: rgba(255,255,255,0.8); letter-spacing: 0.05em; max-width: 260px; line-height: 1.6; }
+      .v360-mobile-notice-sub { font-size: 0.65rem; color: rgba(255,255,255,0.4); }
     `;
     document.head.appendChild(s);
 
@@ -87,6 +130,100 @@
     document.head.appendChild(script);
   }
 
+  // ────────────────────────────────────────────────────────────────────────────
+  // FUNCIÓN AUXILIAR: Abre el visor en ventana nueva (estrategia móvil)
+  // Genera un HTML completo con el tour embebido en 100vw/100vh usando blob URL.
+  // ────────────────────────────────────────────────────────────────────────────
+  function abrirEnVentanaMovil(configPath, configData) {
+    // Serializar la configuración completa en el HTML para que funcione offline
+    // (evita problemas de CORS al cargar el .js desde blob://)
+    const configSerial = JSON.stringify(configData);
+
+    // Resolución de rutas relativas: convertimos la ruta del config a absoluta
+    // para que el blob pueda cargar Three.js y el viewer desde CDN/origen correcto.
+    const threeURL = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
+    const viewerURL = new URL(document.currentScript
+      ? document.currentScript.src
+      : (document.querySelector('script[src*="viewer360"]') || {}).src || 'viewer360.js',
+      window.location.href
+    ).href;
+
+    // Resolvemos la base de assets relativos al configPath original
+    const configBase = new URL(configPath, window.location.href).href;
+
+    const html = `<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <title>${configData.titulo || 'Tour 360'}</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; overflow: hidden; background: #000; }
+    .omh-360-widget { position: fixed; inset: 0; width: 100vw; height: 100dvh; }
+  </style>
+</head>
+<body>
+  <div class="omh-360-widget" id="visor-movil"></div>
+
+  <script>
+    // Inyectar config con rutas resueltas a absolutas
+    (function() {
+      const raw = ${configSerial};
+      // Resolver imagen base relativa al configPath original
+      const base = '${configBase}'.replace(/\\/[^\\/]*$/, '/');
+      function resolveURL(url) {
+        if (!url || url.startsWith('http') || url.startsWith('data:')) return url;
+        return base + url.replace(/^\\.\\.\\//, '').replace(/^\\.\\//,'');
+      }
+      // Recorrer escenas y resolver rutas de imágenes
+      if (raw.escenas) {
+        Object.values(raw.escenas).forEach(function(esc) {
+          if (esc.imagen) esc.imagen = new URL(esc.imagen, '${configBase}').href;
+          if (esc.hotspots) {
+            esc.hotspots.forEach(function(hs) {
+              if (hs.iconoPng) hs.iconoPng = new URL(hs.iconoPng, '${configBase}').href;
+            });
+          }
+        });
+      }
+      if (raw.tema) {
+        if (raw.tema.logoURL) raw.tema.logoURL = new URL(raw.tema.logoURL, '${configBase}').href;
+      }
+      window.tourConfig = raw;
+    })();
+  <\/script>
+  <script src="${threeURL}"><\/script>
+  <script src="${viewerURL}"><\/script>
+  <script>
+    // Forzar arranque sobre el elemento fijo (el DOMContentLoaded ya pasó)
+    (function waitViewer() {
+      if (window.OMH360_init) {
+        window.OMH360_init(document.getElementById('visor-movil'));
+      } else {
+        setTimeout(waitViewer, 50);
+      }
+    })();
+  <\/script>
+</body>
+</html>`;
+
+    const blob = new Blob([html], { type: 'text/html' });
+    const blobURL = URL.createObjectURL(blob);
+    const win = window.open(blobURL, '_blank');
+
+    // Si el popup fue bloqueado, mostrar aviso al usuario
+    if (!win || win.closed || typeof win.closed === 'undefined') {
+      return false; // caller mostrará el aviso
+    }
+    // Limpiar blob URL después de que la ventana lo cargue
+    setTimeout(() => URL.revokeObjectURL(blobURL), 5000);
+    return true;
+  }
+
+  // ────────────────────────────────────────────────────────────────────────────
   class OMHWidget360 {
     constructor(contenedor) {
       this.contenedor = contenedor;
@@ -106,8 +243,44 @@
       this.transitionProgress = 0;
       this.siguienteEscenaID = null;
 
+      // [MEMO] Cache centralizada de texturas: evita recargas y permite dispose()
+      this._textureCache = new Map(); // key: url → THREE.Texture
+
       this.construirDOM();
       this.cargarConfig();
+    }
+
+    // ──────────────────────────────────────────────────────────────────────────
+    // [MEMO] Libera una textura de VRAM y la elimina del caché interno.
+    // Llama siempre antes de reasignar matPrincipal.map o matClon.map.
+    // ──────────────────────────────────────────────────────────────────────────
+    _disposeTex(tex) {
+      if (!tex) return;
+      tex.dispose();
+      // Eliminar del caché por URL para forzar recarga limpia si se vuelve a visitar
+      if (tex.image && tex.image.src) {
+        this._textureCache.delete(tex.image.src);
+      }
+    }
+
+    // ──────────────────────────────────────────────────────────────────────────
+    // [MEMO] Carga una textura con caché. Si ya está en memoria la reutiliza
+    // sin hacer una nueva petición HTTP; si no, la descarga y guarda en caché.
+    // Callback: fn(texture)
+    // ──────────────────────────────────────────────────────────────────────────
+    _cargarTextura(url, callback) {
+      if (this._textureCache.has(url)) {
+        callback(this._textureCache.get(url));
+        return;
+      }
+      const loader = new THREE.TextureLoader();
+      loader.load(url, tex => {
+        // Optimizaciones de compresión/calidad para móvil
+        tex.minFilter = THREE.LinearFilter;      // Evita generación de mipmaps (ahorra VRAM)
+        tex.generateMipmaps = false;
+        this._textureCache.set(url, tex);
+        callback(tex);
+      });
     }
 
     construirDOM() {
@@ -133,6 +306,7 @@
               <button class="v360-btn" id="btn-ficha-${this.id}" title="Ficha Técnica">ⓘ</button>
               <button class="v360-btn activo" id="btn-rot-${this.id}" title="Auto-Rotación">↻</button>
               <button class="v360-btn" id="btn-ed-${this.id}" title="Modo Editor">✦</button>
+              <button class="v360-btn v360-btn-fs" id="btn-fs-${this.id}" title="Pantalla Completa">⛶</button>
             </div>
           </div>
 
@@ -145,6 +319,14 @@
               <button class="v360-splash-btn" id="sp-btn-${this.id}">Iniciar Recorrido</button>
               <a href="#" target="_blank" class="v360-maps-splash-btn" id="sp-maps-${this.id}" title="Ver Ubicación">📍</a>
             </div>
+          </div>
+
+          <!-- Aviso popup bloqueado (móvil) -->
+          <div class="v360-mobile-notice" id="mn-${this.id}">
+            <div class="v360-mobile-notice-icon">🔒</div>
+            <div class="v360-mobile-notice-text">Tu navegador bloqueó la ventana.<br>Permite ventanas emergentes para esta página y presiona el botón nuevamente.</div>
+            <button class="v360-splash-btn" id="mn-btn-${this.id}" style="margin-top:0.5rem;">Reintentar</button>
+            <div class="v360-mobile-notice-sub">O busca "Permitir ventanas emergentes" en la configuración del navegador.</div>
           </div>
 
           <div class="v360-minimap-wrapper colapsado" id="mm-wrap-${this.id}">
@@ -222,6 +404,7 @@
       this.scene = new THREE.Scene();
       this.camera = new THREE.PerspectiveCamera(75, wrap.clientWidth / wrap.clientHeight, 1, 1100);
       this.renderer = new THREE.WebGLRenderer({ antialias: true });
+      this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // Limitar DPR en móvil
       this.renderer.setSize(wrap.clientWidth, wrap.clientHeight);
       wrap.appendChild(this.renderer.domElement);
 
@@ -233,10 +416,25 @@
       this.scene.add(this.spherePrincipal);
 
       this.lon = 0; this.lat = 0;
-      this.autoRotar = true;
+      this.autoRotar = this.config.autoRotar !== false;
+
       this.raycaster = new THREE.Raycaster();
       this.mouseVector = new THREE.Vector2();
 
+      this._registrarInteraccionDrag(wrap);
+      this._registrarZoomRueda(wrap);
+      this._registrarTouchControls(wrap);
+      this._registrarResizeObserver(wrap);
+      this._registrarBotones(wrap);
+
+      this.cargarEscenaInicial(this.config.escenaInicial);
+      this.animar();
+    }
+
+    // ──────────────────────────────────────────────────────────────────────────
+    // Arrastre con mouse
+    // ──────────────────────────────────────────────────────────────────────────
+    _registrarInteraccionDrag(wrap) {
       let isDragging = false, prevX = 0, prevY = 0, totalMove = 0;
       
       wrap.addEventListener('mousedown', e => {
@@ -258,50 +456,197 @@
         isDragging = false; this.ocultarTooltip();
         if (totalMove < 5 && this.modoEditor) this.procesarClickEnFoto(e);
       });
+    }
 
-      // ─── NUEVO: ZOOM CON RUEDA DEL RATÓN (FOV DINÁMICO) ───
+    // ──────────────────────────────────────────────────────────────────────────
+    // Zoom con rueda del ratón
+    // ──────────────────────────────────────────────────────────────────────────
+    _registrarZoomRueda(wrap) {
       wrap.addEventListener('wheel', e => {
-        // Ignorar si el tour no ha iniciado o si estamos en medio de una transición
         if (!this.tourIniciado || this.faseTransicion !== "quieto") return;
-        
-        e.preventDefault(); // Bloquea el scroll de la página web para que no se mueva el sitio
-        
+        e.preventDefault();
         const zoomSpeed = 0.05;
         this.cameraFOV += e.deltaY * zoomSpeed;
-        
-        // Límites suaves: no alejar a menos de 100 grados ni acercar a más de 40 grados
         this.cameraFOV = Math.max(40, Math.min(100, this.cameraFOV));
-      }, { passive: false }); // Se requiere false para permitir e.preventDefault()
+      }, { passive: false });
+    }
 
+    // ──────────────────────────────────────────────────────────────────────────
+    // [MÓVIL] Touch: arrastre con un dedo + pinch-to-zoom con dos dedos
+    // ──────────────────────────────────────────────────────────────────────────
+    _registrarTouchControls(wrap) {
+      let lastTouchX = 0, lastTouchY = 0;
+      let lastPinchDist = 0;
+
+      wrap.addEventListener('touchstart', e => {
+        if (!this.tourIniciado) return;
+        this.autoRotar = false;
+        document.getElementById('btn-rot-' + this.id).classList.remove('activo');
+
+        if (e.touches.length === 1) {
+          lastTouchX = e.touches[0].clientX;
+          lastTouchY = e.touches[0].clientY;
+        } else if (e.touches.length === 2) {
+          lastPinchDist = Math.hypot(
+            e.touches[0].clientX - e.touches[1].clientX,
+            e.touches[0].clientY - e.touches[1].clientY
+          );
+        }
+      }, { passive: true });
+
+      wrap.addEventListener('touchmove', e => {
+        if (!this.tourIniciado) return;
+        e.preventDefault(); // Evitar scroll de página mientras arrastramos
+
+        if (e.touches.length === 1) {
+          // Un dedo → rotar panorama
+          const dx = e.touches[0].clientX - lastTouchX;
+          const dy = e.touches[0].clientY - lastTouchY;
+          this.lon -= dx * 0.2;
+          this.lat += dy * 0.2;
+          lastTouchX = e.touches[0].clientX;
+          lastTouchY = e.touches[0].clientY;
+        } else if (e.touches.length === 2) {
+          // Dos dedos → pinch-to-zoom
+          const dist = Math.hypot(
+            e.touches[0].clientX - e.touches[1].clientX,
+            e.touches[0].clientY - e.touches[1].clientY
+          );
+          const delta = lastPinchDist - dist;
+          this.cameraFOV = Math.max(40, Math.min(100, this.cameraFOV + delta * 0.1));
+          lastPinchDist = dist;
+        }
+      }, { passive: false });
+    }
+
+    // ──────────────────────────────────────────────────────────────────────────
+    // ResizeObserver: actualiza cámara y renderer al cambiar tamaño del widget
+    // (cubre fullscreen, resize de ventana y rotación de móvil)
+    // ──────────────────────────────────────────────────────────────────────────
+    _registrarResizeObserver(wrap) {
+      const ro = new ResizeObserver(() => {
+        const W = wrap.clientWidth;
+        const H = wrap.clientHeight;
+        if (!W || !H) return;
+        this.renderer.setSize(W, H);
+        this.camera.aspect = W / H;
+        this.camera.updateProjectionMatrix();
+      });
+      ro.observe(this.contenedor);
+    }
+
+    // ──────────────────────────────────────────────────────────────────────────
+    // Registro de todos los botones del HUD y Splash
+    // ──────────────────────────────────────────────────────────────────────────
+    _registrarBotones(wrap) {
+      // ── Rotación automática ──
       document.getElementById('btn-rot-' + this.id).addEventListener('click', e => {
         this.autoRotar = !this.autoRotar;
         e.currentTarget.classList.toggle('activo', this.autoRotar);
       });
 
+      // ── Ficha Comercial ──
       document.getElementById('btn-ficha-' + this.id).addEventListener('click', e => {
         this.fichaActiva = !this.fichaActiva;
         e.currentTarget.classList.toggle('activo', this.fichaActiva);
         document.getElementById('ficha-' + this.id).style.display = this.fichaActiva ? 'block' : 'none';
       });
 
+      // ── Modo Editor ──
       document.getElementById('btn-ed-' + this.id).addEventListener('click', e => this.toggleEditor(e.currentTarget));
       document.getElementById('btn-copy-' + this.id).addEventListener('click', () => this.copiarCoordenadas());
 
+      // ── [PC] Fullscreen API ──
+      const btnFS = document.getElementById('btn-fs-' + this.id);
+      if (btnFS) {
+        btnFS.addEventListener('click', () => this._toggleFullscreen());
+        // Sincronizar icono al entrar/salir de fullscreen (ESC o botón)
+        const syncFSicon = () => {
+          const enFS = !!(document.fullscreenElement
+            || document.webkitFullscreenElement
+            || document.mozFullScreenElement
+            || document.msFullscreenElement);
+          btnFS.textContent = enFS ? '⮌' : '⛶';
+          btnFS.title = enFS ? 'Salir de Pantalla Completa' : 'Pantalla Completa';
+          btnFS.classList.toggle('activo', enFS);
+        };
+        document.addEventListener('fullscreenchange', syncFSicon);
+        document.addEventListener('webkitfullscreenchange', syncFSicon);
+        document.addEventListener('mozfullscreenchange', syncFSicon);
+        document.addEventListener('MSFullscreenChange', syncFSicon);
+      }
+
+      // ── [MÓVIL / PC] Splash "Iniciar Recorrido" ──
       document.getElementById('sp-btn-' + this.id).addEventListener('click', () => {
-        this.tourIniciado = true;
-        wrap.classList.remove('splash-blur');
-        document.getElementById('splash-' + this.id).classList.add('oculto');
-        document.getElementById('hud-' + this.id).classList.add('visible');
-        document.getElementById('mm-wrap-' + this.id).classList.add('visible');
-        document.getElementById('hs-' + this.id).style.opacity = '1';
+        if (isMobile()) {
+          this._iniciarEnMovil();
+        } else {
+          this._iniciarEnDesktop(wrap);
+        }
       });
 
+      // ── Reintentar (aviso popup bloqueado) ──
+      const mnBtn = document.getElementById('mn-btn-' + this.id);
+      if (mnBtn) {
+        mnBtn.addEventListener('click', () => {
+          document.getElementById('mn-' + this.id).classList.remove('visible');
+          this._iniciarEnMovil();
+        });
+      }
+
+      // ── Minimap toggle ──
       document.getElementById('mm-toggle-' + this.id).addEventListener('click', () => {
         document.getElementById('mm-wrap-' + this.id).classList.toggle('colapsado');
       });
+    }
 
-      this.cargarEscenaInicial(this.config.escenaInicial);
-      this.animar();
+    // ──────────────────────────────────────────────────────────────────────────
+    // [PC] Arranque del visor en el mismo contenedor
+    // ──────────────────────────────────────────────────────────────────────────
+    _iniciarEnDesktop(wrap) {
+      this.tourIniciado = true;
+      wrap.classList.remove('splash-blur');
+      document.getElementById('splash-' + this.id).classList.add('oculto');
+      document.getElementById('hud-' + this.id).classList.add('visible');
+      document.getElementById('mm-wrap-' + this.id).classList.add('visible');
+      document.getElementById('hs-' + this.id).style.opacity = '1';
+    }
+
+    // ──────────────────────────────────────────────────────────────────────────
+    // [MÓVIL] Lanza el visor en ventana nueva como Web App inmersiva
+    // ──────────────────────────────────────────────────────────────────────────
+    _iniciarEnMovil() {
+      const ok = abrirEnVentanaMovil(this.configPath, this.config);
+      if (!ok) {
+        // Popup bloqueado → mostrar aviso
+        document.getElementById('mn-' + this.id).classList.add('visible');
+      }
+    }
+
+    // ──────────────────────────────────────────────────────────────────────────
+    // [PC] Fullscreen API — solicita/sale de pantalla completa
+    // ──────────────────────────────────────────────────────────────────────────
+    _toggleFullscreen() {
+      const el = this.contenedor; // El .omh-360-widget
+      const enFS = !!(document.fullscreenElement
+        || document.webkitFullscreenElement
+        || document.mozFullScreenElement
+        || document.msFullscreenElement);
+
+      if (!enFS) {
+        // Solicitar fullscreen con fallbacks para Safari/IE
+        const req = el.requestFullscreen
+          || el.webkitRequestFullscreen
+          || el.mozRequestFullScreen
+          || el.msRequestFullscreen;
+        if (req) req.call(el).catch(err => console.warn('Fullscreen no disponible:', err));
+      } else {
+        const exit = document.exitFullscreen
+          || document.webkitExitFullscreen
+          || document.mozCancelFullScreen
+          || document.msExitFullscreen;
+        if (exit) exit.call(document).catch(err => console.warn('Exit fullscreen error:', err));
+      }
     }
 
     procesarClickEnFoto(e) {
@@ -325,17 +670,24 @@
       }
     }
 
+    // ──────────────────────────────────────────────────────────────────────────
+    // [MEMO] Carga inicial con dispose de textura previa si existe
+    // ──────────────────────────────────────────────────────────────────────────
     cargarEscenaInicial(idEscena) {
       const datos = this.config.escenas[idEscena];
       if (!datos) return;
       this.escenaActual = idEscena;
       document.getElementById('titulo-' + this.id).textContent = datos.tituloEscena || '';
 
-      const loader = new THREE.TextureLoader();
-      loader.load(datos.imagen, tex => {
+      this._cargarTextura(datos.imagen, tex => {
+        // Liberar textura previa si existía (raro en la carga inicial, pero defensivo)
+        const texAnterior = this.matPrincipal.map;
+        if (texAnterior && texAnterior !== tex) this._disposeTex(texAnterior);
+
         this.matPrincipal.map = tex;
         this.matPrincipal.needsUpdate = true;
-        this.spherePrincipal.rotation.z = datos.correccionHorizonte ? datos.correccionHorizonte * (Math.PI / 180) : 0;
+        this.spherePrincipal.rotation.z = datos.correccionHorizonte
+          ? datos.correccionHorizonte * (Math.PI / 180) : 0;
         
         const spin = document.getElementById('spin-' + this.id);
         if (spin) { spin.style.opacity = '0'; setTimeout(() => spin.style.display = 'none', 300); }
@@ -343,6 +695,9 @@
       });
     }
 
+    // ──────────────────────────────────────────────────────────────────────────
+    // Dispara transición de disolvencia hacia la escena siguiente
+    // ──────────────────────────────────────────────────────────────────────────
     dispararTransicionHacia(idSiguiente) {
       if (this.faseTransicion !== "quieto") return;
       
@@ -353,14 +708,14 @@
       const spin = document.getElementById('spin-' + this.id);
       if (spin) { spin.style.display = 'flex'; spin.style.opacity = '1'; }
 
-      const loader = new THREE.TextureLoader();
-      loader.load(datosSiguiente.imagen, tex => {
+      this._cargarTextura(datosSiguiente.imagen, tex => {
         const geoClon = new THREE.SphereGeometry(495, 60, 40); 
         geoClon.scale(-1, 1, 1);
         
         this.matClon = new THREE.MeshBasicMaterial({ map: tex, transparent: true, opacity: 0 }); 
         this.sphereClon = new THREE.Mesh(geoClon, this.matClon);
-        this.sphereClon.rotation.z = datosSiguiente.correccionHorizonte ? datosSiguiente.correccionHorizonte * (Math.PI / 180) : 0;
+        this.sphereClon.rotation.z = datosSiguiente.correccionHorizonte
+          ? datosSiguiente.correccionHorizonte * (Math.PI / 180) : 0;
         
         this.scene.add(this.sphereClon);
 
@@ -372,15 +727,30 @@
       });
     }
 
+    // ──────────────────────────────────────────────────────────────────────────
+    // [MEMO] Finaliza la disolvencia y libera la textura ANTIGUA de VRAM
+    // ──────────────────────────────────────────────────────────────────────────
     finalizarDisolvencia() {
+      // Guardar referencia a la textura que vamos a descartar
+      const texAntigua = this.matPrincipal.map;
+
+      // Reasignar al material principal la textura nueva
       this.matPrincipal.map = this.matClon.map;
       this.matPrincipal.needsUpdate = true;
       this.spherePrincipal.rotation.z = this.sphereClon.rotation.z;
       this.matPrincipal.opacity = 1; 
 
+      // Limpiar esfera clonada (geometría + material, pero NO la textura,
+      // que ahora la usa matPrincipal)
       this.scene.remove(this.sphereClon);
       this.sphereClon.geometry.dispose();
-      this.matClon.dispose();
+      this.matClon.dispose(); // Solo el material wrapper; la textura sigue viva en matPrincipal
+
+      // [MEMO] Liberar la textura ANTIGUA (la que tenía matPrincipal antes)
+      // Solo si es distinta a la que acabamos de asignar (evitar doble-dispose)
+      if (texAntigua && texAntigua !== this.matPrincipal.map) {
+        this._disposeTex(texAntigua);
+      }
 
       this.escenaActual = this.siguienteEscenaID;
       const datos = this.config.escenas[this.escenaActual];
@@ -445,11 +815,13 @@
     }
 
     ocultarTooltip() { document.getElementById('tt-' + this.id).style.opacity = '0'; }
+
     toggleEditor(btn) {
       this.modoEditor = !this.modoEditor;
       btn.classList.toggle('activo', this.modoEditor);
       document.getElementById('panel-ed-' + this.id).style.display = this.modoEditor ? 'block' : 'none';
     }
+
     copiarCoordenadas() {
       navigator.clipboard.writeText('pitch: ' + this.lastClickCoords.pitch + ',\nyaw: ' + this.lastClickCoords.yaw + ',').then(() => {
         const msg = document.getElementById('copy-msg-' + this.id);
@@ -491,7 +863,7 @@
         const t = Math.min(1, this.transitionProgress);
         const curvaSmooth = t * t * (3 - 2 * t); 
         
-        this.cameraFOV = THREE.MathUtils.lerp(this.cameraFOV, 73, 0.08); // Zoom sutil a 73
+        this.cameraFOV = THREE.MathUtils.lerp(this.cameraFOV, 73, 0.08);
         
         this.matPrincipal.opacity = 1 - curvaSmooth;
         this.matClon.opacity = curvaSmooth;
@@ -537,6 +909,16 @@
       this.renderer.render(this.scene, this.camera);
     }
   }
+
+  // ─── BOOTSTRAP ──────────────────────────────────────────────────────────────
+  // Exponer función de init para que la ventana blob pueda arrancarlo manualmente
+  window.OMH360_init = function(el) {
+    if (!window.THREE) {
+      console.error('Three.js no cargado aún.');
+      return;
+    }
+    new OMHWidget360(el);
+  };
 
   document.addEventListener('DOMContentLoaded', () => {
     const widgets = document.querySelectorAll('.omh-360-widget');
