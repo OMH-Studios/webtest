@@ -1,5 +1,5 @@
 /**
- * viewer360.js — Motor OMH Estudio (V14.2 - Estabilización Cinemática de Giroscopio)
+ * viewer360.js — Motor OMH Estudio (V14.3 - Ejes de Giroscopio Corregidos y Limitados)
  */
 (function () {
   'use strict';
@@ -62,7 +62,7 @@
       .v360-canvas-wrap.splash-blur { filter: blur(15px) brightness(0.5); transition: filter 1.5s ease-in-out; }
       .v360-canvas-wrap.motion-blur { filter: blur(4px) brightness(0.95); transition: filter 0.4s ease-in-out; }
       
-      /* HUD Superior Responsivo */
+      /* HUD Superior */
       .v360-hud { position: absolute; top: 0; left: 0; right: 0; padding: 1rem 1.2rem; background: linear-gradient(to bottom, rgba(0,0,0,0.85), transparent); display: flex; justify-content: space-between; align-items: center; gap: 10px; z-index: 10; pointer-events: none; opacity: 0; transition: opacity 0.8s ease; }
       .v360-hud.visible { opacity: 1; }
       
@@ -160,11 +160,11 @@
       this.transitionProgress = 0;
       this.siguienteEscenaID  = null;
 
-      // VARIABLES PARA GIROSCOPIO CON FILTRO KINETIC DE AMORTIGUACIÓN
+      // VARIABLES PARA GIROSCOPIO DE ALTA PRECISIÓN CALIBRADO
       this.giroscopioActivo   = false;
-      this.targetLon          = 0; // El ángulo al que el sensor quiere ir
+      this.targetLon          = 0; 
       this.targetLat          = 0;
-      this.offsetLon          = 0; // Offset relativo del arrastre de los dedos
+      this.offsetLon          = 0; 
       this.offsetLat          = 0;
 
       this._textureCache = new Map();
@@ -546,7 +546,6 @@
       document.getElementById('btn-rot-' + this.id).classList.remove('activo');
       document.getElementById('btn-giro-' + this.id).classList.add('activo');
 
-      // Calibrar la cámara sobre el punto actual
       this.offsetLon = this.lon;
       this.offsetLat = this.lat;
       this.targetLon = 0;
@@ -556,31 +555,36 @@
       window.addEventListener('deviceorientation', e => this._onDeviceOrientation(e), false);
     }
 
-    // ── CONFIGURACIÓN DE EJES DE PRECISIÓN ABSOLUTA (CORRECCIÓN HORIZONTAL/SQUASH) ──
+    // ── RE-INGENIERÍA ABSOLUTA DE MATRICES DE GIRO (FIX ARRIBA/ABAJO + ESCOFINAS DE DIRECCIÓN) ──
     _onDeviceOrientation(event) {
       if (!this.giroscopioActivo || this.faseTransicion !== 'quieto') return;
 
-      let alpha = event.alpha ? event.alpha : 0;
-      let beta  = event.beta  ? event.beta  : 0;
-      let gamma = event.gamma ? event.gamma : 0;
+      let alpha = event.alpha ? event.alpha : 0; // Eje Z (Norte/Brújula)
+      let beta  = event.beta  ? event.beta  : 0; // Eje X (Frente/Atrás)
+      let gamma = event.gamma ? event.gamma : 0; // Eje Y (Izquierda/Derecha)
 
       let orientacionPantalla = window.orientation || 0;
 
-      // RE-INGENIERÍA MATEMÁTICA DE EJES (Sincronización natural de paneo a la izquierda y derecha)
+      // CALIBRACIÓN DE EJES PARA EVITAR ROTACIONES INVERTIDAS
       if (orientacionPantalla === 90) {
-        this.targetLon = -alpha - beta;
-        this.targetLat = -gamma - 45;
+        this.targetLon = alpha - beta;
+        this.targetLat = gamma;
       } else if (orientacionPantalla === -90) {
-        this.targetLon = -alpha + beta;
-        this.targetLat = gamma - 45;
+        this.targetLon = alpha + beta;
+        this.targetLat = -gamma;
       } else if (orientacionPantalla === 180) {
-        this.targetLon = -alpha + gamma;
-        this.targetLat = -beta - 45;
+        this.targetLon = alpha - gamma;
+        this.targetLat = -beta;
       } else {
-        // Vertical estándar (Portrait de iPhone o Android de gama alta)
-        this.targetLon = -alpha - gamma; 
-        this.targetLat = beta - 70; // Ángulo de mirada cómodo al frente
+        // Vertical estándar (Retrato - iPhone / Android)
+        // FIX PRINCIPAL: Ajuste del signo de Alpha (+alpha) para sincronizar paneo real a la derecha
+        this.targetLon = alpha + gamma; 
+        this.targetLat = beta - 70; // Centrado cómodo de mirada al horizonte físico
       }
+
+      // CANDADO DE SEGURIDAD ABSOLUTO: Evitar que la esfera gire más de una vez en vertical
+      // Limitamos el target vertical estrictamente entre -80° y 80° para que no se "vaya de paso"
+      this.targetLat = Math.max(-80, Math.min(80, this.targetLat));
 
       this.targetLon = ((this.targetLon % 360) + 360) % 360;
     }
@@ -806,7 +810,7 @@
         this.cameraFOV = THREE.MathUtils.lerp(this.cameraFOV, 73, 0.08);
         this.matPrincipal.opacity = 1 - smooth;
         this.matClon.opacity      = smooth;
-        if (this.transitionProgress >= 1) this.finalivalDisolvencia || this.finalizarDisolvencia();
+        if (this.transitionProgress >= 1) this.finalizarDisolvencia();
       } else if (this.faseTransicion === 'zoom_out') {
         this.cameraFOV = THREE.MathUtils.lerp(this.cameraFOV, 75, 0.06);
         if (Math.abs(this.cameraFOV - 75) < 0.1) {
@@ -819,18 +823,16 @@
       this.camera.fov = this.cameraFOV;
       this.camera.updateProjectionMatrix();
 
-      // ── MÓDULO CINEMÁTICO SUAVE CON FILTRO DE PASO BAJO (CERO TIRONES) ──
+      // ── MÓDULO CINEMÁTICO SUAVE CON CANDADO DE LATITUD (PASO BAJO) ──
       if (this.giroscopioActivo && this.faseTransicion === 'quieto') {
-        // El valor real de la cámara corre de forma amortiguada (0.07) hacia el target + offset del dedo
         const targetCalculadoLon = this.targetLon + this.offsetLon;
         const targetCalculadoLat = this.targetLat + this.offsetLat;
 
-        // Interpolación lineal esférica simplificada para evitar saltos en el límite de los 360°
         let diffLon = targetCalculadoLon - this.lon;
         while (diffLon < -180) diffLon += 360;
         while (diffLon > 180) diffLon -= 360;
         
-        // Amortiguación cinemática constante (0.07 es el punto dulce de suavizado)
+        // Amortiguación de velocidad constante (Seda total)
         this.lon += diffLon * 0.07;
         this.lat += (targetCalculadoLat - this.lat) * 0.07;
         
@@ -838,7 +840,9 @@
         this.lon += (this.config.velocidadRotacion || 0.05);
       }
 
-      this.lat = Math.max(-84, Math.min(84, this.lat));
+      // DOBLE CANDADO FÍSICO DE SEGURIDAD EN EL RENDERIZADO VERTICAL
+      this.lat = Math.max(-83, Math.min(83, this.lat));
+
       const phi   = THREE.MathUtils.degToRad(90 - this.lat);
       const theta = THREE.MathUtils.degToRad(this.lon);
       this.camera.lookAt(
@@ -890,7 +894,6 @@
     }
   });
 
-  // Alias helper por diferencias en nombres de llamadas asíncronas
   function inyectarDependencies(cb) { inyectarDependencias(cb); }
 
 })();
