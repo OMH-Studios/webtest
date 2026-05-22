@@ -1,5 +1,5 @@
 /**
- * viewer360.js — Motor OMH Estudio (V14.0 - Giroscopio Integrado Móvil)
+ * viewer360.js — Motor OMH Estudio (V14.1 - Fix de Ejes, Layout Responsivo y Botón Salir)
  */
 (function () {
   'use strict';
@@ -55,7 +55,7 @@
     const s = document.createElement('style');
     s.id = 'v360-styles';
     s.textContent = `
-      .omh-360-widget { position: relative; display: block; overflow: hidden; background: #000; }
+      .omh-360-widget { position: relative; display: block; overflow: hidden; background: #000; user-select: none; -webkit-user-select: none; }
       .v360-container { position: absolute; inset: 0; width: 100%; height: 100%; font-family: var(--v360-font, 'Raleway', sans-serif); color: #fff; }
       
       .v360-canvas-wrap { position: absolute; inset: 0; z-index: 1; cursor: grab; transition: filter 0.8s ease-in-out; }
@@ -63,42 +63,48 @@
       .v360-canvas-wrap.splash-blur { filter: blur(15px) brightness(0.5); transition: filter 1.5s ease-in-out; }
       .v360-canvas-wrap.motion-blur { filter: blur(4px) brightness(0.95); transition: filter 0.4s ease-in-out; }
       
-      /* HUD Superior */
-      .v360-hud { position: absolute; top: 0; left: 0; right: 0; padding: 1.5rem 2rem; background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent); display: flex; justify-content: space-between; align-items: center; z-index: 10; pointer-events: none; opacity: 0; transition: opacity 0.8s ease; }
+      /* HUD Superior Optimizado para Cualquier Tamaño de Pantalla */
+      .v360-hud { position: absolute; top: 0; left: 0; right: 0; padding: 1rem 1.2rem; background: linear-gradient(to bottom, rgba(0,0,0,0.85), transparent); display: flex; justify-content: space-between; align-items: center; gap: 10px; z-index: 10; pointer-events: none; opacity: 0; transition: opacity 0.8s ease; }
       .v360-hud.visible { opacity: 1; }
-      .v360-hud-logo { height: 24px; max-width: 130px; object-fit: contain; pointer-events: all; display: none; }
-      .v360-hud-info { text-align: center; flex: 1; margin: 0 1rem; }
-      .v360-hud-cliente { font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--v360-color-primario, #0178ff); font-weight: 700; display: block; }
-      .v360-hud-titulo { font-size: 0.85rem; font-weight: 600; text-transform: uppercase; margin-top: 4px; display: block; font-family: var(--v360-font-title, 'Lexend Tera', sans-serif); }
       
-      .v360-acciones { display: flex; gap: 0.5rem; pointer-events: all; }
-      .v360-btn { width: 36px; height: 36px; border-radius: 50%; background: var(--v360-color-secundario, rgba(255,255,255,0.1)); border: 1px solid rgba(255,255,255,0.15); color: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); font-size: 0.9rem; }
+      .v360-hud-left-group { display: flex; align-items: center; gap: 10px; pointer-events: all; }
+      
+      .v360-hud-logo { height: 20px; max-width: 90px; object-fit: contain; display: none; }
+      .v360-hud-info { display: flex; flex-direction: column; justify-content: center; }
+      .v360-hud-cliente { font-size: 0.55rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--v360-color-primario, #0178ff); font-weight: 700; line-height: 1; }
+      .v360-hud-titulo { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; margin-top: 3px; line-height: 1; font-family: var(--v360-font-title, 'Lexend Tera', sans-serif); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 140px; }
+      
+      .v360-acciones { display: flex; gap: 6px; pointer-events: all; align-items: center; margin-left: auto; }
+      .v360-btn { width: 34px; height: 34px; border-radius: 50%; background: var(--v360-color-secundario, rgba(255,255,255,0.1)); border: 1px solid rgba(255,255,255,0.15); color: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); font-size: 0.85rem; padding: 0; box-sizing: border-box; }
       .v360-btn:hover { background: rgba(255,255,255,0.2); transform: scale(1.05); border-color: rgba(255,255,255,0.4); }
       .v360-btn.activo { background: var(--v360-color-primario, #0178ff); border-color: transparent; color: #fff; }
 
-      /* Botones condicionales responsivos */
+      /* Control responsivo de botones sin romper diseño */
       .v360-btn-fs { display: flex; }
       .v360-btn-giro { display: none; }
+      .v360-btn-salir { display: none; } /* Solo sale en standalone */
       
       @media (pointer: coarse) { 
         .v360-btn-fs { display: none !important; } 
         .v360-btn-giro { display: flex; }
+        .v360-hud-logo { display: none !important; } /* Ahorrar espacio en móviles pequeños */
+        .v360-hud-titulo { max-width: 110px; }
       }
       
       /* Panel de Ficha Comercial */
-      .v360-ficha-panel { position: absolute; top: 80px; left: 2rem; z-index: 90; background: rgba(10,10,10,0.95); border: 1px solid rgba(255,255,255,0.12); border-radius: 12px; padding: 1.5rem; width: 280px; pointer-events: all; display: none; backdrop-filter: blur(10px); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-      .v360-ficha-titulo { font-family: var(--v360-font-title, 'Lexend Tera', sans-serif); font-size: 0.65rem; color: var(--v360-color-primario, #0178ff); margin-bottom: 1rem; letter-spacing: 0.1em; text-transform: uppercase; }
-      .v360-ficha-item { margin-bottom: 0.8rem; font-size: 0.75rem; line-height: 1.4; color: rgba(255,255,255,0.85); }
-      .v360-ficha-label { font-size: 0.55rem; text-transform: uppercase; letter-spacing: 0.05em; color: rgba(255,255,255,0.4); display: block; margin-bottom: 2px; }
+      .v360-ficha-panel { position: absolute; top: 70px; left: 1.2rem; z-index: 90; background: rgba(10,10,10,0.96); border: 1px solid rgba(255,255,255,0.12); border-radius: 12px; padding: 1.2rem; width: 260px; pointer-events: all; display: none; backdrop-filter: blur(10px); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+      .v360-ficha-titulo { font-family: var(--v360-font-title, 'Lexend Tera', sans-serif); font-size: 0.65rem; color: var(--v360-color-primario, #0178ff); margin-bottom: 0.8rem; letter-spacing: 0.1em; text-transform: uppercase; }
+      .v360-ficha-item { margin-bottom: 0.7rem; font-size: 0.72rem; line-height: 1.4; color: rgba(255,255,255,0.85); }
+      .v360-ficha-label { font-size: 0.55rem; text-transform: uppercase; letter-spacing: 0.05em; color: rgba(255,255,255,0.4); display: block; margin-bottom: 1px; }
 
       /* Splash Screen */
       .v360-splash { position: absolute; inset: 0; z-index: 30; background: linear-gradient(135deg, rgba(0,0,0,0.5), rgba(0,0,0,0.2)); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem; box-sizing: border-box; text-align: center; transition: opacity 1s, visibility 1s; }
       .v360-splash-overlay { position: absolute; inset: 0; background: var(--v360-color-primario, #0178ff); opacity: 0.08; z-index: -1; }
       .v360-splash-logo { max-height: 50px; max-width: 200px; object-fit: contain; margin-bottom: 1.5rem; display: none; }
       .v360-splash-cliente { font-size: 0.65rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--v360-color-primario, #0178ff); font-weight: 700; display: block; margin-bottom: 0.5rem; }
-      .v360-splash-titulo { font-size: 1.4rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; font-family: var(--v360-font-title, 'Lexend Tera', sans-serif); max-width: 600px; line-height: 1.3; margin-bottom: 2rem; text-shadow: 0 4px 20px rgba(0,0,0,0.6); }
+      .v360-splash-titulo { font-size: 1.3rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; font-family: var(--v360-font-title, 'Lexend Tera', sans-serif); max-width: 500px; line-height: 1.3; margin-bottom: 2rem; text-shadow: 0 4px 20px rgba(0,0,0,0.6); }
       .v360-splash-bton-group { display: flex; gap: 1rem; align-items: center; }
-      .v360-splash-btn { padding: 0.8rem 2.2rem; background: transparent; border: 1px solid rgba(255,255,255,0.4); border-radius: 40px; color: #fff; font-family: var(--v360-font, 'Raleway', sans-serif); font-size: 0.68rem; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; cursor: pointer; transition: all 0.3s ease; backdrop-filter: blur(8px); }
+      .v360-splash-btn { padding: 0.8rem 2rem; background: transparent; border: 1px solid rgba(255,255,255,0.4); border-radius: 40px; color: #fff; font-family: var(--v360-font, 'Raleway', sans-serif); font-size: 0.68rem; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; cursor: pointer; transition: all 0.3s ease; backdrop-filter: blur(8px); }
       .v360-splash-btn:hover { background: #fff; color: #000; border-color: #fff; transform: translateY(-2px); }
       .v360-maps-splash-btn { width: 44px; height: 44px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.05); display: none; align-items: center; justify-content: center; color: #fff; text-decoration: none; font-size: 1.1rem; transition: all 0.3s; backdrop-filter: blur(8px); }
       .v360-maps-splash-btn:hover { background: #4caf50; border-color: transparent; transform: scale(1.1); }
@@ -156,11 +162,11 @@
       this.transitionProgress = 0;
       this.siguienteEscenaID  = null;
 
-      // VARIABLES PARA GIROSCOPIO NATIVO
+      // VARIABLES PARA GIROSCOPIO NATIVO CALIBRADO
       this.giroscopioActivo   = false;
       this.lonGiro            = 0;
       this.latGiro            = 0;
-      this.offsetLon          = 0; // Para calibrar la orientación al encenderlo
+      this.offsetLon          = 0; 
       this.offsetLat          = 0;
 
       this._textureCache = new Map();
@@ -206,15 +212,18 @@
           </div>
 
           <div class="v360-hud" id="hud-${this.id}">
-            <img src="" class="v360-hud-logo" id="logo-${this.id}">
-            <div class="v360-hud-info">
-              <span class="v360-hud-cliente" id="cliente-${this.id}"></span>
-              <span class="v360-hud-titulo" id="titulo-${this.id}"></span>
+            <div class="v360-hud-left-group">
+              <button class="v360-btn" id="btn-salir-${this.id}" title="Salir del Recorrido" style="display: ${this.autoIniciar ? 'flex' : 'none'}; background: rgba(200,0,0,0.6); font-weight: bold; border-color: transparent;">✕</button>
+              <img src="" class="v360-hud-logo" id="logo-${this.id}">
+              <div class="v360-hud-info">
+                <span class="v360-hud-cliente" id="cliente-${this.id}"></span>
+                <span class="v360-hud-titulo" id="titulo-${this.id}"></span>
+              </div>
             </div>
             <div class="v360-acciones">
               <button class="v360-btn" id="btn-ficha-${this.id}" title="Ficha Técnica">ⓘ</button>
               <button class="v360-btn activo" id="btn-rot-${this.id}" title="Auto-Rotación">↻</button>
-              <button class="v360-btn v360-btn-giro" id="btn-giro-${this.id}" title="Activar Brújula/Giroscopio">🧭</button>
+              <button class="v360-btn" id="btn-giro-${this.id}" title="Activar Brújula/Giroscopio">🧭</button>
               <button class="v360-btn" id="btn-ed-${this.id}" title="Modo Editor">✦</button>
               <button class="v360-btn v360-btn-fs" id="btn-fs-${this.id}" title="Pantalla Completa">⛶</button>
             </div>
@@ -329,8 +338,7 @@
       this.spherePrincipal = new THREE.Mesh(geo, this.matPrincipal);
       this.scene.add(this.spherePrincipal);
 
-      this.lon       = 0;
-      this.lat       = 0;
+      this.lon = 0; this.lat = 0;
       this.autoRotar = this.config.autoRotar !== false;
       this.raycaster  = new THREE.Raycaster();
       this.mouseVector = new THREE.Vector2();
@@ -346,7 +354,6 @@
 
       if (this.autoIniciar) {
         setTimeout(() => this._activarVisor(wrap), 300);
-        // Forzar encendido automático de giroscopio en modo standalone si tiene permisos
         setTimeout(() => this._solicitarPermisoGiroscopio(false), 600);
       }
     }
@@ -418,7 +425,6 @@
           const dx = e.touches[0].clientX - lastX;
           const dy = e.touches[0].clientY - lastY;
           
-          // Si el giroscopio está prendido, sumamos el arrastre como "offset" relativo
           if (this.giroscopioActivo) {
             this.offsetLon -= dx * 0.2;
             this.offsetLat += dy * 0.2;
@@ -468,10 +474,17 @@
         document.getElementById('ficha-' + this.id).style.display = this.fichaActiva ? 'block' : 'none';
       });
 
-      // BOTÓN FLOTANTE DEL GIROSCOPIO
       document.getElementById('btn-giro-' + this.id).addEventListener('click', () => {
         this._solicitarPermisoGiroscopio(true);
       });
+
+      // BOTÓN SALIR SÓLO EN MÓVIL STANDALONE
+      const btnSalir = document.getElementById('btn-salir-' + this.id);
+      if (btnSalir) {
+        btnSalir.addEventListener('click', () => {
+          window.close(); // Cierra la pestaña independiente
+        });
+      }
 
       document.getElementById('btn-ed-'  + this.id).addEventListener('click', e => this.toggleEditor(e.currentTarget));
       document.getElementById('btn-copy-'+ this.id).addEventListener('click', () => this.copiarCoordenadas());
@@ -502,7 +515,6 @@
       });
     }
 
-    // ── GESTIÓN DE PERMISOS NATIVOS DE ORIENTACIÓN (iOS / ANDROID) ─────────────
     _solicitarPermisoGiroscopio(mostrarAlertaError) {
       const btnGiro = document.getElementById('btn-giro-' + this.id);
       
@@ -512,23 +524,20 @@
         return;
       }
 
-      // Caso 1: Dispositivos iOS 13+ requieren permiso explícito por API de Apple
       if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
         DeviceOrientationEvent.requestPermission()
           .then(response => {
             if (response === 'granted') {
               this._encenderGiroscopio();
             } else {
-              if (mostrarAlertaError) alert('Permiso denegado para acceder a la brújula/giroscopio.');
+              if (mostrarAlertaError) alert('Permiso denegado para acceder al giroscopio.');
             }
           })
           .catch(err => {
             console.error(err);
-            if (mostrarAlertaError) alert('Debes iniciar el recorrido e interactuar con el botón para activar el giroscopio.');
+            if (mostrarAlertaError) alert('Interactúa con la pantalla primero para otorgar permisos.');
           });
-      } 
-      // Caso 2: Android y navegadores estándar que no tienen capada la API de inicio
-      else {
+      } else {
         this._encenderGiroscopio();
       }
     }
@@ -540,46 +549,40 @@
       document.getElementById('btn-rot-' + this.id).classList.remove('activo');
       document.getElementById('btn-giro-' + this.id).classList.add('activo');
 
-      // Sincronizar el offset actual para evitar que la cámara "brinque" feo al encenderlo
       this.offsetLon = this.lon;
       this.offsetLat = this.lat;
       this.lonGiro = 0;
       this.latGiro = 0;
 
-      // Escuchar el canal nativo del hardware del celular
       window.removeEventListener('deviceorientation', this._onDeviceOrientation);
       window.addEventListener('deviceorientation', e => this._onDeviceOrientation(e), false);
     }
 
+    // ── CORRECCIÓN MATEMÁTICA DE INVERSIÓN DE EJES ──
     _onDeviceOrientation(event) {
       if (!this.giroscopioActivo || this.faseTransicion !== 'quieto') return;
 
-      // alpha: rotación sobre eje Z (brújula/norte) [0, 360]
-      // beta: inclinación frente-atrás (eje X) [-180, 180]
-      // gamma: inclinación izquierda-derecha (eje Y) [-90, 90]
       let alpha = event.alpha ? event.alpha : 0;
       let beta  = event.beta  ? event.beta  : 0;
       let gamma = event.gamma ? event.gamma : 0;
 
-      // Validar si el dispositivo cambió a modo horizontal (landscape)
       let orientacionPantalla = window.orientation || 0;
 
+      // FIX: Inversión de Alpha (-alpha) para sincronizar paneo natural izquierda-derecha
       if (orientacionPantalla === 90) {
-        this.lonGiro = alpha + gamma;
+        this.lonGiro = -alpha + gamma;
         this.latGiro = beta - 90;
       } else if (orientacionPantalla === -90) {
-        this.lonGiro = alpha - gamma;
+        this.lonGiro = -alpha - gamma;
         this.latGiro = -beta - 90;
       } else if (orientacionPantalla === 180) {
-        this.lonGiro = alpha;
+        this.lonGiro = -alpha;
         this.latGiro = -beta;
       } else {
-        // Vertical estándar (Portrait)
-        this.lonGiro = alpha + gamma;
-        this.latGiro = beta - 60; // Ajuste de ángulo cómodo de visión (mirada al frente)
+        this.lonGiro = -alpha + gamma;
+        this.latGiro = beta - 60; 
       }
 
-      // Normalizar ángulos matemáticos tridimensionales
       this.lonGiro = ((this.lonGiro % 360) + 360) % 360;
     }
 
@@ -662,7 +665,7 @@
           ? datosSig.correccionHorizonte * (Math.PI / 180) : 0;
         this.scene.add(this.sphereClon);
         if (spin) { spin.style.opacity = '0'; setTimeout(() => spin.style.display = 'none', 300); }
-        this.siguienteEscenaID  = idSiguiente;
+        this.siguienteEscenaID = idSiguiente;
         this.faseTransicion     = 'zoom_in';
         this.transitionProgress = 0;
       });
@@ -688,7 +691,6 @@
       const datos = this.config.escenas[this.escenaActual];
       document.getElementById('titulo-' + this.id).textContent = datos.tituloEscena || '';
       
-      // Re-calibrar la orientación del giroscopio al aterrizar en el nuevo espacio
       if (this.giroscopioActivo) {
         this.offsetLon = this.lon;
         this.offsetLat = this.lat;
@@ -818,9 +820,7 @@
       this.camera.fov = this.cameraFOV;
       this.camera.updateProjectionMatrix();
 
-      // MÓDULO MATEMÁTICO INTEGRAL DE RENDIMIENTO DE COORDENADAS
       if (this.giroscopioActivo && this.faseTransicion === 'quieto') {
-        // Combinamos la lectura física del giroscopio con el offset acumulado por el dedo
         this.lon = this.lonGiro + this.offsetLon;
         this.lat = this.latGiro + this.offsetLat;
       } else if (this.autoRotar && this.faseTransicion === 'quieto') {
