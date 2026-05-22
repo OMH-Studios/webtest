@@ -1,5 +1,5 @@
 /**
- * viewer360.js — Motor OMH Estudio (V14.4 - Giroscopio Ágil y Ejes Corregidos)
+ * viewer360.js — Motor OMH Estudio (V14.5 - Fix Definitivo de Eje Horizontal Invertido)
  */
 (function () {
   'use strict';
@@ -318,7 +318,7 @@
       wrap.appendChild(this.renderer.domElement);
 
       const geo = new THREE.SphereGeometry(500, 60, 40);
-      geo.scale(-1, 1, 1); // ESTO VOLTEA EL EJE X VISUALMENTE
+      geo.scale(-1, 1, 1);
 
       this.matPrincipal   = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 1 });
       this.spherePrincipal = new THREE.Mesh(geo, this.matPrincipal);
@@ -543,7 +543,7 @@
       window.addEventListener('deviceorientation', e => this._onDeviceOrientation(e), false);
     }
 
-    // ── FIX FINAL DE EJES INVERTIDOS Y CANDADOS DE LIMITACIÓN ──
+    // ── FIX DEFINITIVO DE INVERSIÓN: Signo positivo en el cálculo horizontal ──
     _onDeviceOrientation(event) {
       if (!this.giroscopioActivo || this.faseTransicion !== 'quieto') return;
 
@@ -553,25 +553,22 @@
 
       let orientacionPantalla = window.orientation || 0;
 
-      // Inversión absoluta (-alpha) para empatar el compás real con la esfera volteada (scale -1)
       if (orientacionPantalla === 90) {
-        this.targetLon = -alpha - beta;
+        this.targetLon = alpha + beta;
         this.targetLat = gamma;
       } else if (orientacionPantalla === -90) {
-        this.targetLon = -alpha + beta;
+        this.targetLon = alpha - beta;
         this.targetLat = -gamma;
       } else if (orientacionPantalla === 180) {
-        this.targetLon = -alpha + gamma;
+        this.targetLon = alpha - gamma;
         this.targetLat = -beta;
       } else {
-        // Modo Portrait (Vertical): Corregido de raíz.
-        this.targetLon = -alpha - gamma; 
+        // Vertical estándar. Alpha se suma (+) para coincidir con la esfera real
+        this.targetLon = alpha + gamma; 
         this.targetLat = beta - 70; 
       }
 
-      // CANDADO VERTICAL: Evita que el usuario dé vueltas completas sobre sí mismo al mirar al techo/piso
       this.targetLat = Math.max(-80, Math.min(80, this.targetLat));
-
       this.targetLon = ((this.targetLon % 360) + 360) % 360;
     }
 
@@ -809,7 +806,6 @@
       this.camera.fov = this.cameraFOV;
       this.camera.updateProjectionMatrix();
 
-      // ── MÓDULO MATEMÁTICO RESPONSIVO (FACTOR 0.15 PARA ELIMINAR EL LAG/ARRASTRE) ──
       if (this.giroscopioActivo && this.faseTransicion === 'quieto') {
         const targetCalculadoLon = this.targetLon + this.offsetLon;
         const targetCalculadoLat = this.targetLat + this.offsetLat;
@@ -818,7 +814,6 @@
         while (diffLon < -180) diffLon += 360;
         while (diffLon > 180) diffLon -= 360;
         
-        // El factor subió a 0.15 para una respuesta inmediata pero estable
         this.lon += diffLon * 0.15;
         this.lat += (targetCalculadoLat - this.lat) * 0.15;
         
@@ -826,7 +821,6 @@
         this.lon += (this.config.velocidadRotacion || 0.05);
       }
 
-      // CANDADO DE SEGURIDAD ABSOLUTO PARA EVITAR ROTACIONES INVERTIDAS
       this.lat = Math.max(-83, Math.min(83, this.lat));
 
       const phi   = THREE.MathUtils.degToRad(90 - this.lat);
