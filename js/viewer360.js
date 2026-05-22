@@ -54,7 +54,7 @@
       .omh-360-widget { position: relative; display: block; overflow: hidden; background: #000; user-select: none; -webkit-user-select: none; }
       .v360-container { position: absolute; inset: 0; width: 100%; height: 100%; font-family: var(--v360-font, 'Raleway', sans-serif); color: #fff; }
       
-      .v360-canvas-wrap { position: absolute; inset: 0; z-index: 1; cursor: grab; transition: filter 0.8s ease-in-out; }
+      .v360-canvas-wrap { position: absolute; inset: 0; z-index: 1; cursor: grab; transition: filter 0.8s ease-in-out; touch-action: none; overscroll-behavior: none; -webkit-overflow-scrolling: auto; }
       .v360-canvas-wrap:active { cursor: grabbing; }
       .v360-canvas-wrap.splash-blur { filter: blur(15px) brightness(0.5); transition: filter 1.5s ease-in-out; }
       .v360-canvas-wrap.motion-blur { filter: blur(4px) brightness(0.95); transition: filter 0.4s ease-in-out; }
@@ -316,7 +316,7 @@
       this.scene    = new THREE.Scene();
       this.camera   = new THREE.PerspectiveCamera(75, wrap.clientWidth / wrap.clientHeight, 1, 1100);
       this.renderer = new THREE.WebGLRenderer({ antialias: true });
-      this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      this.renderer.setPixelRatio(isMobile() ? 1.25 : Math.min(window.devicePixelRatio, 2));
       this.renderer.setSize(wrap.clientWidth, wrap.clientHeight);
       wrap.appendChild(this.renderer.domElement);
 
@@ -538,8 +538,14 @@
       document.getElementById('btn-rot-' + this.id).classList.remove('activo');
       document.getElementById('btn-giro-' + this.id).classList.add('activo');
 
-      window.removeEventListener('deviceorientation', this._onDeviceOrientationBind);
-      window.addEventListener('deviceorientation', this._onDeviceOrientationBind, false);
+      // Usar deviceorientationabsolute cuando está disponible (mejor referencia, menos drift)
+      this._eventoOrientacion = 'ondeviceorientationabsolute' in window
+        ? 'deviceorientationabsolute'
+        : 'deviceorientation';
+
+      window.removeEventListener('deviceorientation',         this._onDeviceOrientationBind);
+      window.removeEventListener('deviceorientationabsolute', this._onDeviceOrientationBind);
+      window.addEventListener(this._eventoOrientacion, this._onDeviceOrientationBind, true);
     }
 
     // ── CORRECCIÓN MATEMÁTICA DEFINITIVA DE EJES ──
@@ -824,9 +830,11 @@
         while (diffLon < -180) diffLon += 360;
         while (diffLon > 180) diffLon -= 360;
         
-        // Mantengo el amortiguamiento de 0.15: Rápido pero elimina los temblores microoscópicos
-        this.lon += diffLon * 0.15;
-        this.lat += (targetCalculadoLat - this.lat) * 0.15;
+        // Factor alto = respuesta casi inmediata, similar a Facebook/Kuula
+        // El sensor del OS ya filtra el ruido; no necesitamos amortiguamiento extra
+        const factorGiro = 0.85;
+        this.lon += diffLon * factorGiro;
+        this.lat += (targetCalculadoLat - this.lat) * factorGiro;
         
       } else if (this.autoRotar && this.faseTransicion === 'quieto') {
         this.lon += (this.config.velocidadRotacion || 0.05);
