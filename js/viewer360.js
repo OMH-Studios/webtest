@@ -218,7 +218,7 @@
             <div class="v360-acciones">
               <button class="v360-btn" id="btn-ficha-${this.id}" title="Ficha Técnica">ⓘ</button>
               <button class="v360-btn activo" id="btn-rot-${this.id}" title="Auto-Rotación">↻</button>
-              <button class="v360-btn" id="btn-giro-${this.id}" title="Activar Brújula/Giroscopio">🧭</button>
+              <button class="v360-btn v360-btn-giro" id="btn-giro-${this.id}" title="Activar Brújula/Giroscopio">🧭</button>
               <button class="v360-btn" id="btn-ed-${this.id}" title="Modo Editor">✦</button>
               <button class="v360-btn v360-btn-fs" id="btn-fs-${this.id}" title="Pantalla Completa">⛶</button>
             </div>
@@ -430,11 +430,25 @@
           const dy = e.touches[0].clientY - lastY;
           
           if (this.giroscopioActivo && this._gyroActivo) {
-            // Rotar el offset de calibración para que el drag mueva la vista sobre el quaternion
-            const rotY = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0),  dx * 0.003);
-            const rotX = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1, 0, 0), -dy * 0.003);
             if (!this._gyroOffset) this._gyroOffset = new THREE.Quaternion();
-            this._gyroOffset.premultiply(rotY).premultiply(rotX);
+
+            // Horizontal (yaw): rotar sobre el eje Y del mundo — siempre es "izquierda/derecha"
+            const rotY = new THREE.Quaternion().setFromAxisAngle(
+              new THREE.Vector3(0, 1, 0),
+              dx * 0.003
+            );
+
+            // Vertical (pitch): rotar sobre el eje X LOCAL de la cámara — siempre es "arriba/abajo"
+            // Si usamos el eje X global, la inclinación se mezcla con el roll del giroscopio
+            const ejeXLocal = new THREE.Vector3(1, 0, 0).applyQuaternion(this.camera.quaternion);
+            const rotX = new THREE.Quaternion().setFromAxisAngle(
+              ejeXLocal,
+              -dy * 0.003
+            );
+
+            // Primero yaw (mundo), luego pitch (local) — mismo orden que hace Facebook/Kuula
+            this._gyroOffset.premultiply(rotY);
+            this._gyroOffset.premultiply(rotX);
           } else {
             this.lon -= dx * 0.22; 
             this.lat += dy * 0.22;
