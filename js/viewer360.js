@@ -54,7 +54,7 @@
       .omh-360-widget { position: relative; display: block; overflow: hidden; background: #000; user-select: none; -webkit-user-select: none; }
       .v360-container { position: absolute; inset: 0; width: 100%; height: 100%; font-family: var(--v360-font, 'Raleway', sans-serif); color: #fff; }
       
-      .v360-canvas-wrap { position: absolute; inset: 0; z-index: 1; cursor: grab; transition: filter 0.8s ease-in-out; touch-action: none; overscroll-behavior: none; -webkit-overflow-scrolling: auto; }
+      .v360-canvas-wrap { position: absolute; inset: 0; z-index: 1; cursor: grab; transition: filter 0.8s ease-in-out; touch-action: none; overscroll-behavior: none; }
       .v360-canvas-wrap:active { cursor: grabbing; }
       .v360-canvas-wrap.splash-blur { filter: blur(15px) brightness(0.5); transition: filter 1.5s ease-in-out; }
       .v360-canvas-wrap.motion-blur { filter: blur(4px) brightness(0.95); transition: filter 0.4s ease-in-out; }
@@ -150,11 +150,17 @@
       this.siguienteEscenaID  = null;
 
       this.giroscopioActivo   = false;
-      this.calibrandoGiroscopio = false; // Flag para evitar el salto inicial
-      this.targetLon          = 0; 
+      this.calibrandoGiroscopio = false;
+      this.targetLon          = 0;
       this.targetLat          = 0;
-      this.offsetLon          = 0; 
+      this.offsetLon          = 0;
       this.offsetLat          = 0;
+
+      // ── SISTEMA QUATERNION PARA GIROSCOPIO ──
+      // Se inicializan en iniciarThreeJS() cuando THREE ya está cargado
+      this._gyroQ        = null; // quaternion destino del sensor
+      this._gyroSmooth   = 0.25; // slerp: 0=lento, 1=instantáneo
+      this._gyroActivo   = false; // true sólo cuando el quaternion ya está listo
 
       // Vincular el evento una sola vez para control de RAM
       this._onDeviceOrientationBind = this._onDeviceOrientation.bind(this);
@@ -316,9 +322,18 @@
       this.scene    = new THREE.Scene();
       this.camera   = new THREE.PerspectiveCamera(75, wrap.clientWidth / wrap.clientHeight, 1, 1100);
       this.renderer = new THREE.WebGLRenderer({ antialias: true });
-      this.renderer.setPixelRatio(isMobile() ? 1.25 : Math.min(window.devicePixelRatio, 2));
+      this.renderer.setPixelRatio(isMobile() ? Math.min(window.devicePixelRatio, 1.5) : Math.min(window.devicePixelRatio, 2));
       this.renderer.setSize(wrap.clientWidth, wrap.clientHeight);
       wrap.appendChild(this.renderer.domElement);
+
+      // ── Objetos THREE para el sistema quaternion del giroscopio ──
+      // Equivalente exacto a DeviceOrientationControls de Three.js
+      this._gyroQ  = new THREE.Quaternion();
+      this._gyroEuler = new THREE.Euler();
+      this._gyroZee   = new THREE.Vector3(0, 0, 1);
+      this._gyroQ0    = new THREE.Quaternion();
+      // Corrección de eje: rota -90° en X para pasar del sistema del dispositivo al de la cámara
+      this._gyroQ1    = new THREE.Quaternion(-Math.sqrt(0.5), 0, 0, Math.sqrt(0.5));
 
       const geo = new THREE.SphereGeometry(500, 60, 40);
       geo.scale(-1, 1, 1);
@@ -414,9 +429,12 @@
           const dx = e.touches[0].clientX - lastX;
           const dy = e.touches[0].clientY - lastY;
           
-          if (this.giroscopioActivo) {
-            this.offsetLon -= dx * 0.22;
-            this.offsetLat += dy * 0.22;
+          if (this.giroscopioActivo && this._gyroActivo) {
+            // Rotar el offset de calibración para que el drag mueva la vista sobre el quaternion
+            const rotY = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0),  dx * 0.003);
+            const rotX = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1, 0, 0), -dy * 0.003);
+            if (!this._gyroOffset) this._gyroOffset = new THREE.Quaternion();
+            this._gyroOffset.premultiply(rotY).premultiply(rotX);
           } else {
             this.lon -= dx * 0.22; 
             this.lat += dy * 0.22;
@@ -508,7 +526,11 @@
       
       if (this.giroscopioActivo) {
         this.giroscopioActivo = false;
+        this._gyroActivo = false;
         btnGiro.classList.remove('activo');
+        // Remover el listener del evento que se haya registrado
+        window.removeEventListener('deviceorientationabsolute', this._onDeviceOrientationBind, true);
+        window.removeEventListener('deviceorientation',         this._onDeviceOrientationBind, true);
         return;
       }
 
@@ -533,58 +555,54 @@
     _encenderGiroscopio() {
       this.giroscopioActivo = true;
       this.autoRotar = false;
-      this.calibrandoGiroscopio = true;
-      
+      this._gyroActivo = false; // se activa en el primer evento válido
+
       document.getElementById('btn-rot-' + this.id).classList.remove('activo');
       document.getElementById('btn-giro-' + this.id).classList.add('activo');
 
-      // Usar deviceorientationabsolute cuando está disponible (mejor referencia, menos drift)
-      this._eventoOrientacion = 'ondeviceorientationabsolute' in window
+      // deviceorientationabsolute tiene referencia magnética real → menos drift
+      // deviceorientation como fallback para iOS Safari
+      this._eventoOrientacion = ('ondeviceorientationabsolute' in window)
         ? 'deviceorientationabsolute'
         : 'deviceorientation';
 
-      window.removeEventListener('deviceorientation',         this._onDeviceOrientationBind);
-      window.removeEventListener('deviceorientationabsolute', this._onDeviceOrientationBind);
+      window.removeEventListener('deviceorientationabsolute', this._onDeviceOrientationBind, true);
+      window.removeEventListener('deviceorientation',         this._onDeviceOrientationBind, true);
       window.addEventListener(this._eventoOrientacion, this._onDeviceOrientationBind, true);
     }
 
-    // ── CORRECCIÓN MATEMÁTICA DEFINITIVA DE EJES ──
+    // ── SISTEMA QUATERNION — equivalente a DeviceOrientationControls de Three.js ──
+    // Convierte alpha/beta/gamma a un quaternion 3D real, sin gimbal lock,
+    // con compensación de orientación de pantalla y calibración sin salto inicial.
     _onDeviceOrientation(event) {
       if (!this.giroscopioActivo || this.faseTransicion !== 'quieto') return;
+      if (event.alpha === null || event.beta === null || event.gamma === null) return;
+      if (!this._gyroQ) return;
 
-      let alpha = event.alpha || 0; 
-      let beta  = event.beta  || 0; 
-      let gamma = event.gamma || 0; 
+      const alpha  = THREE.MathUtils.degToRad(event.alpha);  // rotación Z (brújula)
+      const beta   = THREE.MathUtils.degToRad(event.beta);   // rotación X (inclinación frente/atrás)
+      const gamma  = THREE.MathUtils.degToRad(event.gamma);  // rotación Y (inclinación costados)
+      const orient = THREE.MathUtils.degToRad(window.screen?.orientation?.angle ?? window.orientation ?? 0);
 
-      let orientacionPantalla = window.orientation || 0;
-      let rawLon = 0;
-      let rawLat = 0;
+      // Orden YXZ: primero brújula, luego inclinación, luego roll — correcto para portrait
+      this._gyroEuler.set(beta, alpha, -gamma, 'YXZ');
+      this._gyroQ.setFromEuler(this._gyroEuler);
 
-      // Extraemos puramente el giro horizontal sin cruzar la inclinación para evitar temblores
-      if (orientacionPantalla === 90) {
-        rawLon = alpha;
-        rawLat = -gamma;
-      } else if (orientacionPantalla === -90) {
-        rawLon = alpha;
-        rawLat = gamma;
-      } else {
-        // Celular parado en vertical (Portrait)
-        rawLon = alpha;
-        rawLat = beta - 90; 
-      }
+      // Q1 corrige el sistema de coordenadas del dispositivo al de la cámara (-90° en X)
+      this._gyroQ.multiply(this._gyroQ1);
 
-      // LA INVERSIÓN FINAL: 360 menos el giro obliga a la vista a empatar con el movimiento real
-      this.targetLon = 360 - rawLon;
-      
-      // CANDADO DE SEGURIDAD VERTICAL: Impide que de vueltas hacia el techo
-      this.targetLat = Math.max(-80, Math.min(80, rawLat));
+      // Compensar la rotación de la pantalla (landscape/portrait)
+      this._gyroQ.multiply(
+        this._gyroQ0.setFromAxisAngle(this._gyroZee, -orient)
+      );
 
-      // CALIBRACIÓN INICIAL INVISIBLE (Evita que el cuarto brinque al prender el botón)
-      if (this.calibrandoGiroscopio) {
-        this.offsetLon = this.lon - this.targetLon;
-        this.offsetLat = this.lat - this.targetLat;
-        this.calibrandoGiroscopio = false;
-        return;
+      // Primera lectura válida: calibrar para que no haya salto de cámara
+      if (!this._gyroActivo) {
+        // Guardamos el quaternion inverso de la posición actual de la cámara
+        // para que el punto de partida sea exactamente donde el usuario mira ahora
+        this._gyroOffset = this.camera.quaternion.clone()
+          .multiply(this._gyroQ.clone().invert());
+        this._gyroActivo = true;
       }
     }
 
@@ -822,33 +840,40 @@
       this.camera.fov = this.cameraFOV;
       this.camera.updateProjectionMatrix();
 
-      if (this.giroscopioActivo && this.faseTransicion === 'quieto') {
-        const targetCalculadoLon = this.targetLon + this.offsetLon;
-        const targetCalculadoLat = this.targetLat + this.offsetLat;
+      if (this.giroscopioActivo && this._gyroActivo && this.faseTransicion === 'quieto') {
+        // ── MODO QUATERNION: control de cámara directo, sin lon/lat, sin lookAt ──
+        // Aplicamos el offset de calibración + el quaternion del sensor
+        const qTarget = this._gyroOffset
+          ? this._gyroOffset.clone().multiply(this._gyroQ)
+          : this._gyroQ.clone();
 
-        let diffLon = targetCalculadoLon - this.lon;
-        while (diffLon < -180) diffLon += 360;
-        while (diffLon > 180) diffLon -= 360;
-        
-        // Factor alto = respuesta casi inmediata, similar a Facebook/Kuula
-        // El sensor del OS ya filtra el ruido; no necesitamos amortiguamiento extra
-        const factorGiro = 0.85;
-        this.lon += diffLon * factorGiro;
-        this.lat += (targetCalculadoLat - this.lat) * factorGiro;
-        
+        // slerp: interpolación esférica suave pero sin lag perceptible
+        this.camera.quaternion.slerp(qTarget, this._gyroSmooth);
+
+        // Actualizamos lon/lat a partir del quaternion para que el touch-offset
+        // y la navegación de hotspots sigan funcionando correctamente
+        const dir = new THREE.Vector3(0, 0, -1).applyQuaternion(this.camera.quaternion);
+        this.lon = THREE.MathUtils.radToDeg(Math.atan2(dir.x, -dir.z));
+        this.lat = THREE.MathUtils.radToDeg(Math.asin(Math.max(-1, Math.min(1, dir.y))));
+
+      } else if (this.giroscopioActivo && this.faseTransicion === 'quieto') {
+        // Giroscopio encendido pero primera lectura aún no llegó — mantener posición
       } else if (this.autoRotar && this.faseTransicion === 'quieto') {
         this.lon += (this.config.velocidadRotacion || 0.05);
       }
 
       this.lat = Math.max(-83, Math.min(83, this.lat));
 
-      const phi   = THREE.MathUtils.degToRad(90 - this.lat);
-      const theta = THREE.MathUtils.degToRad(this.lon);
-      this.camera.lookAt(
-        500 * Math.sin(phi) * Math.cos(theta),
-        500 * Math.cos(phi),
-        500 * Math.sin(phi) * Math.sin(theta)
-      );
+      // lookAt solo se usa cuando NO está el giroscopio activo
+      if (!this.giroscopioActivo || !this._gyroActivo) {
+        const phi   = THREE.MathUtils.degToRad(90 - this.lat);
+        const theta = THREE.MathUtils.degToRad(this.lon);
+        this.camera.lookAt(
+          500 * Math.sin(phi) * Math.cos(theta),
+          500 * Math.cos(phi),
+          500 * Math.sin(phi) * Math.sin(theta)
+        );
+      }
 
       const W = this.contenedor.clientWidth, H = this.contenedor.clientHeight;
       const vec = new THREE.Vector3();
