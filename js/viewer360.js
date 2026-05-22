@@ -1,23 +1,5 @@
 /**
- * viewer360.js — Motor OMH Estudio (V13.1)
- *
- * CHANGELOG V13.1 — Fix Móvil (reemplaza estrategia blob por URL param):
- * ─────────────────────────────────────────────────────────────────────────────
- * [1] MÓVIL — Estrategia URL param ?v360fs=<configPath>
- *     • ABANDONA blob URL (fallaba en iOS/Android por restricciones de seguridad
- *       sobre carga de assets desde blob://).
- *     • Nueva estrategia: abre window.open() con la MISMA URL de la página actual
- *       + parámetro ?v360fs=<configPath_encodificado>.
- *     • En la nueva pestaña, el motor detecta ese param y pone el widget en modo
- *       "standalone": ocupa 100vw/100dvh, oculta todo el resto de la página,
- *       e inicia el recorrido automáticamente sin splash.
- *     • Funciona con cualquier servidor/CDN porque todas las rutas de assets
- *       son relativas al origen real de la página, no a un blob.
- *
- * [2] PC — Fullscreen API nativa (sin cambios respecto a V13.0)
- *
- * [3] MEMORIA — Dispose agresivo + caché centralizada (sin cambios respecto a V13.0)
- * ─────────────────────────────────────────────────────────────────────────────
+ * viewer360.js — Motor OMH Estudio (V14.0 - Giroscopio Integrado Móvil)
  */
 (function () {
   'use strict';
@@ -29,10 +11,9 @@
   }
 
   // ─── MODO STANDALONE: detectar si esta pestaña fue abierta por móvil ────────
-  // Si la URL contiene ?v360fs=..., ponemos la página en modo visor fullscreen.
   function detectarModoStandalone() {
     const params = new URLSearchParams(window.location.search);
-    return params.get('v360fs') || null; // devuelve el configPath o null
+    return params.get('v360frame') || params.get('v360fs') || null; 
   }
 
   // Inyecta CSS de modo standalone en el <head> para ocultar todo excepto el widget
@@ -40,7 +21,6 @@
     const css = document.createElement('style');
     css.id = 'v360-standalone-css';
     css.textContent = `
-      /* Ocultar toda la página excepto el widget 360 en modo standalone móvil */
       body.v360-standalone > *:not(.omh-360-widget-standalone-wrap) {
         display: none !important;
       }
@@ -68,7 +48,6 @@
   function inyectarDependencias(callback) {
     if (document.getElementById('v360-styles')) {
       if (window.THREE) return callback();
-      // Three.js se está cargando, esperar
       const t = setInterval(() => { if (window.THREE) { clearInterval(t); callback(); } }, 50);
       return;
     }
@@ -89,29 +68,34 @@
       .v360-hud.visible { opacity: 1; }
       .v360-hud-logo { height: 24px; max-width: 130px; object-fit: contain; pointer-events: all; display: none; }
       .v360-hud-info { text-align: center; flex: 1; margin: 0 1rem; }
-      .v360-hud-cliente { font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--v360-color-primario, #01eeff); font-weight: 700; display: block; }
+      .v360-hud-cliente { font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--v360-color-primario, #0178ff); font-weight: 700; display: block; }
       .v360-hud-titulo { font-size: 0.85rem; font-weight: 600; text-transform: uppercase; margin-top: 4px; display: block; font-family: var(--v360-font-title, 'Lexend Tera', sans-serif); }
       
       .v360-acciones { display: flex; gap: 0.5rem; pointer-events: all; }
       .v360-btn { width: 36px; height: 36px; border-radius: 50%; background: var(--v360-color-secundario, rgba(255,255,255,0.1)); border: 1px solid rgba(255,255,255,0.15); color: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); font-size: 0.9rem; }
       .v360-btn:hover { background: rgba(255,255,255,0.2); transform: scale(1.05); border-color: rgba(255,255,255,0.4); }
-      .v360-btn.activo { background: var(--v360-color-primario, #01eeff); border-color: transparent; color: #000; }
+      .v360-btn.activo { background: var(--v360-color-primario, #0178ff); border-color: transparent; color: #fff; }
 
-      /* Botón fullscreen — oculto en móvil (pointer:coarse), visible en desktop */
+      /* Botones condicionales responsivos */
       .v360-btn-fs { display: flex; }
-      @media (pointer: coarse) { .v360-btn-fs { display: none !important; } }
+      .v360-btn-giro { display: none; }
+      
+      @media (pointer: coarse) { 
+        .v360-btn-fs { display: none !important; } 
+        .v360-btn-giro { display: flex; }
+      }
       
       /* Panel de Ficha Comercial */
       .v360-ficha-panel { position: absolute; top: 80px; left: 2rem; z-index: 90; background: rgba(10,10,10,0.95); border: 1px solid rgba(255,255,255,0.12); border-radius: 12px; padding: 1.5rem; width: 280px; pointer-events: all; display: none; backdrop-filter: blur(10px); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-      .v360-ficha-titulo { font-family: var(--v360-font-title, 'Lexend Tera', sans-serif); font-size: 0.65rem; color: var(--v360-color-primario, #01eeff); margin-bottom: 1rem; letter-spacing: 0.1em; text-transform: uppercase; }
+      .v360-ficha-titulo { font-family: var(--v360-font-title, 'Lexend Tera', sans-serif); font-size: 0.65rem; color: var(--v360-color-primario, #0178ff); margin-bottom: 1rem; letter-spacing: 0.1em; text-transform: uppercase; }
       .v360-ficha-item { margin-bottom: 0.8rem; font-size: 0.75rem; line-height: 1.4; color: rgba(255,255,255,0.85); }
       .v360-ficha-label { font-size: 0.55rem; text-transform: uppercase; letter-spacing: 0.05em; color: rgba(255,255,255,0.4); display: block; margin-bottom: 2px; }
 
       /* Splash Screen */
       .v360-splash { position: absolute; inset: 0; z-index: 30; background: linear-gradient(135deg, rgba(0,0,0,0.5), rgba(0,0,0,0.2)); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem; box-sizing: border-box; text-align: center; transition: opacity 1s, visibility 1s; }
-      .v360-splash-overlay { position: absolute; inset: 0; background: var(--v360-color-primario, #01eeff); opacity: 0.08; z-index: -1; }
+      .v360-splash-overlay { position: absolute; inset: 0; background: var(--v360-color-primario, #0178ff); opacity: 0.08; z-index: -1; }
       .v360-splash-logo { max-height: 50px; max-width: 200px; object-fit: contain; margin-bottom: 1.5rem; display: none; }
-      .v360-splash-cliente { font-size: 0.65rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--v360-color-primario, #01eeff); font-weight: 700; display: block; margin-bottom: 0.5rem; }
+      .v360-splash-cliente { font-size: 0.65rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--v360-color-primario, #0178ff); font-weight: 700; display: block; margin-bottom: 0.5rem; }
       .v360-splash-titulo { font-size: 1.4rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; font-family: var(--v360-font-title, 'Lexend Tera', sans-serif); max-width: 600px; line-height: 1.3; margin-bottom: 2rem; text-shadow: 0 4px 20px rgba(0,0,0,0.6); }
       .v360-splash-bton-group { display: flex; gap: 1rem; align-items: center; }
       .v360-splash-btn { padding: 0.8rem 2.2rem; background: transparent; border: 1px solid rgba(255,255,255,0.4); border-radius: 40px; color: #fff; font-family: var(--v360-font, 'Raleway', sans-serif); font-size: 0.68rem; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; cursor: pointer; transition: all 0.3s ease; backdrop-filter: blur(8px); }
@@ -123,12 +107,12 @@
       /* Minimap */
       .v360-minimap-wrapper { position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%); z-index: 10; display: flex; flex-direction: column; align-items: center; gap: 0.5rem; pointer-events: none; width: 90%; max-width: max-content; opacity: 0; transition: opacity 0.8s ease; }
       .v360-minimap-wrapper.visible { opacity: 1; }
-      .v360-mm-toggle { padding: 0 12px; height: 24px; background: rgba(0,0,0,0.8); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; color: var(--v360-color-primario, #01eeff); font-size: 0.55rem; font-weight: 700; letter-spacing: 0.12em; display: flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer; pointer-events: all; backdrop-filter: blur(10px); }
+      .v360-mm-toggle { padding: 0 12px; height: 24px; background: rgba(0,0,0,0.8); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; color: var(--v360-color-primario, #0178ff); font-size: 0.55rem; font-weight: 700; letter-spacing: 0.12em; display: flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer; pointer-events: all; backdrop-filter: blur(10px); }
       .v360-minimap { display: flex; gap: 0.5rem; align-items: center; padding: 0.55rem 1.2rem; background: rgba(0,0,0,0.7); border: 1px solid rgba(255,255,255,0.1); border-radius: 50px; backdrop-filter: blur(10px); pointer-events: all; max-width: 100%; overflow-x: auto; transition: all 0.3s ease; }
       .v360-minimap-wrapper.colapsado .v360-minimap { opacity: 0; transform: translateY(15px); pointer-events: none; visibility: hidden; height: 0; padding: 0; border-color: transparent; }
       .v360-mm-escena { display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; padding: 4px 8px; border-radius: 6px; }
       .v360-mm-dot { width: 7px; height: 7px; border-radius: 50%; background: rgba(255,255,255,0.3); }
-      .v360-mm-escena.activa .v360-mm-dot { background: var(--v360-color-primario, #01eeff); transform: scale(1.4); }
+      .v360-mm-escena.activa .v360-mm-dot { background: var(--v360-color-primario, #0178ff); transform: scale(1.4); }
       .v360-mm-label { font-size: 0.58rem; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255,255,255,0.4); white-space: nowrap; }
       .v360-mm-escena.activa .v360-mm-label { color: rgba(255,255,255,0.9); font-weight: 600; }
 
@@ -141,7 +125,7 @@
 
       /* Spinner */
       .v360-spinner { position: absolute; bottom: 2rem; right: 2rem; z-index: 50; display: flex; align-items: center; gap: 10px; color: rgba(255,255,255,0.6); font-size: 0.55rem; letter-spacing: 0.15em; text-transform: uppercase; background: rgba(0,0,0,0.6); padding: 6px 14px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.08); opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
-      .v360-spin-ring { width: 12px; height: 12px; border: 1.5px solid rgba(255,255,255,0.2); border-top-color: var(--v360-color-primario, #01eeff); border-radius: 50%; animation: v360spin 0.8s linear infinite; }
+      .v360-spin-ring { width: 12px; height: 12px; border: 1.5px solid rgba(255,255,255,0.2); border-top-color: var(--v360-color-primario, #0178ff); border-radius: 50%; animation: v360spin 0.8s linear infinite; }
       @keyframes v360spin { to { transform: rotate(360deg); } }
     `;
     document.head.appendChild(s);
@@ -158,7 +142,6 @@
       this.contenedor    = contenedor;
       this.id            = Math.random().toString(36).substring(2, 9);
       this.configPath    = contenedor.getAttribute('data-config');
-      // opcionesExtra.autoIniciar = true → saltar splash (modo standalone móvil)
       this.autoIniciar   = opcionesExtra && opcionesExtra.autoIniciar ? true : false;
 
       if (!this.configPath) return console.error('Visor 360: Falta data-config.');
@@ -173,21 +156,25 @@
       this.transitionProgress = 0;
       this.siguienteEscenaID  = null;
 
-      // Caché centralizada de texturas: url → THREE.Texture
+      // VARIABLES PARA GIROSCOPIO NATIVO
+      this.giroscopioActivo   = false;
+      this.lonGiro            = 0;
+      this.latGiro            = 0;
+      this.offsetLon          = 0; // Para calibrar la orientación al encenderlo
+      this.offsetLat          = 0;
+
       this._textureCache = new Map();
 
       this.construirDOM();
       this.cargarConfig();
     }
 
-    // ── Libera una textura de VRAM y del caché ─────────────────────────────────
     _disposeTex(tex) {
       if (!tex) return;
       tex.dispose();
       if (tex.image && tex.image.src) this._textureCache.delete(tex.image.src);
     }
 
-    // ── Carga con caché + optimizaciones de memoria para móvil ─────────────────
     _cargarTextura(url, callback) {
       if (this._textureCache.has(url)) {
         callback(this._textureCache.get(url));
@@ -195,7 +182,7 @@
       }
       const loader = new THREE.TextureLoader();
       loader.load(url, tex => {
-        tex.minFilter     = THREE.LinearFilter; // Sin mipmaps → ahorra ~33% VRAM
+        tex.minFilter     = THREE.LinearFilter; 
         tex.generateMipmaps = false;
         this._textureCache.set(url, tex);
         callback(tex);
@@ -227,6 +214,7 @@
             <div class="v360-acciones">
               <button class="v360-btn" id="btn-ficha-${this.id}" title="Ficha Técnica">ⓘ</button>
               <button class="v360-btn activo" id="btn-rot-${this.id}" title="Auto-Rotación">↻</button>
+              <button class="v360-btn v360-btn-giro" id="btn-giro-${this.id}" title="Activar Brújula/Giroscopio">🧭</button>
               <button class="v360-btn" id="btn-ed-${this.id}" title="Modo Editor">✦</button>
               <button class="v360-btn v360-btn-fs" id="btn-fs-${this.id}" title="Pantalla Completa">⛶</button>
             </div>
@@ -249,9 +237,9 @@
           </div>
 
           <div class="v360-editor-panel" id="panel-ed-${this.id}">
-            <div style="font-size:0.55rem; color:#01eeff; margin-bottom:10px; font-weight:bold;">◉ MODO EDITOR</div>
+            <div style="font-size:0.55rem; color:#0178ff; margin-bottom:10px; font-weight:bold;">◉ MODO EDITOR</div>
             <div id="coords-${this.id}" style="background:#000; padding:10px; font-family:monospace; font-size:0.75rem; margin-bottom:12px; text-align:center; border:1px solid #222; color:#4caf50;">Haz click en la foto</div>
-            <button id="btn-copy-${this.id}" style="width:100%; padding:8px; background:#01eeff; color:#000; border:none; border-radius:4px; cursor:pointer; font-size:0.7rem; font-weight:700;">COPIAR COORDENADAS</button>
+            <button id="btn-copy-${this.id}" style="width:100%; padding:8px; background:#0178ff; color:#fff; border:none; border-radius:4px; cursor:pointer; font-size:0.7rem; font-weight:700;">COPIAR COORDENADAS</button>
             <div id="copy-msg-${this.id}" style="color:#4caf50; font-size:0.65rem; text-align:center; margin-top:5px; height:15px;"></div>
           </div>
         </div>
@@ -259,9 +247,6 @@
     }
 
     cargarConfig() {
-      // Si la config ya está en window.tourConfig (modo standalone: el script
-      // ya fue cargado por la página original), úsala directamente.
-      // Si no, cargarla dinámicamente desde configPath.
       if (window.tourConfig) {
         this.config = window.tourConfig;
         this._onConfigLista();
@@ -286,7 +271,7 @@
 
     aplicarBranding() {
       const tema = this.config.tema || {};
-      this.colorPrimario   = tema.colorPrimario   || '#01eeff';
+      this.colorPrimario   = tema.colorPrimario   || '#0178ff';
       this.colorSecundario = tema.colorSecundario || 'rgba(255,255,255,0.15)';
 
       this.contenedor.style.setProperty('--v360-color-primario',   this.colorPrimario);
@@ -333,7 +318,6 @@
       this.scene    = new THREE.Scene();
       this.camera   = new THREE.PerspectiveCamera(75, wrap.clientWidth / wrap.clientHeight, 1, 1100);
       this.renderer = new THREE.WebGLRenderer({ antialias: true });
-      // Limitar DPR para no saturar la GPU de móviles de alta densidad
       this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
       this.renderer.setSize(wrap.clientWidth, wrap.clientHeight);
       wrap.appendChild(this.renderer.domElement);
@@ -360,14 +344,13 @@
       this.cargarEscenaInicial(this.config.escenaInicial);
       this.animar();
 
-      // Modo standalone: ya no hay splash, iniciar directo
       if (this.autoIniciar) {
-        // Pequeño delay para que el canvas esté pintado antes de quitar el blur
         setTimeout(() => this._activarVisor(wrap), 300);
+        // Forzar encendido automático de giroscopio en modo standalone si tiene permisos
+        setTimeout(() => this._solicitarPermisoGiroscopio(false), 600);
       }
     }
 
-    // Activa el visor (quita splash y blur, muestra HUD y hotspots)
     _activarVisor(wrap) {
       wrap = wrap || document.getElementById('canvas-' + this.id);
       this.tourIniciado = true;
@@ -378,7 +361,6 @@
       document.getElementById('hs-'      + this.id).style.opacity = '1';
     }
 
-    // ── Drag con mouse ─────────────────────────────────────────────────────────
     _registrarInteraccionDrag(wrap) {
       let isDragging = false, prevX = 0, prevY = 0, totalMove = 0;
 
@@ -403,7 +385,6 @@
       });
     }
 
-    // ── Zoom rueda mouse ───────────────────────────────────────────────────────
     _registrarZoomRueda(wrap) {
       wrap.addEventListener('wheel', e => {
         if (!this.tourIniciado || this.faseTransicion !== 'quieto') return;
@@ -412,7 +393,6 @@
       }, { passive: false });
     }
 
-    // ── Touch: 1 dedo = rotar, 2 dedos = pinch-zoom ───────────────────────────
     _registrarTouchControls(wrap) {
       let lastX = 0, lastY = 0, lastPinch = 0;
 
@@ -437,7 +417,16 @@
         if (e.touches.length === 1) {
           const dx = e.touches[0].clientX - lastX;
           const dy = e.touches[0].clientY - lastY;
-          this.lon -= dx * 0.2; this.lat += dy * 0.2;
+          
+          // Si el giroscopio está prendido, sumamos el arrastre como "offset" relativo
+          if (this.giroscopioActivo) {
+            this.offsetLon -= dx * 0.2;
+            this.offsetLat += dy * 0.2;
+          } else {
+            this.lon -= dx * 0.2; 
+            this.lat += dy * 0.2;
+          }
+          
           lastX = e.touches[0].clientX;
           lastY = e.touches[0].clientY;
         } else if (e.touches.length === 2) {
@@ -451,7 +440,6 @@
       }, { passive: false });
     }
 
-    // ── ResizeObserver: cubre fullscreen, resize y rotación de móvil ───────────
     _registrarResizeObserver() {
       const ro = new ResizeObserver(() => {
         const W = this.contenedor.clientWidth;
@@ -464,26 +452,30 @@
       ro.observe(this.contenedor);
     }
 
-    // ── Todos los botones ──────────────────────────────────────────────────────
     _registrarBotones(wrap) {
-      // Rotación
       document.getElementById('btn-rot-' + this.id).addEventListener('click', e => {
         this.autoRotar = !this.autoRotar;
         e.currentTarget.classList.toggle('activo', this.autoRotar);
+        if (this.autoRotar && this.giroscopioActivo) {
+          this.giroscopioActivo = false;
+          document.getElementById('btn-giro-' + this.id).classList.remove('activo');
+        }
       });
 
-      // Ficha comercial
       document.getElementById('btn-ficha-' + this.id).addEventListener('click', e => {
         this.fichaActiva = !this.fichaActiva;
         e.currentTarget.classList.toggle('activo', this.fichaActiva);
         document.getElementById('ficha-' + this.id).style.display = this.fichaActiva ? 'block' : 'none';
       });
 
-      // Editor
+      // BOTÓN FLOTANTE DEL GIROSCOPIO
+      document.getElementById('btn-giro-' + this.id).addEventListener('click', () => {
+        this._solicitarPermisoGiroscopio(true);
+      });
+
       document.getElementById('btn-ed-'  + this.id).addEventListener('click', e => this.toggleEditor(e.currentTarget));
       document.getElementById('btn-copy-'+ this.id).addEventListener('click', () => this.copiarCoordenadas());
 
-      // ── [PC] Fullscreen API ──
       const btnFS = document.getElementById('btn-fs-' + this.id);
       if (btnFS) {
         btnFS.addEventListener('click', () => this._toggleFullscreen());
@@ -491,14 +483,12 @@
           const enFS = !!(document.fullscreenElement || document.webkitFullscreenElement
             || document.mozFullScreenElement || document.msFullscreenElement);
           btnFS.textContent = enFS ? '⮌' : '⛶';
-          btnFS.title       = enFS ? 'Salir de Pantalla Completa' : 'Pantalla Completa';
           btnFS.classList.toggle('activo', enFS);
         };
         ['fullscreenchange','webkitfullscreenchange','mozfullscreenchange','MSFullscreenChange']
           .forEach(ev => document.addEventListener(ev, syncIcon));
       }
 
-      // ── Splash "Iniciar Recorrido" ──
       document.getElementById('sp-btn-' + this.id).addEventListener('click', () => {
         if (isMobile()) {
           this._iniciarEnMovil();
@@ -507,23 +497,100 @@
         }
       });
 
-      // Minimap
       document.getElementById('mm-toggle-' + this.id).addEventListener('click', () => {
         document.getElementById('mm-wrap-' + this.id).classList.toggle('colapsado');
       });
     }
 
-    // ── [MÓVIL] Abre la misma página con ?v360fs=<configPath> ─────────────────
+    // ── GESTIÓN DE PERMISOS NATIVOS DE ORIENTACIÓN (iOS / ANDROID) ─────────────
+    _solicitarPermisoGiroscopio(mostrarAlertaError) {
+      const btnGiro = document.getElementById('btn-giro-' + this.id);
+      
+      if (this.giroscopioActivo) {
+        this.giroscopioActivo = false;
+        btnGiro.classList.remove('activo');
+        return;
+      }
+
+      // Caso 1: Dispositivos iOS 13+ requieren permiso explícito por API de Apple
+      if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
+        DeviceOrientationEvent.requestPermission()
+          .then(response => {
+            if (response === 'granted') {
+              this._encenderGiroscopio();
+            } else {
+              if (mostrarAlertaError) alert('Permiso denegado para acceder a la brújula/giroscopio.');
+            }
+          })
+          .catch(err => {
+            console.error(err);
+            if (mostrarAlertaError) alert('Debes iniciar el recorrido e interactuar con el botón para activar el giroscopio.');
+          });
+      } 
+      // Caso 2: Android y navegadores estándar que no tienen capada la API de inicio
+      else {
+        this._encenderGiroscopio();
+      }
+    }
+
+    _encenderGiroscopio() {
+      this.giroscopioActivo = true;
+      this.autoRotar = false;
+      
+      document.getElementById('btn-rot-' + this.id).classList.remove('activo');
+      document.getElementById('btn-giro-' + this.id).classList.add('activo');
+
+      // Sincronizar el offset actual para evitar que la cámara "brinque" feo al encenderlo
+      this.offsetLon = this.lon;
+      this.offsetLat = this.lat;
+      this.lonGiro = 0;
+      this.latGiro = 0;
+
+      // Escuchar el canal nativo del hardware del celular
+      window.removeEventListener('deviceorientation', this._onDeviceOrientation);
+      window.addEventListener('deviceorientation', e => this._onDeviceOrientation(e), false);
+    }
+
+    _onDeviceOrientation(event) {
+      if (!this.giroscopioActivo || this.faseTransicion !== 'quieto') return;
+
+      // alpha: rotación sobre eje Z (brújula/norte) [0, 360]
+      // beta: inclinación frente-atrás (eje X) [-180, 180]
+      // gamma: inclinación izquierda-derecha (eje Y) [-90, 90]
+      let alpha = event.alpha ? event.alpha : 0;
+      let beta  = event.beta  ? event.beta  : 0;
+      let gamma = event.gamma ? event.gamma : 0;
+
+      // Validar si el dispositivo cambió a modo horizontal (landscape)
+      let orientacionPantalla = window.orientation || 0;
+
+      if (orientacionPantalla === 90) {
+        this.lonGiro = alpha + gamma;
+        this.latGiro = beta - 90;
+      } else if (orientacionPantalla === -90) {
+        this.lonGiro = alpha - gamma;
+        this.latGiro = -beta - 90;
+      } else if (orientacionPantalla === 180) {
+        this.lonGiro = alpha;
+        this.latGiro = -beta;
+      } else {
+        // Vertical estándar (Portrait)
+        this.lonGiro = alpha + gamma;
+        this.latGiro = beta - 60; // Ajuste de ángulo cómodo de visión (mirada al frente)
+      }
+
+      // Normalizar ángulos matemáticos tridimensionales
+      this.lonGiro = ((this.lonGiro % 360) + 360) % 360;
+    }
+
     _iniciarEnMovil() {
-      // Construir URL de la página actual + el parámetro del tour
       const url    = new URL(window.location.href);
-      url.search   = ''; // Limpiar params previos
+      url.search   = ''; 
       url.hash     = '';
       url.searchParams.set('v360fs', this.configPath);
       window.open(url.toString(), '_blank');
     }
 
-    // ── [PC] Fullscreen API ────────────────────────────────────────────────────
     _toggleFullscreen() {
       const el  = this.contenedor;
       const enFS = !!(document.fullscreenElement || document.webkitFullscreenElement
@@ -539,7 +606,6 @@
       }
     }
 
-    // ── Click en foto para modo editor ────────────────────────────────────────
     procesarClickEnFoto(e) {
       const wrap = document.getElementById('canvas-' + this.id);
       const rect = wrap.getBoundingClientRect();
@@ -559,7 +625,6 @@
       }
     }
 
-    // ── [MEMO] Carga inicial ───────────────────────────────────────────────────
     cargarEscenaInicial(idEscena) {
       const datos = this.config.escenas[idEscena];
       if (!datos) return;
@@ -579,7 +644,6 @@
       });
     }
 
-    // ── Disolvencia cruzada ────────────────────────────────────────────────────
     dispararTransicionHacia(idSiguiente) {
       if (this.faseTransicion !== 'quieto') return;
       const datosSig = this.config.escenas[idSiguiente];
@@ -604,7 +668,6 @@
       });
     }
 
-    // ── [MEMO] Finaliza disolvencia y libera textura antigua ──────────────────
     finalizarDisolvencia() {
       const texAntigua = this.matPrincipal.map;
 
@@ -615,9 +678,8 @@
 
       this.scene.remove(this.sphereClon);
       this.sphereClon.geometry.dispose();
-      this.matClon.dispose(); // Solo el wrapper; la textura sigue viva en matPrincipal
+      this.matClon.dispose(); 
 
-      // Liberar VRAM de la imagen anterior
       if (texAntigua && texAntigua !== this.matPrincipal.map) {
         this._disposeTex(texAntigua);
       }
@@ -625,12 +687,18 @@
       this.escenaActual = this.siguienteEscenaID;
       const datos = this.config.escenas[this.escenaActual];
       document.getElementById('titulo-' + this.id).textContent = datos.tituloEscena || '';
+      
+      // Re-calibrar la orientación del giroscopio al aterrizar en el nuevo espacio
+      if (this.giroscopioActivo) {
+        this.offsetLon = this.lon;
+        this.offsetLat = this.lat;
+      }
+
       this.faseTransicion = 'zoom_out';
       this.renderizarHotspots(datos.hotspots || []);
       this.sincronizarMinimap();
     }
 
-    // ── Hotspots ──────────────────────────────────────────────────────────────
     renderizarHotspots(hotspots) {
       const layer = document.getElementById('hs-' + this.id);
       layer.innerHTML = '';
@@ -727,7 +795,6 @@
       });
     }
 
-    // ── Loop de animación ──────────────────────────────────────────────────────
     animar() {
       requestAnimationFrame(() => this.animar());
 
@@ -751,7 +818,12 @@
       this.camera.fov = this.cameraFOV;
       this.camera.updateProjectionMatrix();
 
-      if (this.autoRotar && this.faseTransicion === 'quieto') {
+      // MÓDULO MATEMÁTICO INTEGRAL DE RENDIMIENTO DE COORDENADAS
+      if (this.giroscopioActivo && this.faseTransicion === 'quieto') {
+        // Combinamos la lectura física del giroscopio con el offset acumulado por el dedo
+        this.lon = this.lonGiro + this.offsetLon;
+        this.lat = this.latGiro + this.offsetLat;
+      } else if (this.autoRotar && this.faseTransicion === 'quieto') {
         this.lon += (this.config.velocidadRotacion || 0.05);
       }
 
@@ -782,9 +854,6 @@
     const configPathStandalone = detectarModoStandalone();
 
     if (configPathStandalone) {
-      // ── MODO STANDALONE MÓVIL ──
-      // Esta es la pestaña nueva abierta desde el móvil.
-      // Crear un wrapper que ocupe toda la pantalla y arrancar el visor.
       aplicarModoStandalone();
 
       const wrap = document.createElement('div');
@@ -802,7 +871,6 @@
       });
 
     } else {
-      // ── MODO NORMAL (página original) ──
       const widgets = document.querySelectorAll('.omh-360-widget');
       if (widgets.length === 0) return;
       inyectarDependencias(() => {
