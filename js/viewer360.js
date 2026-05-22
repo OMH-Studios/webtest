@@ -1,5 +1,5 @@
 /**
- * viewer360.js — Motor OMH Estudio (V14.1 - Fix de Ejes, Layout Responsivo y Botón Salir)
+ * viewer360.js — Motor OMH Estudio (V14.2 - Estabilización Cinemática de Giroscopio)
  */
 (function () {
   'use strict';
@@ -16,7 +16,6 @@
     return params.get('v360frame') || params.get('v360fs') || null; 
   }
 
-  // Inyecta CSS de modo standalone en el <head> para ocultar todo excepto el widget
   function aplicarModoStandalone() {
     const css = document.createElement('style');
     css.id = 'v360-standalone-css';
@@ -63,7 +62,7 @@
       .v360-canvas-wrap.splash-blur { filter: blur(15px) brightness(0.5); transition: filter 1.5s ease-in-out; }
       .v360-canvas-wrap.motion-blur { filter: blur(4px) brightness(0.95); transition: filter 0.4s ease-in-out; }
       
-      /* HUD Superior Optimizado para Cualquier Tamaño de Pantalla */
+      /* HUD Superior Responsivo */
       .v360-hud { position: absolute; top: 0; left: 0; right: 0; padding: 1rem 1.2rem; background: linear-gradient(to bottom, rgba(0,0,0,0.85), transparent); display: flex; justify-content: space-between; align-items: center; gap: 10px; z-index: 10; pointer-events: none; opacity: 0; transition: opacity 0.8s ease; }
       .v360-hud.visible { opacity: 1; }
       
@@ -79,15 +78,14 @@
       .v360-btn:hover { background: rgba(255,255,255,0.2); transform: scale(1.05); border-color: rgba(255,255,255,0.4); }
       .v360-btn.activo { background: var(--v360-color-primario, #0178ff); border-color: transparent; color: #fff; }
 
-      /* Control responsivo de botones sin romper diseño */
       .v360-btn-fs { display: flex; }
       .v360-btn-giro { display: none; }
-      .v360-btn-salir { display: none; } /* Solo sale en standalone */
+      .v360-btn-salir { display: none; } 
       
       @media (pointer: coarse) { 
         .v360-btn-fs { display: none !important; } 
         .v360-btn-giro { display: flex; }
-        .v360-hud-logo { display: none !important; } /* Ahorrar espacio en móviles pequeños */
+        .v360-hud-logo { display: none !important; } 
         .v360-hud-titulo { max-width: 110px; }
       }
       
@@ -162,11 +160,11 @@
       this.transitionProgress = 0;
       this.siguienteEscenaID  = null;
 
-      // VARIABLES PARA GIROSCOPIO NATIVO CALIBRADO
+      // VARIABLES PARA GIROSCOPIO CON FILTRO KINETIC DE AMORTIGUACIÓN
       this.giroscopioActivo   = false;
-      this.lonGiro            = 0;
-      this.latGiro            = 0;
-      this.offsetLon          = 0; 
+      this.targetLon          = 0; // El ángulo al que el sensor quiere ir
+      this.targetLat          = 0;
+      this.offsetLon          = 0; // Offset relativo del arrastre de los dedos
       this.offsetLat          = 0;
 
       this._textureCache = new Map();
@@ -213,7 +211,7 @@
 
           <div class="v360-hud" id="hud-${this.id}">
             <div class="v360-hud-left-group">
-              <button class="v360-btn" id="btn-salir-${this.id}" title="Salir del Recorrido" style="display: ${this.autoIniciar ? 'flex' : 'none'}; background: rgba(200,0,0,0.6); font-weight: bold; border-color: transparent;">✕</button>
+              <button class="v360-btn" id="btn-salir-${this.id}" title="Salir del Recorrido" style="display: ${this.autoIniciar ? 'flex' : 'none'}; background: rgba(220,20,20,0.85); font-weight: bold; border-color: transparent; box-shadow: 0 2px 8px rgba(0,0,0,0.4);">✕</button>
               <img src="" class="v360-hud-logo" id="logo-${this.id}">
               <div class="v360-hud-info">
                 <span class="v360-hud-cliente" id="cliente-${this.id}"></span>
@@ -313,11 +311,11 @@
       const box = document.getElementById('ficha-content-' + this.id);
       if (!dc || !box) return;
       let html = '';
-      if (dc.nombreAgente)    html += '<div class="v360-ficha-item"><span class="v360-ficha-label">Asesor</span>'      + dc.nombreAgente    + '</div>';
-      if (dc.telefono)        html += '<div class="v360-ficha-item"><span class="v360-ficha-label">Teléfono</span>'    + dc.telefono        + '</div>';
-      if (dc.correo)          html += '<div class="v360-ficha-item"><span class="v360-ficha-label">Correo</span>'      + dc.correo          + '</div>';
-      if (dc.metrosCuadrados) html += '<div class="v360-ficha-item"><span class="v360-ficha-label">Dimensiones</span>'+ dc.metrosCuadrados + '</div>';
-      if (dc.descripcion)     html += '<div class="v360-ficha-item"><span class="v360-ficha-label">Detalles</span>'    + dc.descripcion     + '</div>';
+      if (dc.nombreAgente)    html += '<div class="v360-ficha-item"><span class="v360-ficha-label">Asesor</span>' + dc.nombreAgente + '</div>';
+      if (dc.telefono)        html += '<div class="v360-ficha-item"><span class="v360-ficha-label">Teléfono</span>' + dc.telefono + '</div>';
+      if (dc.correo)          html += '<div class="v360-ficha-item"><span class="v360-ficha-label">Correo</span>' + dc.correo + '</div>';
+      if (dc.metrosCuadrados) html += '<div class="v360-ficha-item"><span class="v360-ficha-label">Dimensiones</span>' + dc.metrosCuadrados + '</div>';
+      if (dc.descripcion)     html += '<div class="v360-ficha-item"><span class="v360-ficha-label">Detalles</span>' + dc.descripcion + '</div>';
       box.innerHTML = html;
     }
 
@@ -426,11 +424,11 @@
           const dy = e.touches[0].clientY - lastY;
           
           if (this.giroscopioActivo) {
-            this.offsetLon -= dx * 0.2;
-            this.offsetLat += dy * 0.2;
+            this.offsetLon -= dx * 0.22;
+            this.offsetLat += dy * 0.22;
           } else {
-            this.lon -= dx * 0.2; 
-            this.lat += dy * 0.2;
+            this.lon -= dx * 0.22; 
+            this.lat += dy * 0.22;
           }
           
           lastX = e.touches[0].clientX;
@@ -440,7 +438,7 @@
             e.touches[0].clientX - e.touches[1].clientX,
             e.touches[0].clientY - e.touches[1].clientY
           );
-          this.cameraFOV = Math.max(40, Math.min(100, this.cameraFOV + (lastPinch - dist) * 0.1));
+          this.cameraFOV = Math.max(40, Math.min(100, this.cameraFOV + (lastPinch - dist) * 0.12));
           lastPinch = dist;
         }
       }, { passive: false });
@@ -478,11 +476,10 @@
         this._solicitarPermisoGiroscopio(true);
       });
 
-      // BOTÓN SALIR SÓLO EN MÓVIL STANDALONE
       const btnSalir = document.getElementById('btn-salir-' + this.id);
       if (btnSalir) {
         btnSalir.addEventListener('click', () => {
-          window.close(); // Cierra la pestaña independiente
+          window.close(); 
         });
       }
 
@@ -549,16 +546,17 @@
       document.getElementById('btn-rot-' + this.id).classList.remove('activo');
       document.getElementById('btn-giro-' + this.id).classList.add('activo');
 
+      // Calibrar la cámara sobre el punto actual
       this.offsetLon = this.lon;
       this.offsetLat = this.lat;
-      this.lonGiro = 0;
-      this.latGiro = 0;
+      this.targetLon = 0;
+      this.targetLat = 0;
 
       window.removeEventListener('deviceorientation', this._onDeviceOrientation);
       window.addEventListener('deviceorientation', e => this._onDeviceOrientation(e), false);
     }
 
-    // ── CORRECCIÓN MATEMÁTICA DE INVERSIÓN DE EJES ──
+    // ── CONFIGURACIÓN DE EJES DE PRECISIÓN ABSOLUTA (CORRECCIÓN HORIZONTAL/SQUASH) ──
     _onDeviceOrientation(event) {
       if (!this.giroscopioActivo || this.faseTransicion !== 'quieto') return;
 
@@ -568,22 +566,23 @@
 
       let orientacionPantalla = window.orientation || 0;
 
-      // FIX: Inversión de Alpha (-alpha) para sincronizar paneo natural izquierda-derecha
+      // RE-INGENIERÍA MATEMÁTICA DE EJES (Sincronización natural de paneo a la izquierda y derecha)
       if (orientacionPantalla === 90) {
-        this.lonGiro = -alpha + gamma;
-        this.latGiro = beta - 90;
+        this.targetLon = -alpha - beta;
+        this.targetLat = -gamma - 45;
       } else if (orientacionPantalla === -90) {
-        this.lonGiro = -alpha - gamma;
-        this.latGiro = -beta - 90;
+        this.targetLon = -alpha + beta;
+        this.targetLat = gamma - 45;
       } else if (orientacionPantalla === 180) {
-        this.lonGiro = -alpha;
-        this.latGiro = -beta;
+        this.targetLon = -alpha + gamma;
+        this.targetLat = -beta - 45;
       } else {
-        this.lonGiro = -alpha + gamma;
-        this.latGiro = beta - 60; 
+        // Vertical estándar (Portrait de iPhone o Android de gama alta)
+        this.targetLon = -alpha - gamma; 
+        this.targetLat = beta - 70; // Ángulo de mirada cómodo al frente
       }
 
-      this.lonGiro = ((this.lonGiro % 360) + 360) % 360;
+      this.targetLon = ((this.targetLon % 360) + 360) % 360;
     }
 
     _iniciarEnMovil() {
@@ -807,7 +806,7 @@
         this.cameraFOV = THREE.MathUtils.lerp(this.cameraFOV, 73, 0.08);
         this.matPrincipal.opacity = 1 - smooth;
         this.matClon.opacity      = smooth;
-        if (this.transitionProgress >= 1) this.finalizarDisolvencia();
+        if (this.transitionProgress >= 1) this.finalivalDisolvencia || this.finalizarDisolvencia();
       } else if (this.faseTransicion === 'zoom_out') {
         this.cameraFOV = THREE.MathUtils.lerp(this.cameraFOV, 75, 0.06);
         if (Math.abs(this.cameraFOV - 75) < 0.1) {
@@ -820,9 +819,21 @@
       this.camera.fov = this.cameraFOV;
       this.camera.updateProjectionMatrix();
 
+      // ── MÓDULO CINEMÁTICO SUAVE CON FILTRO DE PASO BAJO (CERO TIRONES) ──
       if (this.giroscopioActivo && this.faseTransicion === 'quieto') {
-        this.lon = this.lonGiro + this.offsetLon;
-        this.lat = this.latGiro + this.offsetLat;
+        // El valor real de la cámara corre de forma amortiguada (0.07) hacia el target + offset del dedo
+        const targetCalculadoLon = this.targetLon + this.offsetLon;
+        const targetCalculadoLat = this.targetLat + this.offsetLat;
+
+        // Interpolación lineal esférica simplificada para evitar saltos en el límite de los 360°
+        let diffLon = targetCalculadoLon - this.lon;
+        while (diffLon < -180) diffLon += 360;
+        while (diffLon > 180) diffLon -= 360;
+        
+        // Amortiguación cinemática constante (0.07 es el punto dulce de suavizado)
+        this.lon += diffLon * 0.07;
+        this.lat += (targetCalculadoLat - this.lat) * 0.07;
+        
       } else if (this.autoRotar && this.faseTransicion === 'quieto') {
         this.lon += (this.config.velocidadRotacion || 0.05);
       }
@@ -866,7 +877,7 @@
       widget.setAttribute('data-config', configPathStandalone);
       wrap.appendChild(widget);
 
-      inyectarDependencias(() => {
+      inyectarDependencies(() => {
         new OMHWidget360(widget, { autoIniciar: true });
       });
 
@@ -878,5 +889,8 @@
       });
     }
   });
+
+  // Alias helper por diferencias en nombres de llamadas asíncronas
+  function inyectarDependencies(cb) { inyectarDependencias(cb); }
 
 })();
