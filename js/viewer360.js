@@ -1,5 +1,5 @@
 /**
- * viewer360.js — Motor OMH Estudio (V14.5 - Fix Definitivo de Eje Horizontal Invertido)
+ * viewer360.js — Motor OMH Estudio (V14.5 - Fix Definitivo de Ejes y Calibración de Giroscopio)
  */
 (function () {
   'use strict';
@@ -150,11 +150,14 @@
       this.siguienteEscenaID  = null;
 
       this.giroscopioActivo   = false;
+      this.calibrandoGiroscopio = false; // Flag para evitar el salto inicial
       this.targetLon          = 0; 
       this.targetLat          = 0;
       this.offsetLon          = 0; 
       this.offsetLat          = 0;
 
+      // Vincular el evento una sola vez para control de RAM
+      this._onDeviceOrientationBind = this._onDeviceOrientation.bind(this);
       this._textureCache = new Map();
 
       this.construirDOM();
@@ -174,7 +177,7 @@
       }
       const loader = new THREE.TextureLoader();
       loader.load(url, tex => {
-        tex.minFilter     = THREE.LinearFilter; 
+        tex.minFilter = THREE.LinearFilter; 
         tex.generateMipmaps = false;
         this._textureCache.set(url, tex);
         callback(tex);
@@ -530,46 +533,53 @@
     _encenderGiroscopio() {
       this.giroscopioActivo = true;
       this.autoRotar = false;
+      this.calibrandoGiroscopio = true;
       
       document.getElementById('btn-rot-' + this.id).classList.remove('activo');
       document.getElementById('btn-giro-' + this.id).classList.add('activo');
 
-      this.offsetLon = this.lon;
-      this.offsetLat = this.lat;
-      this.targetLon = 0;
-      this.targetLat = 0;
-
-      window.removeEventListener('deviceorientation', this._onDeviceOrientation);
-      window.addEventListener('deviceorientation', e => this._onDeviceOrientation(e), false);
+      window.removeEventListener('deviceorientation', this._onDeviceOrientationBind);
+      window.addEventListener('deviceorientation', this._onDeviceOrientationBind, false);
     }
 
-    // ── FIX DEFINITIVO DE INVERSIÓN: Signo positivo en el cálculo horizontal ──
+    // ── CORRECCIÓN MATEMÁTICA DEFINITIVA DE EJES ──
     _onDeviceOrientation(event) {
       if (!this.giroscopioActivo || this.faseTransicion !== 'quieto') return;
 
-      let alpha = event.alpha ? event.alpha : 0; 
-      let beta  = event.beta  ? event.beta  : 0; 
-      let gamma = event.gamma ? event.gamma : 0; 
+      let alpha = event.alpha || 0; 
+      let beta  = event.beta  || 0; 
+      let gamma = event.gamma || 0; 
 
       let orientacionPantalla = window.orientation || 0;
+      let rawLon = 0;
+      let rawLat = 0;
 
+      // Extraemos puramente el giro horizontal sin cruzar la inclinación para evitar temblores
       if (orientacionPantalla === 90) {
-        this.targetLon = alpha + beta;
-        this.targetLat = gamma;
+        rawLon = alpha;
+        rawLat = -gamma;
       } else if (orientacionPantalla === -90) {
-        this.targetLon = alpha - beta;
-        this.targetLat = -gamma;
-      } else if (orientacionPantalla === 180) {
-        this.targetLon = alpha - gamma;
-        this.targetLat = -beta;
+        rawLon = alpha;
+        rawLat = gamma;
       } else {
-        // Vertical estándar. Alpha se suma (+) para coincidir con la esfera real
-        this.targetLon = alpha + gamma; 
-        this.targetLat = beta - 70; 
+        // Celular parado en vertical (Portrait)
+        rawLon = alpha;
+        rawLat = beta - 90; 
       }
 
-      this.targetLat = Math.max(-80, Math.min(80, this.targetLat));
-      this.targetLon = ((this.targetLon % 360) + 360) % 360;
+      // LA INVERSIÓN FINAL: 360 menos el giro obliga a la vista a empatar con el movimiento real
+      this.targetLon = 360 - rawLon;
+      
+      // CANDADO DE SEGURIDAD VERTICAL: Impide que de vueltas hacia el techo
+      this.targetLat = Math.max(-80, Math.min(80, rawLat));
+
+      // CALIBRACIÓN INICIAL INVISIBLE (Evita que el cuarto brinque al prender el botón)
+      if (this.calibrandoGiroscopio) {
+        this.offsetLon = this.lon - this.targetLon;
+        this.offsetLat = this.lat - this.targetLat;
+        this.calibrandoGiroscopio = false;
+        return;
+      }
     }
 
     _iniciarEnMovil() {
@@ -677,9 +687,9 @@
       const datos = this.config.escenas[this.escenaActual];
       document.getElementById('titulo-' + this.id).textContent = datos.tituloEscena || '';
       
+      // Aseguramos que al entrar al otro cuarto no haya un salto de cámara
       if (this.giroscopioActivo) {
-        this.offsetLon = this.lon;
-        this.offsetLat = this.lat;
+        this.calibrandoGiroscopio = true; 
       }
 
       this.faseTransicion = 'zoom_out';
@@ -814,6 +824,7 @@
         while (diffLon < -180) diffLon += 360;
         while (diffLon > 180) diffLon -= 360;
         
+        // Mantengo el amortiguamiento de 0.15: Rápido pero elimina los temblores microoscópicos
         this.lon += diffLon * 0.15;
         this.lat += (targetCalculadoLat - this.lat) * 0.15;
         
