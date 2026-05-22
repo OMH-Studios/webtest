@@ -1,16 +1,14 @@
 /**
- * viewer360.js — Motor OMH Estudio (V14.3 - Ejes de Giroscopio Corregidos y Limitados)
+ * viewer360.js — Motor OMH Estudio (V14.4 - Giroscopio Ágil y Ejes Corregidos)
  */
 (function () {
   'use strict';
 
-  // ─── DETECCIÓN MÓVIL ────────────────────────────────────────────────────────
   function isMobile() {
     if (window.matchMedia && window.matchMedia('(pointer: coarse)').matches) return true;
     return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
   }
 
-  // ─── MODO STANDALONE: detectar si esta pestaña fue abierta por móvil ────────
   function detectarModoStandalone() {
     const params = new URLSearchParams(window.location.search);
     return params.get('v360frame') || params.get('v360fs') || null; 
@@ -43,7 +41,6 @@
     document.head.appendChild(css);
   }
 
-  // ─── INYECCIÓN DE DEPENDENCIAS ──────────────────────────────────────────────
   function inyectarDependencias(callback) {
     if (document.getElementById('v360-styles')) {
       if (window.THREE) return callback();
@@ -62,7 +59,6 @@
       .v360-canvas-wrap.splash-blur { filter: blur(15px) brightness(0.5); transition: filter 1.5s ease-in-out; }
       .v360-canvas-wrap.motion-blur { filter: blur(4px) brightness(0.95); transition: filter 0.4s ease-in-out; }
       
-      /* HUD Superior */
       .v360-hud { position: absolute; top: 0; left: 0; right: 0; padding: 1rem 1.2rem; background: linear-gradient(to bottom, rgba(0,0,0,0.85), transparent); display: flex; justify-content: space-between; align-items: center; gap: 10px; z-index: 10; pointer-events: none; opacity: 0; transition: opacity 0.8s ease; }
       .v360-hud.visible { opacity: 1; }
       
@@ -80,7 +76,6 @@
 
       .v360-btn-fs { display: flex; }
       .v360-btn-giro { display: none; }
-      .v360-btn-salir { display: none; } 
       
       @media (pointer: coarse) { 
         .v360-btn-fs { display: none !important; } 
@@ -89,13 +84,11 @@
         .v360-hud-titulo { max-width: 110px; }
       }
       
-      /* Panel de Ficha Comercial */
       .v360-ficha-panel { position: absolute; top: 70px; left: 1.2rem; z-index: 90; background: rgba(10,10,10,0.96); border: 1px solid rgba(255,255,255,0.12); border-radius: 12px; padding: 1.2rem; width: 260px; pointer-events: all; display: none; backdrop-filter: blur(10px); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
       .v360-ficha-titulo { font-family: var(--v360-font-title, 'Lexend Tera', sans-serif); font-size: 0.65rem; color: var(--v360-color-primario, #0178ff); margin-bottom: 0.8rem; letter-spacing: 0.1em; text-transform: uppercase; }
       .v360-ficha-item { margin-bottom: 0.7rem; font-size: 0.72rem; line-height: 1.4; color: rgba(255,255,255,0.85); }
       .v360-ficha-label { font-size: 0.55rem; text-transform: uppercase; letter-spacing: 0.05em; color: rgba(255,255,255,0.4); display: block; margin-bottom: 1px; }
 
-      /* Splash Screen */
       .v360-splash { position: absolute; inset: 0; z-index: 30; background: linear-gradient(135deg, rgba(0,0,0,0.5), rgba(0,0,0,0.2)); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem; box-sizing: border-box; text-align: center; transition: opacity 1s, visibility 1s; }
       .v360-splash-overlay { position: absolute; inset: 0; background: var(--v360-color-primario, #0178ff); opacity: 0.08; z-index: -1; }
       .v360-splash-logo { max-height: 50px; max-width: 200px; object-fit: contain; margin-bottom: 1.5rem; display: none; }
@@ -108,7 +101,6 @@
       .v360-maps-splash-btn:hover { background: #4caf50; border-color: transparent; transform: scale(1.1); }
       .v360-splash.oculto { opacity: 0; pointer-events: none; visibility: hidden; }
 
-      /* Minimap */
       .v360-minimap-wrapper { position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%); z-index: 10; display: flex; flex-direction: column; align-items: center; gap: 0.5rem; pointer-events: none; width: 90%; max-width: max-content; opacity: 0; transition: opacity 0.8s ease; }
       .v360-minimap-wrapper.visible { opacity: 1; }
       .v360-mm-toggle { padding: 0 12px; height: 24px; background: rgba(0,0,0,0.8); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; color: var(--v360-color-primario, #0178ff); font-size: 0.55rem; font-weight: 700; letter-spacing: 0.12em; display: flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer; pointer-events: all; backdrop-filter: blur(10px); }
@@ -120,14 +112,12 @@
       .v360-mm-label { font-size: 0.58rem; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255,255,255,0.4); white-space: nowrap; }
       .v360-mm-escena.activa .v360-mm-label { color: rgba(255,255,255,0.9); font-weight: 600; }
 
-      /* Hotspots */
       .v360-hotspot-layer { position: absolute; inset: 0; z-index: 5; pointer-events: none; opacity: 0; transition: opacity 0.6s ease-in-out; }
       .v360-hotspot { position: absolute; pointer-events: all; cursor: pointer; transform: translate(-50%, -50%); display: flex; align-items: center; justify-content: center; transition: transform 0.2s ease; }
       .v360-hotspot:hover { transform: translate(-50%, -50%) scale(1.15) !important; }
       .v360-tooltip { position: absolute; background: rgba(10,10,10,0.96); color: #fff; padding: 0.75rem 1rem; border-radius: 8px; border: 1px solid rgba(255,255,255,0.12); max-width: 260px; pointer-events: none; opacity: 0; transition: opacity 0.2s ease; z-index: 20; transform: translate(-50%, calc(-100% - 15px)); line-height: 1.4; }
       .v360-editor-panel { position: absolute; top: 80px; right: 1.5rem; z-index: 100; background: rgba(8,8,8,0.95); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 1.2rem; width: 230px; pointer-events: all; display: none; }
-
-      /* Spinner */
+      
       .v360-spinner { position: absolute; bottom: 2rem; right: 2rem; z-index: 50; display: flex; align-items: center; gap: 10px; color: rgba(255,255,255,0.6); font-size: 0.55rem; letter-spacing: 0.15em; text-transform: uppercase; background: rgba(0,0,0,0.6); padding: 6px 14px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.08); opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
       .v360-spin-ring { width: 12px; height: 12px; border: 1.5px solid rgba(255,255,255,0.2); border-top-color: var(--v360-color-primario, #0178ff); border-radius: 50%; animation: v360spin 0.8s linear infinite; }
       @keyframes v360spin { to { transform: rotate(360deg); } }
@@ -140,7 +130,6 @@
     document.head.appendChild(script);
   }
 
-  // ────────────────────────────────────────────────────────────────────────────
   class OMHWidget360 {
     constructor(contenedor, opcionesExtra) {
       this.contenedor    = contenedor;
@@ -160,7 +149,6 @@
       this.transitionProgress = 0;
       this.siguienteEscenaID  = null;
 
-      // VARIABLES PARA GIROSCOPIO DE ALTA PRECISIÓN CALIBRADO
       this.giroscopioActivo   = false;
       this.targetLon          = 0; 
       this.targetLat          = 0;
@@ -330,7 +318,7 @@
       wrap.appendChild(this.renderer.domElement);
 
       const geo = new THREE.SphereGeometry(500, 60, 40);
-      geo.scale(-1, 1, 1);
+      geo.scale(-1, 1, 1); // ESTO VOLTEA EL EJE X VISUALMENTE
 
       this.matPrincipal   = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 1 });
       this.spherePrincipal = new THREE.Mesh(geo, this.matPrincipal);
@@ -555,35 +543,33 @@
       window.addEventListener('deviceorientation', e => this._onDeviceOrientation(e), false);
     }
 
-    // ── RE-INGENIERÍA ABSOLUTA DE MATRICES DE GIRO (FIX ARRIBA/ABAJO + ESCOFINAS DE DIRECCIÓN) ──
+    // ── FIX FINAL DE EJES INVERTIDOS Y CANDADOS DE LIMITACIÓN ──
     _onDeviceOrientation(event) {
       if (!this.giroscopioActivo || this.faseTransicion !== 'quieto') return;
 
-      let alpha = event.alpha ? event.alpha : 0; // Eje Z (Norte/Brújula)
-      let beta  = event.beta  ? event.beta  : 0; // Eje X (Frente/Atrás)
-      let gamma = event.gamma ? event.gamma : 0; // Eje Y (Izquierda/Derecha)
+      let alpha = event.alpha ? event.alpha : 0; 
+      let beta  = event.beta  ? event.beta  : 0; 
+      let gamma = event.gamma ? event.gamma : 0; 
 
       let orientacionPantalla = window.orientation || 0;
 
-      // CALIBRACIÓN DE EJES PARA EVITAR ROTACIONES INVERTIDAS
+      // Inversión absoluta (-alpha) para empatar el compás real con la esfera volteada (scale -1)
       if (orientacionPantalla === 90) {
-        this.targetLon = alpha - beta;
+        this.targetLon = -alpha - beta;
         this.targetLat = gamma;
       } else if (orientacionPantalla === -90) {
-        this.targetLon = alpha + beta;
+        this.targetLon = -alpha + beta;
         this.targetLat = -gamma;
       } else if (orientacionPantalla === 180) {
-        this.targetLon = alpha - gamma;
+        this.targetLon = -alpha + gamma;
         this.targetLat = -beta;
       } else {
-        // Vertical estándar (Retrato - iPhone / Android)
-        // FIX PRINCIPAL: Ajuste del signo de Alpha (+alpha) para sincronizar paneo real a la derecha
-        this.targetLon = alpha + gamma; 
-        this.targetLat = beta - 70; // Centrado cómodo de mirada al horizonte físico
+        // Modo Portrait (Vertical): Corregido de raíz.
+        this.targetLon = -alpha - gamma; 
+        this.targetLat = beta - 70; 
       }
 
-      // CANDADO DE SEGURIDAD ABSOLUTO: Evitar que la esfera gire más de una vez en vertical
-      // Limitamos el target vertical estrictamente entre -80° y 80° para que no se "vaya de paso"
+      // CANDADO VERTICAL: Evita que el usuario dé vueltas completas sobre sí mismo al mirar al techo/piso
       this.targetLat = Math.max(-80, Math.min(80, this.targetLat));
 
       this.targetLon = ((this.targetLon % 360) + 360) % 360;
@@ -823,7 +809,7 @@
       this.camera.fov = this.cameraFOV;
       this.camera.updateProjectionMatrix();
 
-      // ── MÓDULO CINEMÁTICO SUAVE CON CANDADO DE LATITUD (PASO BAJO) ──
+      // ── MÓDULO MATEMÁTICO RESPONSIVO (FACTOR 0.15 PARA ELIMINAR EL LAG/ARRASTRE) ──
       if (this.giroscopioActivo && this.faseTransicion === 'quieto') {
         const targetCalculadoLon = this.targetLon + this.offsetLon;
         const targetCalculadoLat = this.targetLat + this.offsetLat;
@@ -832,15 +818,15 @@
         while (diffLon < -180) diffLon += 360;
         while (diffLon > 180) diffLon -= 360;
         
-        // Amortiguación de velocidad constante (Seda total)
-        this.lon += diffLon * 0.07;
-        this.lat += (targetCalculadoLat - this.lat) * 0.07;
+        // El factor subió a 0.15 para una respuesta inmediata pero estable
+        this.lon += diffLon * 0.15;
+        this.lat += (targetCalculadoLat - this.lat) * 0.15;
         
       } else if (this.autoRotar && this.faseTransicion === 'quieto') {
         this.lon += (this.config.velocidadRotacion || 0.05);
       }
 
-      // DOBLE CANDADO FÍSICO DE SEGURIDAD EN EL RENDERIZADO VERTICAL
+      // CANDADO DE SEGURIDAD ABSOLUTO PARA EVITAR ROTACIONES INVERTIDAS
       this.lat = Math.max(-83, Math.min(83, this.lat));
 
       const phi   = THREE.MathUtils.degToRad(90 - this.lat);
@@ -864,7 +850,6 @@
     }
   }
 
-  // ─── BOOTSTRAP ──────────────────────────────────────────────────────────────
   document.addEventListener('DOMContentLoaded', () => {
     const configPathStandalone = detectarModoStandalone();
 
