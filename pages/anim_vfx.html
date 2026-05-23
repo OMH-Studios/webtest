@@ -79,6 +79,35 @@
   };
 </script>
 
+<!-- ===================================================================
+    CARRUSEL 3D, LLAMADA A ARCHIVO JS PARA INSERTARLO EN LA PÁGINA
+     ===================================================================-->
+
+     <div id="carrusel-dinamico"></div>
+
+    <script>
+      window.carruselConfig = {
+        label: "Fotogramas y concepto",
+        titleHtml: "Visual <em>Breackdown</em>",
+        bg: "negro", 
+        padding: "4rem 0",
+        speed: 0.0008,
+        images: [ // <-- Asegúrate de usar 'images' exactamente como se mapea en el JS
+          "../assets/anim_vfx/vfx01.jpg",
+          "../assets/anim_vfx/vfx07.jpg",
+          "../assets/anim_vfx/vfx03.jpg",
+          "../assets/anim_vfx/vfx09.jpg",
+          "../assets/anim_vfx/vfx05.jpg",
+          "../assets/anim_vfx/vfx06.jpg",
+          "../assets/anim_vfx/vfx02.jpg",
+          "../assets/anim_vfx/vfx08.jpg",
+          "../assets/anim_vfx/vfx04.jpg",
+          "../assets/anim_vfx/vfx10.jpg",
+          "../assets/anim_vfx/vfx11.jpg"
+        ]
+      };
+    </script>
+
 <!-- ═══════════════════════════════════════════════════════════════
      SECCIÓN YOUTUBE
      ─────────────────────────────────────────────────────────────
@@ -150,6 +179,7 @@
 <script src="../js/navbar.js"></script>
 <script src="../js/hero.js"></script>
 <script src="../js/gridproyectos.js"></script>
+<script src="../js/carrusel-3d.js"></script>
 <script src="../js/youtubelink.js"></script>
 <script src="../js/botonera.js"></script>
 <script src="../js/footer.js"></script>
