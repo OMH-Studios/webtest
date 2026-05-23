@@ -49,32 +49,58 @@
     label: "Conoce cada rincón", 
     title: "Tours 360 &<br>Fotografía", 
     videoPath: "../assets/tours_360/tours360_bg.mp4", 
-    overlayOpacity: 0.4
+    overlayOpacity: 0.6
   };
 </script>
 
 <!-- ===================================================================
-    GRID DE PROYECTOS, UN PEQUEÑO TEXTO Y DOS IMAGENES, LLAMADA A ARCHIVO JS PARA INSERTARLO EN LA PÁGINA
+    VISOR TIPO FRAMER, LLAMADA A ARCHIVO JS PARA INSERTARLO EN LA PÁGINA
      ===================================================================-->
 
-<div id="grid-proyectos-dinamico"></div>
+<div id="seccion-framer-dinamico"></div>
 
 <script>
-  window.gridProyectosConfig = {
-    introTitle: "Espacios Reales, <em>Experiencias Virtuales</em>", 
-    introSubtitle: "Llevamos el mundo físico al digital para que veas cada rincon de tu espacio con gemelos digitales interactivos y recorridos envolventes de alta fidelidad.",
+  window.framerConfig = {
+    titulo: "CAPTURA TUS <em>ESPACIOS A DETALLE</em>", 
+    subtitulo: "FOTO Y RECORRIDOS 360",
+    bg: "negro",                
+    paddingSimetrico: "4rem 0",  
     
-    proyectos: [
+    bloques: [
       {
-        category: "Showroom Virtual",
-        title: "Paseo Pitahaya - Atlas Desarrollos",
-        mediaPath: "../assets/tours_360/360_01.jpg"
+        title: "Fotografía Inmobiliaria",
+        desc: "Capturamos la esencia y el potencial de cada espacio con tomas de alta calidad, iluminación balanceada y encuadres estratégicos. Resaltamos los mejores atributos de tu propiedad para generar una primera impresión de impacto que acelere tus ventas o rentas.",
+        img: "../assets/tours_360/360_03.jpg"
       },
       {
-        category: "Google Street View",
-        title: "Recorrido Comercial OMH",
-        mediaPath: "../assets/tours_360/360_02.jpg"
+        title: "Fotografía 360°",
+        desc: "Creamos experiencias interactivas e inmersivas completas, desde la captura a nivel de piso hasta el desarrollo del recorrido web. Integramos tus espacios directamente en Google Maps para potenciar tu presencia digital y permitir visitas virtuales desde cualquier lugar.",
+        img: "../assets/tours_360/360_04.jpg"
+      },
+      {
+        title: "Tomas aereas",
+        desc: "Elevamos la perspectiva de tus proyectos mediante capturas aéreas de alta resolución y panorámicas en 360 grados. Mostramos el entorno ideal, la ubicación exacta y la verdadera magnitud de la propiedad desde ángulos espectaculares e innovadores.",
+        img: "../assets/tours_360/360_05.jpg"
       }
+    ]
+  };
+</script>
+
+<!-- ===================================================================
+    BLOQUE DE TEXTO, RESUMEN DE HISTORIA, LLAMADA A ARCHIVO JS PARA INSERTARLO EN LA PÁGINA
+     ===================================================================-->
+
+<div id="texto-bloque-dinamico"></div>
+
+<script>
+  window.textBloqueConfig = {
+    label: "Explora nuestra Muestra Interactiva",
+    titleHtml: "Recorrido<em>360°</em>",
+    bg: "negro", // Fondo gris oscuro para hacer juego
+    padding: "3.5rem 0",
+    paragraphs: [
+      "Vive la experiencia en primera persona y visita cada rincon de nuestros recorridos virtuales. Haz clic, navega libremente por cada rincón e interactúa con el espacio para comprobar cómo transformamos una propiedad en una visita digital completamente inmersiva.",
+      "¡Personaliza la experiencia a TU medida y la de tu proyecto!"
     ]
   };
 </script>
@@ -88,6 +114,32 @@
      data-config="../js/tours/tour-demo.js" 
      style="position: relative; display: block; width: 100%; max-width: 1100px; aspect-ratio: 16/9; margin: 0 auto 4rem auto; overflow: hidden; border-radius: 8px; border: 1px solid var(--gris-borde); background: #000;">
 </div>
+
+<!-- ===================================================================
+    GRID DE PROYECTOS, UN PEQUEÑO TEXTO Y DOS IMAGENES, LLAMADA A ARCHIVO JS PARA INSERTARLO EN LA PÁGINA
+     ===================================================================-->
+
+<div id="grid-proyectos-dinamico"></div>
+
+<script>
+  window.gridProyectosConfig = {
+    introTitle: "Precios, Extras y <em> Proyectos a la Medida</em>", 
+    introSubtitle: "Explora nuestras opciones base y complementa tu proyecto con servicios extra diseñados para hacer destacar tu propiedad. ¿Tienes un proyecto único o requerimientos especiales? Solicita una cotización personalizada y nuestro equipo adaptará una propuesta exclusivamente para ti.",
+    
+    proyectos: [
+      {
+        category: "Foto y captura 360°",
+        title: "Paquetes",
+        mediaPath: "../assets/tours_360/360_01.jpg"
+      },
+      {
+        category: "Añade extras a tu experiencia",
+        title: "Toppings",
+        mediaPath: "../assets/tours_360/360_02.jpg"
+      }
+    ]
+  };
+</script>
 
 <!-- ===================================================================
     BOTON DE REGRESAR AL INICIO
@@ -140,7 +192,9 @@
 
 <script src="../js/navbar.js"></script>
 <script src="../js/hero.js"></script>
+<script src="../js/seccion-framer.js"></script>
 <script src="../js/gridproyectos.js"></script>
+<script src="../js/textobloque.js"></script>
 <script src="../js/viewer360.js"></script>
 <script src="../js/botonera.js"></script>
 <script src="../js/footer.js"></script>
