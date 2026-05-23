@@ -39,7 +39,8 @@
             font-weight: 700;
             letter-spacing: 0.3em;
             text-transform: uppercase;
-            color: var(--rojo);
+            /* Reemplazo de rojo por el color de la subpágina */
+            color: var(--color-seccion);
             margin-bottom: 1.5rem;
             display: flex;
             align-items: center;
@@ -50,7 +51,8 @@
             display: block;
             width: 24px;
             height: 1px;
-            background: var(--rojo);
+            /* Reemplazo de rojo por el color de la subpágina */
+            background: var(--color-seccion);
           }
           .tech-title-din {
             font-family: 'Lexend Tera', sans-serif;
@@ -62,7 +64,8 @@
             margin-bottom: 4rem;
           }
           .tech-title-din em {
-            color: var(--rojo);
+            /* Corregido: Ahora hereda directamente el color de la subpágina para que no se quede blanco */
+            color: var(--color-seccion);
             font-style: normal;
           }
           .tech-grid-din {
@@ -110,10 +113,8 @@
           @media (max-width: 600px) {
             .tech-section { padding: 4rem 0; }
             .tech-container { padding: 0 1.2rem; }
-            /* Cambio clave: 1 sola columna para smartphones */
             .tech-grid-din { grid-template-columns: 1fr; }
             .tech-title-din { margin-bottom: 2.5rem; }
-            /* Reducción de padding interno en cada tarjeta para no alargar demasiado el scroll */
             .tech-item-din { padding: 2rem 1rem; }
           }
         </style>
@@ -146,18 +147,22 @@
       </section>
     `;
 
-    // 4. Vincular con el Cursor Rojo de OMH si existe en la página
+    // 4. Vincular con el Cursor Custom de OMH si existe en la página
     const cursorCustom = document.getElementById('cursor');
     const ringCustom = document.getElementById('cursor-ring');
     if (cursorCustom && ringCustom) {
       contenedor.querySelectorAll('.tech-item-din').forEach(el => {
         el.addEventListener('mouseenter', () => {
           cursorCustom.style.transform = 'translate(-50%,-50%) scale(2)';
-          ringCustom.style.borderColor = 'rgba(244,212,49,0.5)';
+          // En hover, el anillo del cursor adopta una versión sutil del color de la subpágina
+          ringCustom.style.borderColor = 'var(--color-seccion)';
+          ringCustom.style.opacity = '0.7';
         });
         el.addEventListener('mouseleave', () => {
           cursorCustom.style.transform = 'translate(-50%,-50%) scale(1)';
-          ringCustom.style.borderColor = 'rgba(204,0,0,0.4)';
+          // Al salir, vuelve a su estado base dinámico
+          ringCustom.style.borderColor = 'var(--color-seccion)';
+          ringCustom.style.opacity = '0.4';
         });
       });
     }
@@ -166,7 +171,6 @@
     if (typeof observer !== "undefined" && observer.observe) {
       contenedor.querySelectorAll('.reveal').forEach(el => observer.observe(el));
     } else {
-      // Fallback si el observer global tarda en cargar
       const localObserver = new IntersectionObserver(entries => {
         entries.forEach(e => {
           if (e.isIntersecting) {
