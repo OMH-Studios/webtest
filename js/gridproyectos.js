@@ -1,5 +1,6 @@
 // Archivo: js/gridproyectos.js
 // Componente modular y paramétrico para el Grid de Proyectos de OMH Estudio
+// MODIFICADO: Adaptación automática al tamaño de la imagen/video
 
 document.addEventListener("DOMContentLoaded", () => {
     const gridContainer = document.getElementById("grid-proyectos-dinamico");
@@ -18,12 +19,14 @@ document.addEventListener("DOMContentLoaded", () => {
             let fondoHtml = "";
 
             if (isVideo) {
+                // MODIFICADO: Agregadas clases para manejo del hover y removida la opacidad inicial baja
                 fondoHtml = `
-                    <video autoplay muted loop playsinline class="card-img-bg">
+                    <video autoplay muted loop playsinline class="card-media-bg">
                         <source src="${proj.mediaPath}" type="video/mp4">
                     </video>`;
             } else {
-                fondoHtml = `<img src="${proj.mediaPath}" class="card-img-bg" alt="${proj.title}">`;
+                // MODIFICADO: Agregadas clases para manejo del hover y removida la opacidad inicial baja
+                fondoHtml = `<img src="${proj.mediaPath}" class="card-media-bg" alt="${proj.title}">`;
             }
 
             tarjetasHtml += `
@@ -51,16 +54,43 @@ document.addEventListener("DOMContentLoaded", () => {
                 .intro-divider { width: 60px; height: 2px; background: var(--color-seccion); margin: 0 auto 3rem auto; }
 
                 /* Grid Estructura */
-                .media-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 2.5rem; margin-bottom: 2rem; }
+                .media-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 2.5rem; margin-bottom: 2rem; align-items: start; /* Asegura que las tarjetas se alineen al inicio si tienen tamaños diferentes */ }
                 
-                /* Tarjeta Individual */
-                .media-card { background: var(--gris-medio); aspect-ratio: 16/10; border: 1px solid var(--gris-borde); overflow: hidden; position: relative; display: flex; flex-direction: column; justify-content: flex-end; transition: border-color 0.4s ease; }
-                .media-card .card-img-bg { width: 100%; height: 100%; object-fit: cover; opacity: 0.5; position: absolute; inset: 0; z-index: 1; transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s; }
+                /* Tarjeta Individual - MODIFICADO */
+                .media-card { background: var(--gris-medio); /* Removido aspect-ratio */ border: 1px solid var(--gris-borde); overflow: hidden; position: relative; display: flex; flex-direction: column; justify-content: flex-end; transition: border-color 0.4s ease; cursor: pointer; /* Agregado cursor: pointer ya que no tienen enlace */ }
+                
+                /* Imagen/Video de fondo - MODIFICADO */
+                .media-card .card-media-bg { 
+                    position: relative; /* Cambiado de absolute a relative para definir el tamaño de la tarjeta */
+                    width: 100%; 
+                    height: auto; /* Permite que la altura se adapte a la imagen/video */
+                    display: block; /* Elimina espacio en blanco inferior en imágenes */
+                    z-index: 1; 
+                    opacity: 1; /* Eliminado el 0.5 para que la imagen se vea bien desde el principio */
+                    transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+                }
+                
+                /* Efectos de Hover - MODIFICADO */
                 .media-card:hover { border-color: var(--color-seccion); }
-                .media-card:hover .card-img-bg { transform: scale(1.05); opacity: 0.85; }
+                /* El zoom se aplica a la imagen, y el contenedor se expande/contrae */
+                .media-card:hover .card-media-bg { transform: scale(1.05); }
 
-                /* Información en Hover */
-                .media-overlay-info { position: relative; z-index: 2; width: 100%; padding: 2.5rem 2rem; box-sizing: border-box; background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.4) 70%, transparent 100%); opacity: 0; transform: translateY(15px); transition: opacity 0.35s ease, transform 0.35s cubic-bezier(0.16, 1, 0.3, 1); text-align: left; }
+                /* Información en Hover - MODIFICADO */
+                .media-overlay-info { 
+                    position: absolute; /* Mantenemos absoluto para posicionarlo sobre la imagen */
+                    inset: 0; /* Cubre todo el área de la tarjeta */
+                    z-index: 2; 
+                    padding: 2.5rem 2rem; 
+                    box-sizing: border-box; 
+                    background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.4) 70%, transparent 100%); 
+                    opacity: 0; 
+                    transform: translateY(15px); 
+                    transition: opacity 0.35s ease, transform 0.35s cubic-bezier(0.16, 1, 0.3, 1); 
+                    text-align: left;
+                    display: flex; /* Para alinear el texto al final */
+                    flex-direction: column;
+                    justify-content: flex-end;
+                }
                 .media-card:hover .media-overlay-info { opacity: 1; transform: translateY(0); }
                 .media-cat-text { font-family: 'Raleway', sans-serif; font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--color-seccion); margin-bottom: 0.4rem; font-weight: 700; }
                 .media-title-text { font-family: 'Lexend Tera', sans-serif; font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--blanco); margin: 0; }
