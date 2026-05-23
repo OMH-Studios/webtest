@@ -108,7 +108,13 @@
             .tech-grid-din { grid-template-columns: repeat(2, 1fr); }
           }
           @media (max-width: 600px) {
-            .tech-section { padding: 5rem 0; }
+            .tech-section { padding: 4rem 0; }
+            .tech-container { padding: 0 1.2rem; }
+            /* Cambio clave: 1 sola columna para smartphones */
+            .tech-grid-din { grid-template-columns: 1fr; }
+            .tech-title-din { margin-bottom: 2.5rem; }
+            /* Reducción de padding interno en cada tarjeta para no alargar demasiado el scroll */
+            .tech-item-din { padding: 2rem 1rem; }
           }
         </style>
       `;
