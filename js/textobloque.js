@@ -12,10 +12,11 @@
       label: "Historia",
       titleHtml: "Nuestro <em>Origen</em>",
       bg: "gris", // "gris" o "negro"
-      padding: "7rem 0", // ← Agregamos este valor por defecto (arriba y abajo)
-      paragraphs: [] // Array de strings (cada elemento es un párrafo)
+      padding: "7rem 0", // Arriba y abajo
+      paragraphs: [] // Array de strings
     }, window.textBloqueConfig);
 
+    // ✨ CORRECCIÓN: Mapeo de fondos usando variables globales heredadas del tema corporativo
     const colorFondo = config.bg === "negro" ? "var(--negro)" : "var(--gris-oscuro)";
 
     // 1. Inyectar Estilos CSS únicos para el bloque de texto
@@ -38,7 +39,8 @@
             font-weight: 700;
             letter-spacing: 0.3em;
             text-transform: uppercase;
-            color: var(--rojo);
+            /* ✨ CORRECCIÓN: Cambiado de var(--rojo) a var(--color-seccion) para herencia dinámica */
+            color: var(--color-seccion);
             margin-bottom: 1.5rem;
             display: flex;
             align-items: center;
@@ -49,7 +51,8 @@
             display: block;
             width: 24px;
             height: 1px;
-            background: var(--rojo);
+            /* ✨ CORRECCIÓN: Línea responde al color maestro de la subpágina */
+            background: var(--color-seccion);
           }
           .text-block-title {
             font-family: 'Lexend Tera', sans-serif;
@@ -61,7 +64,8 @@
             margin-bottom: 3.5rem;
           }
           .text-block-title em {
-            color: var(--rojo);
+            /* ✨ CORRECCIÓN: El énfasis <em> mutará según la sección activa */
+            color: var(--color-seccion);
             font-style: normal;
           }
           .text-block-body {
