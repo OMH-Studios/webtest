@@ -6,8 +6,8 @@ window.contactoGlobal = {
   email_link: "mailto:contacto@omhestudio.com",
   email_display: "contacto@omhestudio.com",
   instagram: "https://www.instagram.com/omh_estudio/",
-  tiktok: "https://www.tiktok.com/@omh.studios",
+  tiktok: "https://www.tiktok.com/@omh.estudio",
   youtube: "https://www.youtube.com/@omhestudio",
-  facebook: "https://www.facebook.com/omhstudioarq",
+  facebook: "https://www.facebook.com/omhestudiomx/",
   linkedin: "https://www.linkedin.com/company/omh-estudio/"
 };
