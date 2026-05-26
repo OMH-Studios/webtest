@@ -1103,31 +1103,82 @@ document.addEventListener("DOMContentLoaded", function() {
  FORMULARIO DE CONTACTO CON FORMSPREE, AGREGADO POR OSCAR
  ___________________________________________________________________-->
 
-<section id="contacto" style="padding: 80px 20px; max-width: 900px; margin: 0 auto; border-top: 1px solid #222;">
-    <h2 style="color: #fff; font-family: sans-serif; font-size: 1.5rem; letter-spacing: 2px; text-align: center; margin-bottom: 40px;">
-        ¿DUDAS? <span style="color: #ff0000;">¡PONTE EN CONTACTO!</span>
+<section id="contacto" style="padding: 80px 20px; max-width: 900px; margin: 0 auto; border-top: 1px solid var(--gris-borde, #222);">
+    <h2 style="color: var(--blanco, #fff); font-family: 'Lexend Tera', sans-serif; font-size: 1.5rem; letter-spacing: 2px; text-align: center; margin-bottom: 40px;">
+        ¿DUDAS? <span style="color: var(--rojo, #ff0000);">¡PONTE EN CONTACTO!</span>
     </h2>
     
+    <style>
+        /* ─── ESTILOS RESPONSIVOS DEL FORMULARIO ─── */
+        .omh-form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        /* En pantallas de móvil (Android/iOS pequeños), apila los inputs a 1 sola columna */
+        @media (max-width: 600px) {
+            .omh-form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Limpieza de los inputs para respetar el Color Maestro global */
+        .omh-input {
+            background: transparent;
+            border: 1px solid var(--gris-borde, #333);
+            color: var(--blanco, #fff);
+            padding: 15px;
+            font-family: 'Raleway', sans-serif;
+            font-size: 0.8rem;
+            width: 100%;
+            box-sizing: border-box;
+            transition: border-color 0.3s;
+        }
+        .omh-input:focus {
+            outline: none;
+            border-color: var(--color-seccion, #ff0000);
+        }
+
+        /* Botón integrado con las interacciones del estudio */
+        .omh-btn-submit {
+            background: var(--color-seccion, #fff);
+            color: var(--negro, #000);
+            border: none;
+            padding: 15px;
+            font-family: 'Lexend Tera', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            cursor: none; /* Interactúa con tu cursor global */
+            transition: transform 0.2s, box-shadow 0.2s, background 0.3s;
+            margin-top: 10px;
+            text-transform: uppercase;
+        }
+        .omh-btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(204,0,0,0.3);
+        }
+        .omh-btn-submit span {
+            color: var(--rojo, #ff0000);
+        }
+    </style>
+
     <form action="https://formspree.io/f/mojrgdvj" method="POST" style="display: flex; flex-direction: column; gap: 15px;">
         
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-            <input type="text" name="nombre" placeholder="NOMBRE" required 
-                   style="background: transparent; border: 1px solid #333; color: #fff; padding: 15px; font-family: sans-serif; font-size: 0.8rem;">
-            
-            <input type="email" name="_replyto" placeholder="TU EMAIL" required 
-                   style="background: transparent; border: 1px solid #333; color: #fff; padding: 15px; font-family: sans-serif; font-size: 0.8rem;">
+        <div class="omh-form-row">
+            <input type="text" name="nombre" class="omh-input" placeholder="NOMBRE" required>
+            <input type="email" name="_replyto" class="omh-input" placeholder="TU EMAIL" required>
         </div>
 
-        <input type="text" name="asunto" placeholder="ASUNTO" required 
-               style="background: transparent; border: 1px solid #333; color: #fff; padding: 15px; font-family: sans-serif; font-size: 0.8rem;">
+        <input type="text" name="asunto" class="omh-input" placeholder="ASUNTO" required>
 
-        <textarea name="mensaje" placeholder="¿EN QUE TE PODEMOS AYUDAR?" rows="4" required 
-                  style="background: transparent; border: 1px solid #333; color: #fff; padding: 15px; font-family: sans-serif; font-size: 0.8rem; resize: none;"></textarea>
+        <textarea name="mensaje" class="omh-input" placeholder="¿EN QUÉ TE PODEMOS AYUDAR?" rows="4" required style="resize: none;"></textarea>
 
         <input type="hidden" name="_subject" value="Nuevo contacto desde la web OMH">
 
-        <button type="submit" style="background: #fff; color: #000; border: none; padding: 15px; font-weight: bold; letter-spacing: 2px; cursor: pointer; transition: 0.3s; margin-top: 10px;">
-            ENVIAR<span>♥</span>
+        <button type="submit" class="omh-btn-submit">
+            ENVIAR <span>♥</span>
         </button>
     </form>
 </section>
