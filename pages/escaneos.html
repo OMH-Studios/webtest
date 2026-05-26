@@ -53,6 +53,24 @@
   };
 </script>
 
+<!-- 1. Div contenedor -->
+<div id="visor-splat-dinamico" style="padding: 2rem 5%;"></div>
+
+<!-- 2. Configuración -->
+<script>
+  window.visorSplatConfig = {
+    modelPath: "../assets/escaneos/auto.ply",
+    height: "65vh",
+    upVector: [0, -1, 0], 
+    subtitle: "EXTERIOR",
+    title: "Volkswagen ID.4",
+    // Configura tu cámara isométrica aquí:
+    defaultTheta: 0.8, // Gira el objeto sobre su propio eje
+    defaultPhi: 2.2,   // Como tu eje Y está invertido, > 1.57 es ver desde arriba.
+    defaultFov: 35     // FOV telefoto para aplanar la perspectiva y que se vea isométrico
+  };
+</script>
+
 <!-- ===================================================================
     GRID DE PROYECTOS, UN PEQUEÑO TEXTO Y DOS IMAGENES, LLAMADA A ARCHIVO JS PARA INSERTARLO EN LA PÁGINA
      ===================================================================-->
@@ -131,6 +149,9 @@
 
 <script src="../js/navbar.js"></script>
 <script src="../js/hero.js"></script>
+
+<script src="../js/visor-splat.js"></script>
+
 <script src="../js/gridproyectos.js"></script>
 <script src="../js/botonera.js"></script>
 <script src="../js/footer.js"></script>
