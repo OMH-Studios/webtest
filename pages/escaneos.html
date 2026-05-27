@@ -59,15 +59,52 @@
 <!-- 2. Configuración -->
 <script>
   window.visorSplatConfig = {
+    mode: "auto",
     modelPath: "../assets/escaneos/auto.ply",
-    height: "65vh",
-    upVector: [0, -1, 0], 
-    subtitle: "EXTERIOR",
-    title: "Volkswagen ID.4",
-    // Configura tu cámara isométrica aquí:
-    defaultTheta: 0.8, // Gira el objeto sobre su propio eje
-    defaultPhi: 2.2,   // Como tu eje Y está invertido, > 1.57 es ver desde arriba.
-    defaultFov: 35     // FOV telefoto para aplanar la perspectiva y que se vea isométrico
+    title: "Jetta A4 2001",
+    subtitle: "Volkswagen",
+    height: "80vh",
+    upVector: [0, -1, 0], // Mantiene la corrección de giro del auto
+    background: "#262626",      // Cambia el color del fondo aquí (puedes usar hex, rgb o var)
+    autoRotateSpeed: 2,      // Cambia la velocidad aquí (más alto es más rápido)
+    
+    // CÁMARA CORREGIDA A ISOMÉTRICO (Desde Arriba)
+    defaultTheta: 0.6, //Rotación
+    defaultPhi: 1.8,  //Inclinación
+    defaultFov: 30, //Apertura del lente
+    
+    cameraLimits: {
+      phiMin: 1.5,   // Ahora este es el límite de ABAJO (no dejes bajar más)
+      phiMax: 3.0,   // Ahora este es el límite de ARRIBA (no dejes subir más)
+      radiusMin: 5.5,  // Distancia mínima — ajustado para un carro de ~5m
+      radiusMax: 20.0, // Distancia máxima
+    },
+
+    // HOTSPOTS CON EMOJIS
+    hotspots: [
+      { 
+        id: "Ver motor", 
+        position: [0.0, 0.5, 4.0], //ANCHO  - ALTURA - LARGO
+        label: "Motor", 
+        icon: "../assets/escaneos/icon-motor.png",
+        image: "../assets/escaneos/motor.jpg",
+        text: "Detalle del motor."
+      },
+      { 
+        id: "Ver maletero", 
+        position: [0.0, 0.5, -4], 
+        label: "Cajuela", 
+        icon: "../assets/escaneos/icon-cajuela.png",
+        image: "../assets/escaneos/cajuela.jpg"
+      },
+      { 
+        id: "Ver interior", 
+        position: [0.0, -0.6, 0.1], 
+        label: "Interior 360°", 
+        icon: "../assets/escaneos/icon-interior.png",
+        url: "../tours/auto-interior.html" 
+      }
+    ]
   };
 </script>
 
@@ -150,7 +187,7 @@
 <script src="../js/navbar.js"></script>
 <script src="../js/hero.js"></script>
 
-<script src="../js/visor-splat.js"></script>
+<script type="module" src="../js/visor-splat/index.js"></script>
 
 <script src="../js/gridproyectos.js"></script>
 <script src="../js/botonera.js"></script>
