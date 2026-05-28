@@ -12,12 +12,13 @@ export const ICONS = {
   fov:      `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>`,
   info:     `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`,
   cursor:   `<svg viewBox="0 0 24 24"><path fill="none" stroke="rgba(255,255,255,0.45)" stroke-width="1.5" d="M4 4l7.07 17 2.51-7.39L21 11.07z"/></svg>`,
+  exterior: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10h18M5 10l1.5-4.5A2 2 0 0 1 8.4 4h7.2a2 2 0 0 1 1.9 1.5L19 10m-16 0v10h16V10M8 14v4m8-4v4"/></svg>`,
+  interior: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/><path d="M12 15v7M7.5 10l-6-4M16.5 10l6-4"/></svg>`,
+  gyro:     `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>`,
 };
 
 const CSS = `
   .omh-wrap { position: relative; width: 100%; max-width: 1400px; margin: 0 auto; overflow: hidden; background: var(--negro, #0a0a0a); border: 1px solid rgba(255,255,255,0.05); border-radius: 8px; }
-  
-  /* ── FIX PANTALLA COMPLETA & CURSORES ── */
   .omh-wrap.fullscreen { max-width: none; border-radius: 0; border: none; }
   .omh-wrap.fullscreen, .omh-wrap.fullscreen * { cursor: default !important; }
   .omh-wrap.fullscreen canvas { cursor: grab !important; }
@@ -49,6 +50,11 @@ const CSS = `
   .omh-divider { width: 1px; height: 16px; background: rgba(255,255,255,0.15); margin: 0 10px; transition: opacity 0.3s ease; }
   
   .omh-wrap.view-interior .splat-btn-hide { display: none !important; }
+  
+  /* Lógica para botón de Giroscopio */
+  .tour-btn-show { display: none !important; }
+  .omh-wrap.view-interior .tour-btn-show { display: flex !important; }
+  @media (min-width: 769px) { .mobile-only { display: none !important; } }
 
   .omh-btn-rect { pointer-events: auto; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); border: 1px solid rgba(255,255,255,0.15); border-radius: 2px; color: rgba(255,255,255,0.6); font-family: 'Lexend Tera', sans-serif; font-size: 0.55rem; letter-spacing: 0.15em; font-weight: bold; padding: 10px 16px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s ease; text-transform: uppercase; white-space: nowrap; }
   .omh-btn-rect svg { width: 14px; height: 14px; flex-shrink: 0; }
@@ -59,6 +65,21 @@ const CSS = `
   .omh-btn-sq { pointer-events: auto; width: 38px; height: 38px; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); border: 1px solid rgba(255,255,255,0.15); border-radius: 2px; color: rgba(255,255,255,0.6); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s ease; flex-shrink: 0; }
   .omh-btn-sq svg { width: 16px; height: 16px; }
   .omh-btn-sq:hover { border-color: rgba(255,255,255,0.5); color: #fff; }
+
+  /* ── CONVERTIR BOTONES A ICONOS EN MÓVIL ── */
+  @media (max-width: 768px) {
+    .btn-text { display: none !important; }
+    .omh-btn-rect { padding: 0 !important; width: 36px !important; height: 36px !important; justify-content: center !important; }
+    .omh-btn-rect svg { margin: 0 !important; }
+    .omh-ui-layer { padding: 20px; }
+    .omh-top-right { top: 20px; right: 20px; gap: 6px; }
+    .omh-bottom-left { bottom: 20px; left: 20px; gap: 6px; }
+    .omh-bottom-right { bottom: 20px; right: 20px; }
+    .omh-divider { display: none; }
+    .omh-top-left .omh-tit { font-size: 1.1rem; }
+    .omh-btn-sq { width: 34px; height: 34px; }
+  }
+
   .omh-hotspot { position: absolute; width: 28px; height: 28px; background: var(--color-seccion, #ff6c00); border-radius: 50%; transform: translate(-50%, -50%); cursor: pointer; z-index: 6; box-shadow: 0 0 0 4px rgba(255,108,0,0.3); transition: transform 0.2s, background 0.2s; pointer-events: auto; display: flex; align-items: center; justify-content: center; font-size: 14px; }
   .omh-hotspot:hover { transform: translate(-50%, -50%) scale(1.2); }
   .omh-hs-label { position: absolute; top: -35px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.8); color: #fff; padding: 6px 10px; border-radius: 4px; font-size: 0.55rem; font-family: 'Lexend Tera', sans-serif; letter-spacing: 0.1em; white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity 0.2s; border: 1px solid rgba(255,255,255,0.1); }
@@ -92,14 +113,6 @@ const CSS = `
   .splat-oculto { opacity: 0 !important; pointer-events: none !important; }
 
   @media (max-width: 768px) {
-    .omh-ui-layer { padding: 20px; }
-    .omh-top-right { top: 20px; right: 20px; gap: 6px; }
-    .omh-bottom-left { bottom: 20px; left: 20px; flex-wrap: wrap; max-width: 65%; gap: 6px; }
-    .omh-bottom-right { bottom: 20px; right: 20px; }
-    .omh-divider { display: none; }
-    .omh-top-left .omh-tit { font-size: 1.1rem; }
-    .omh-btn-rect { padding: 8px 12px; font-size: 0.5rem; }
-    .omh-btn-sq { width: 34px; height: 34px; }
     .omh-modal-content { max-width: 95%; padding: 20px; }
     .omh-info-panel { width: calc(100% - 40px); }
   }
@@ -109,7 +122,6 @@ const CSS = `
 `;
 
 const TEMPLATES = {
-  // EL BOTÓN EXTRA HA SIDO ELIMINADO LIMPIAMENTE DE AQUÍ
   auto: (cfg, ICONS) => `
     <div class="omh-top-left"><div class="omh-sub">${cfg.subtitle}</div><h2 class="omh-tit">${cfg.title}</h2></div>
     <div class="omh-top-right">
@@ -118,12 +130,13 @@ const TEMPLATES = {
       <button class="omh-btn-sq" id="btn-share" title="Compartir enlace">${ICONS.share}</button>
     </div>
     <div class="omh-bottom-left">
-      <button class="omh-btn-rect splat-btn-hide" id="btn-rst">${ICONS.reset} Centrar</button>
-      <button class="omh-btn-rect splat-btn-hide" id="btn-ar">${ICONS.autorot} Auto-rotar</button>
-      <button class="omh-btn-rect splat-btn-hide" id="btn-fov">${ICONS.fov} FOV: <span id="fov-val">${cfg.defaultFov}</span>°</button>
+      <button class="omh-btn-rect splat-btn-hide" id="btn-rst">${ICONS.reset} <span class="btn-text">Centrar</span></button>
+      <button class="omh-btn-rect splat-btn-hide" id="btn-ar">${ICONS.autorot} <span class="btn-text">Auto-rotar</span></button>
+      <button class="omh-btn-rect splat-btn-hide" id="btn-fov">${ICONS.fov} <span class="btn-text">FOV: <span id="fov-val">${cfg.defaultFov}</span>°</span></button>
       <div class="omh-divider splat-btn-hide"></div>
-      <button class="omh-btn-rect active" id="btn-ext">${cfg.labelExterior || 'Exterior'}</button>
-      <button class="omh-btn-rect" id="btn-int">${cfg.labelInterior || 'Interior'}</button>
+      <button class="omh-btn-rect active" id="btn-ext">${ICONS.exterior} <span class="btn-text">${cfg.labelExterior || 'Exterior'}</span></button>
+      <button class="omh-btn-rect" id="btn-int">${ICONS.interior} <span class="btn-text">${cfg.labelInterior || 'Interior'}</span></button>
+      <button class="omh-btn-rect tour-btn-show mobile-only" id="btn-giro-ui">${ICONS.gyro} <span class="btn-text">Giroscopio</span></button>
     </div>
   `,
   showroom: (cfg, ICONS) => `
@@ -134,12 +147,12 @@ const TEMPLATES = {
       <button class="omh-btn-sq" id="btn-share" title="Compartir enlace">${ICONS.share}</button>
     </div>
     <div class="omh-bottom-left">
-      <button class="omh-btn-rect splat-btn-hide" id="btn-rst">${ICONS.reset} Centrar</button>
-      <button class="omh-btn-rect splat-btn-hide" id="btn-ar">${ICONS.autorot} Auto-rotar</button>
-      <button class="omh-btn-rect splat-btn-hide" id="btn-fov">${ICONS.fov} FOV: <span id="fov-val">${cfg.defaultFov}</span>°</button>
+      <button class="omh-btn-rect splat-btn-hide" id="btn-rst">${ICONS.reset} <span class="btn-text">Centrar</span></button>
+      <button class="omh-btn-rect splat-btn-hide" id="btn-ar">${ICONS.autorot} <span class="btn-text">Auto-rotar</span></button>
+      <button class="omh-btn-rect splat-btn-hide" id="btn-fov">${ICONS.fov} <span class="btn-text">FOV: <span id="fov-val">${cfg.defaultFov}</span>°</span></button>
     </div>
   `,
-  producto: (cfg, ICONS) => `<div class="omh-top-right"><button class="omh-btn-sq" id="btn-fs" title="Pantalla completa">${ICONS.fullscr}</button></div><div class="omh-bottom-left"><button class="omh-btn-rect splat-btn-hide" id="btn-rst">${ICONS.reset} Centrar</button><button class="omh-btn-rect splat-btn-hide" id="btn-ar">${ICONS.autorot} Auto-rotar</button></div>`,
+  producto: (cfg, ICONS) => `<div class="omh-top-right"><button class="omh-btn-sq" id="btn-fs" title="Pantalla completa">${ICONS.fullscr}</button></div><div class="omh-bottom-left"><button class="omh-btn-rect splat-btn-hide" id="btn-rst">${ICONS.reset} <span class="btn-text">Centrar</span></button><button class="omh-btn-rect splat-btn-hide" id="btn-ar">${ICONS.autorot} <span class="btn-text">Auto-rotar</span></button></div>`,
   simple: (_cfg, _ICONS) => ``,
 };
 
@@ -172,7 +185,7 @@ export class VisorUI {
     this.container.innerHTML = `
       <div class="omh-wrap" id="omh-wrap" style="height:${this.cfg.height}">
         <canvas id="omh-canvas" tabindex="0"></canvas>
-        <iframe id="omh-360-iframe" class="omh-360-layer" allow="fullscreen; accelerometer; gyroscope;" frameborder="0"></iframe>
+        <iframe id="omh-360-iframe" class="omh-360-layer" allow="fullscreen; accelerometer; gyroscope; xr-spatial-tracking" frameborder="0"></iframe>
         <div class="omh-ui-layer" id="omh-ui-layer">${uiInner}</div>
         <div id="omh-hotspots-layer" style="position:absolute; inset:0; pointer-events:none; z-index:6; overflow:hidden;">${hotspotsHtml}</div>
         <div class="omh-hint" id="omh-hint"><div class="omh-hint-inner"><div class="omh-hint-icon">${ICONS.cursor}</div><span class="omh-hint-txt">Arrastra para rotar · Scroll para zoom</span></div></div>
@@ -192,6 +205,7 @@ export class VisorUI {
       errBox: g("omh-error"), errMsg: g("omh-error-msg"), modal: g("omh-modal"), modalBody: g("omh-modal-body"), modalClose: g("btn-modal-close"),
       btnInfo: g("btn-info"), btnRst: g("btn-rst"), btnAr: g("btn-ar"), btnFov: g("btn-fov"), fovVal: g("fov-val"),
       btnFs: g("btn-fs"), btnShare: g("btn-share"), btnTour: g("btn-tour"), btnExt: g("btn-ext"), btnInt: g("btn-int"),
+      btnGiroUi: g("btn-giro-ui"), // <-- Nuevo botón de giroscopio enlazado
       infoPanel: g("omh-info-panel"), infoContent: g("omh-info-content"), infoClose: g("omh-info-close")
     };
 

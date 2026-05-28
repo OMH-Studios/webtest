@@ -186,6 +186,22 @@ export class VisorControls {
       });
     }
 
+    // ── CONEXIÓN DE GIROSCOPIO (CRUZA AL IFRAME) ──
+    if (els.btnGiroUi) {
+      els.btnGiroUi.addEventListener("click", () => {
+        const iframe = els.iframe360;
+        if (iframe && iframe.contentDocument) {
+          // Buscamos el botón nativo del giroscopio dentro del iframe y hacemos clic
+          const btnGiroNativo = iframe.contentDocument.querySelector('.v360-btn-giro');
+          if (btnGiroNativo) {
+            btnGiroNativo.click();
+            // Alternamos el estado visual de nuestro botón UI
+            els.btnGiroUi.classList.toggle("active");
+          }
+        }
+      });
+    }
+
     // ── HOTSPOTS ──
     if (cfg.hotspots && cfg.hotspots.length > 0) {
       cfg.hotspots.forEach(hs => {
