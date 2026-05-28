@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <style>
+    /* Forzamos el fondo negro para que la transición desde el Splat sea fluida y sin flashazos blancos */
+    body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: #000; overflow: hidden; }
+    
+    /* Ocultamos la UI del 360 */
+    .v360-hud, .v360-splash { display: none !important; opacity: 0 !important; visibility: hidden !important; pointer-events: none !important; }
+    .omh-360-widget { background: #000 !important; width: 100vw; height: 100vh; }
+  </style>
+</head>
+<body>
+  
+  <div class="omh-360-widget" data-config="./interior-jetta.js"></div>
+  <script src="../viewer360.js"></script>
+  
+  <script>
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        const btn = document.querySelector('.v360-splash-btn');
+        if (btn) btn.click();
+      }, 100);
+    });
+  </script>
+
+</body>
+</html>

@@ -1,26 +1,9 @@
 /**
  * controls.js — OMH Estudio | Visor Gaussian Splatting
- * ─────────────────────────────────────────────────────────────
- * Responsable de:
- * - Mouse: orbitar, zoom con scroll, pan con botón derecho
- * - Touch: orbitar con 1 dedo, zoom/pan con 2 dedos (pinch)
- * - Auto-rotación con velocidad configurable
- * - Conectar los botones de la UI al renderer
- * - Loop de render (requestAnimationFrame)
- *
- * Recibe referencias al renderer y a los elementos DOM,
- * pero NO toca el DOM directamente salvo los classList de botones.
  */
 
 export class VisorControls {
 
-  /**
-   * @param {SplatRenderer} renderer  — instancia del renderer WebGL
-   * @param {object}        els       — elementos DOM de ui.js
-   * @param {object}        cfg       — configuración completa
-   * @param {VisorUI}       ui        — instancia de la UI (para fullscreen, etc.)
-   * @param {HTMLElement}   wrap      — div principal del visor
-   */
   constructor(renderer, els, cfg, ui, wrap) {
     this.renderer = renderer;
     this.els      = els;
@@ -31,11 +14,9 @@ export class VisorControls {
     this.autoRot  = cfg.autoRotate;
     this._prevT   = 0;
 
-    // Valores disponibles para ciclar el FOV
     this._fovValues = [35, 55, 75, 90];
   }
 
-  // ── Arrancar todo ─────────────────────────────────────────
   init() {
     this._bindMouseEvents();
     this._bindTouchEvents();
@@ -44,7 +25,6 @@ export class VisorControls {
     this._startLoop();
   }
 
-  // ── Mouse ─────────────────────────────────────────────────
   _bindMouseEvents() {
     const { canvas } = this.els;
     let dragging = false, rightDrag = false, lastX = 0, lastY = 0;
@@ -58,7 +38,6 @@ export class VisorControls {
     });
 
     window.addEventListener("mouseup", () => { dragging = false; });
-
     canvas.addEventListener("contextmenu", e => e.preventDefault());
 
     window.addEventListener("mousemove", e => {
@@ -69,14 +48,12 @@ export class VisorControls {
       lastY = e.clientY;
 
       if (rightDrag) {
-        // Pan: mover el punto de mira
         const s = this.renderer.camera.radius * 0.001;
         const theta = this.renderer.camera.theta;
         this.renderer.camera.target[0] -= Math.cos(theta) * dx * s;
         this.renderer.camera.target[2] -= Math.sin(theta) * dx * s;
         this.renderer.camera.target[1] += dy * s;
       } else {
-        // Orbitar
         this.renderer.camera.theta += dx * 0.008;
         this.renderer.camera.phi = Math.max(
           0.05,
@@ -86,7 +63,6 @@ export class VisorControls {
       this._markDirty();
     });
 
-    // Zoom con scroll
     canvas.addEventListener("wheel", e => {
       e.preventDefault();
       this.renderer.camera.radius = Math.max(
@@ -97,7 +73,6 @@ export class VisorControls {
     }, { passive: false });
   }
 
-  // ── Touch (Dispositivos Móviles) ──────────────────────────
   _bindTouchEvents() {
     const { canvas } = this.els;
     let t0 = null, lastDist = 0;
@@ -145,7 +120,6 @@ export class VisorControls {
     }, { passive: false });
   }
 
-  // ── Botones UI ────────────────────────────────────────────
   _bindButtons() {
     const { els, cfg, renderer, ui } = this;
 
@@ -168,7 +142,7 @@ export class VisorControls {
         let idx = this._fovValues.indexOf(renderer.camera.fov);
         if (idx === -1) idx = 1;
         renderer.camera.fov = this._fovValues[(idx + 1) % this._fovValues.length];
-        els.btnFov.lastChild.textContent = ` FOV: ${renderer.camera.fov}°`;
+        if (els.fovVal) els.fovVal.textContent = renderer.camera.fov;
         this._markDirty();
       });
     }
@@ -196,19 +170,71 @@ export class VisorControls {
       });
     }
 
+    // ── CAMBIO ENTRE SPLAT Y 360 ──
     if (els.btnExt && els.btnInt) {
       els.btnExt.addEventListener("click", () => {
+        if (els.btnExt.classList.contains("active")) return;
         els.btnExt.classList.add("active");
         els.btnInt.classList.remove("active");
+        ui.switchView("exterior");
       });
       els.btnInt.addEventListener("click", () => {
+        if (els.btnInt.classList.contains("active")) return;
         els.btnInt.classList.add("active");
         els.btnExt.classList.remove("active");
+        ui.switchView("interior");
       });
     }
+
+    // ── HOTSPOTS ──
+    if (cfg.hotspots && cfg.hotspots.length > 0) {
+      cfg.hotspots.forEach(hs => {
+        const el = document.getElementById(`hs-${hs.id}`);
+        if (!el) return;
+
+        el.addEventListener("click", () => {
+          ui.closeInfoPanel();
+          
+          if (hs.action === "interior") {
+            if (els.btnInt) els.btnInt.click();
+          } 
+          else if (hs.url) {
+            window.open(hs.url, "_blank");
+          } 
+          else if (hs.image) {
+            let html = `<img src="${hs.image}" alt="${hs.label}">`;
+            html += `<h3>${hs.label}</h3>`;
+            if (hs.text) {
+              html += `<p>${hs.text}</p>`;
+            }
+            ui.openModal(html);
+          }
+        });
+      });
+    }
+
+    // ── MODAL ──
+    if (els.modalClose) els.modalClose.addEventListener("click", () => ui.closeModal());
+    if (els.modal) {
+      els.modal.addEventListener("click", (e) => {
+        if (e.target === els.modal) ui.closeModal();
+      });
+    }
+
+    // ── PANEL DE INFORMACIÓN ──
+    if (els.btnInfo) {
+      els.btnInfo.addEventListener("click", (e) => {
+        e.stopPropagation(); 
+        if (cfg.infoHtml) {
+          ui.toggleInfoPanel(cfg.infoHtml);
+        } else {
+          ui.toggleInfoPanel(`<h3>${cfg.title || 'Información'}</h3><p>No se ha cargado una ficha técnica para este modelo.</p>`);
+        }
+      });
+    }
+    if (els.infoClose) els.infoClose.addEventListener("click", () => ui.closeInfoPanel());
   }
 
-  // ── Resize ────────────────────────────────────────────────
   _bindResize() {
     new ResizeObserver(() => this._onResize()).observe(this.wrap);
     this._onResize();
@@ -221,7 +247,6 @@ export class VisorControls {
     this._markDirty();
   }
 
-  // ── Actualizar Posición Física de Hotspots HTML ───────────
   _updateHotspots() {
     if (!this.cfg.hotspots || !this.renderer.splatCount) return;
     const dpr = window.devicePixelRatio || 1;
@@ -242,7 +267,6 @@ export class VisorControls {
     });
   }
 
-  // ── Loop de render ────────────────────────────────────────
   _startLoop() {
     const loop = (t) => {
       requestAnimationFrame(loop);
@@ -265,7 +289,6 @@ export class VisorControls {
     requestAnimationFrame(loop);
   }
 
-  // ── Límites de cámara ─────────────────────────────────────
   _applyLimits() {
     const L = this.cfg.cameraLimits || {};
     const cam = this.renderer.camera;
@@ -285,13 +308,11 @@ export class VisorControls {
     }
   }
 
-  // ── Helper: marcar que hay que re-renderizar ──────────────
   _markDirty() {
     this.renderer.dirty            = true;
     this.renderer._geoNeedsRebuild = true;
   }
 
-  // ── Gizmo de orientación ──────────────────────────────────
   _drawGizmo() {
     const canvas = document.getElementById("omh-gizmo");
     if (!canvas) return;
@@ -300,8 +321,6 @@ export class VisorControls {
     const cx = W / 2, cy = H / 2, len = 26;
 
     ctx.clearRect(0, 0, W, H);
-
-    // Fondo circular
     ctx.beginPath();
     ctx.arc(cx, cy, cx, 0, Math.PI * 2);
     ctx.fillStyle = "rgba(0,0,0,0.4)";
@@ -310,28 +329,22 @@ export class VisorControls {
     const { theta, phi } = this.renderer.camera;
     const up = this.cfg.upVector || [0, 1, 0];
 
-    // Vectores de la cámara en coordenadas esféricas
     const sinP = Math.sin(phi), cosP = Math.cos(phi);
     const sinT = Math.sin(theta), cosT = Math.cos(theta);
-
-    // forward = dirección desde eye hacia target
     const fwd = [-sinP * sinT, -cosP, -sinP * cosT];
 
-    // right = forward × worldUp (normalizado)
     let rx = fwd[1]*up[2] - fwd[2]*up[1];
     let ry = fwd[2]*up[0] - fwd[0]*up[2];
     let rz = fwd[0]*up[1] - fwd[1]*up[0];
     const rl = Math.sqrt(rx*rx + ry*ry + rz*rz) || 1;
     rx /= rl; ry /= rl; rz /= rl;
 
-    // camUp = right × forward
     const cu = [
       ry*fwd[2] - rz*fwd[1],
       rz*fwd[0] - rx*fwd[2],
       rx*fwd[1] - ry*fwd[0],
     ];
 
-    // Proyectar un eje del mundo al plano 2D del gizmo
     const project = (ax) => ({
       sx:    ax[0]*rx    + ax[1]*ry    + ax[2]*rz,
       sy:  -(ax[0]*cu[0] + ax[1]*cu[1] + ax[2]*cu[2]),
@@ -344,7 +357,6 @@ export class VisorControls {
       { label: "Z", color: "#4488ff", axis: [0, 0, 1] },
     ].map(a => ({ ...a, ...project(a.axis) }));
 
-    // Painter's algorithm: ejes más lejanos primero
     axes.sort((a, b) => a.depth - b.depth);
 
     for (const ax of axes) {
@@ -353,7 +365,6 @@ export class VisorControls {
       const alpha = 0.35 + 0.65 * Math.max(0, (ax.depth + 1) / 2);
 
       ctx.globalAlpha = alpha;
-
       ctx.beginPath();
       ctx.moveTo(cx, cy);
       ctx.lineTo(ex, ey);
@@ -374,7 +385,6 @@ export class VisorControls {
       ctx.textBaseline = "middle";
       ctx.fillText(ax.label, ex, ey);
     }
-
     ctx.globalAlpha = 1;
   }
 }
