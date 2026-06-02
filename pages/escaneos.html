@@ -46,12 +46,43 @@
 <!-- AQUÍ EDITAMOS LOS TEXTOS, EL VIDEO Y LA OPACIDAD EL OVERLAY-->
 <script>
   window.heroConfig = {
-    label: "PROP TECH", 
+    label: "DEL PLANO FÍSICO AL DIGITAL", 
     title: "ESCANEOS &<br>DIGITALIZACIÓN", 
     videoPath: "../assets/escaneos/escaneos_bg.mp4", 
     overlayOpacity: 0.4
   };
 </script>
+
+<!-- ===================================================================
+    COLUMNAS DIVIDIDAS, LLAMADA A ARCHIVO JS PARA INSERTARLO EN LA PÁGINA
+     ===================================================================-->
+
+<div style="background-color: var(--negro);">
+    
+    <script>
+        window.columnasDivididasConfig = {
+            eyebrowHtml: "Recorridos inmersivos para presentación comercial y experiencia interactiva",
+            titleHtml: "CONVERTIMOS ELEMENTOS DEL MUNDO FÍSICO EN<br><span class='resalte'>EXPERIENCIAS DIGITALES</span>",
+            paragraphHtml: "Combinamos escaneo 3D, fotografía 360° y visualización en tiempo real para crear recorridos interactivos de productos, objetos y espacios con acceso directo desde la web.",
+            
+            paddingTop: "2rem",
+            paddingBottom: "6rem",
+            bgColor: "var(--negro)",
+            
+            // TODOS los textos restaurados
+            columnaIzq: [
+                { titulo: "Digitalización fiel", texto: "Recreamos completamente el mundo real en el digital." },
+            ],
+            
+            columnaDer: [
+                { titulo: "Interactividad", texto: "Multiples niveles de personalización con los modelos" },
+            ]
+        };
+    </script>
+
+    <div id="modulo-columnas-divididas"></div>
+
+</div>
 
 <!-- VISOR PARA GAUSSIAN SPLAT Y VISOR 360 PARA RECORRIDO DE UN CARRO -->
 <div id="visor-splat-dinamico" style="padding: 2rem 5%;"></div>
@@ -67,18 +98,25 @@
     height: "80vh",
     tourUrl: "../js/tours/tour-jetta.html",
     upVector: [0, -1, 0], // Mantiene la corrección de giro del auto
-    background: "#262626",      // Cambia el color del fondo aquí (puedes usar hex, rgb o var)
+    background: "#0f0f0f",      // Cambia el color del fondo aquí (puedes usar hex, rgb o var)
     autoRotateSpeed: 2,      // Cambia la velocidad aquí (más alto es más rápido)
+
+    // NUEVAS VARIABLES DE FOV
+    fovDesktop: 35, 
+    fovMobile: 65,
     
-    // CÁMARA CORREGIDA A ISOMÉTRICO (Desde Arriba)
-    defaultTheta: 0.6, //Rotación
-    defaultPhi: 1.8,  //Inclinación
-    defaultFov: 30, //Apertura del lente
+    // CONTROL DE ENCUADRE INICIAL
+    cameraTargetOffset: [0, 1.2, 0],
+    cameraRadiusMultiplier: 1.5, // <--- AJUSTA ESTO (Intenta 1.0, 0.8 o 1.2 hasta que te guste)
+    
+    defaultTheta: 0.6, 
+    defaultPhi: 1.8,  
+    defaultFov: 35,
     
     cameraLimits: {
-      phiMin: 1.5,   // Ahora este es el límite de ABAJO (no dejes bajar más)
+      phiMin: 1.6,   // Ahora este es el límite de ABAJO (no dejes bajar más)
       phiMax: 3.0,   // Ahora este es el límite de ARRIBA (no dejes subir más)
-      radiusMin: 5.5,  // Distancia mínima — ajustado para un carro de ~5m
+      radiusMin: 8.5,  // Distancia mínima — ajustado para un carro de ~5m
       radiusMax: 20.0, // Distancia máxima
     },
 
@@ -98,28 +136,34 @@
     hotspots: [
       { 
         id: "Ver motor", 
-        position: [0.0, 0.5, 4.0], 
+        position: [0.0, -3.0, 5.0], 
         label: "Motor", 
         icon: "../assets/escaneos/icon-motor.png",
-        image: "../assets/escaneos/motor.jpg",
+        image: "../assets/escaneos/motor.png",
         // Aquí agregas la descripción del primer elemento:
-        text: "Motor original 2.0L del Jetta A4. <b>Mantenimiento reciente</b>." 
+        text: "Motor original 2.0L del Jetta A4. <b>Mantenimiento reciente</b>.",
+        bg: true,
+        occlude: true
       },
       { 
         id: "Ver maletero", 
-        position: [0.0, 0.5, -4], 
+        position: [0.0, -3.5, -6.0], 
         label: "Cajuela", 
         icon: "../assets/escaneos/icon-cajuela.png",
-        image: "../assets/escaneos/cajuela.jpg",
+        image: "../assets/escaneos/cajuela.png",
         // Aquí agregas la descripción para la cajuela:
-        text: "Amplio espacio de carga con tapicería original en excelente estado."
+        text: "Amplio espacio de carga con tapicería original en excelente estado.",
+        bg: true,
+        occlude: true
       },
       { 
         id: "Ver interior", 
-        position: [0.0, -0.6, 0.1], 
+        position: [0.0, -4.5, 0.1], 
         label: "Interior 360°", 
         icon: "../assets/escaneos/icon-interior.png",
-        action: "interior" // <--- Este comando activa la transición
+        action: "interior", // <--- Este comando activa la transición
+        bg: true,
+        occlude: false
       },
     ]
   };
@@ -204,6 +248,7 @@
 <script src="../js/navbar.js"></script>
 <script src="../js/hero.js"></script>
 
+<script src="../js/columnas-divididas.js"></script>
 <script type="module" src="../js/visor-splat/index.js"></script>
 <script src="../js/viewer360.js"></script>
 

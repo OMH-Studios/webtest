@@ -1,9 +1,9 @@
 /**
  * OMH Estudio - Componente Dinámico de Bloques de Texto Editorial
- * Autoejecutable. Lee window.textBloqueConfig para renderizar el contenido.
+ * Autoejecutable. Carga texto plano desde archivos externos de forma automática.
  */
 (function () {
-  document.addEventListener("DOMContentLoaded", () => {
+  document.addEventListener("DOMContentLoaded", async () => {
     const contenedor = document.getElementById("texto-bloque-dinamico");
     if (!contenedor) return;
 
@@ -11,12 +11,33 @@
     const config = Object.assign({
       label: "Historia",
       titleHtml: "Nuestro <em>Origen</em>",
-      bg: "gris", // "gris" o "negro"
-      padding: "7rem 0", // Arriba y abajo
-      paragraphs: [] // Array de strings
+      bg: "gris", 
+      padding: "7rem 0", 
+      paragraphs: [],
+      urlTexto: null // Ruta al archivo .txt o .json
     }, window.textBloqueConfig);
 
-    // ✨ CORRECCIÓN: Mapeo de fondos usando variables globales heredadas del tema corporativo
+    // 🚀 PROCESADOR DE TEXTO PLANO EXTERNO
+    if (config.urlTexto) {
+      try {
+        const response = await fetch(config.urlTexto);
+        if (response.ok) {
+          let textoPlano = await response.text();
+          
+          // 1. Automatizar negritas: Convierte **texto** a <strong>texto</strong>
+          textoPlano = textoPlano.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+          
+          // 2. Automatizar párrafos: Separa el texto cada vez que encuentra una línea en blanco
+          config.paragraphs = textoPlano.split(/\n\s*\n/).filter(p => p.trim() !== "");
+        } else {
+          console.error("OMH Estudio - Error al cargar el archivo de texto:", response.statusText);
+        }
+      } catch (error) {
+        console.error("OMH Estudio - Error en la petición del archivo:", error);
+      }
+    }
+
+    // Mapeo de fondos usando variables globales
     const colorFondo = config.bg === "negro" ? "var(--negro)" : "var(--gris-oscuro)";
 
     // 1. Inyectar Estilos CSS únicos para el bloque de texto
@@ -29,7 +50,7 @@
             transition: background 0.3s ease;
           }
           .text-block-container {
-            max-width: 900px; /* Layout más cerrado para lectura cómoda */
+            max-width: 900px;
             margin: 0 auto;
             padding: 0 4rem;
           }
@@ -39,7 +60,6 @@
             font-weight: 700;
             letter-spacing: 0.3em;
             text-transform: uppercase;
-            /* ✨ CORRECCIÓN: Cambiado de var(--rojo) a var(--color-seccion) para herencia dinámica */
             color: var(--color-seccion);
             margin-bottom: 1.5rem;
             display: flex;
@@ -51,7 +71,6 @@
             display: block;
             width: 24px;
             height: 1px;
-            /* ✨ CORRECCIÓN: Línea responde al color maestro de la subpágina */
             background: var(--color-seccion);
           }
           .text-block-title {
@@ -64,7 +83,6 @@
             margin-bottom: 3.5rem;
           }
           .text-block-title em {
-            /* ✨ CORRECCIÓN: El énfasis <em> mutará según la sección activa */
             color: var(--color-seccion);
             font-style: normal;
           }
@@ -85,7 +103,6 @@
             color: var(--blanco);
             font-weight: 600;
           }
-          
           @media (max-width: 900px) {
             .text-block-container { padding: 0 2rem; }
             .text-block-section { padding: 5rem 0; }
@@ -95,7 +112,7 @@
       document.head.insertAdjacentHTML("beforeend", styles);
     }
 
-    // 2. Construir los párrafos de texto
+    // 2. Construir los párrafos de texto procesados
     let paragraphsHtml = "";
     if (config.paragraphs && config.paragraphs.length > 0) {
       config.paragraphs.forEach(text => {

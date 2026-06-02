@@ -49,7 +49,8 @@
     label: "ARCHVIZ", 
     title: "VISUALIZACIÓN<br>ARQUITECTÓNICA", 
     videoPath: "../assets/archviz/archviz_bg.mp4", 
-    overlayOpacity: 0.4
+    overlayOpacity: 0.4,
+    titleSize: "clamp(1.5rem, 3.5vw, 2.8rem)"
   };
 </script>
 
@@ -69,39 +70,20 @@
     bloques: [
       {
         title: "Modelado Ultra Preciso",
-        desc: "Convertimos tus planos CAD, archivos de Revit o bocetos en gemelos digitales con una fidelidad milimétrica estructural, listos para optimización de materiales.",
+        desc: "Convertimos tus planos CAD, archivos de Revit o bocetos en modelado digital preciso de alta fidelidad, listos para representar realísticamente tu producto final.",
         img: "../assets/archviz/archviz_01.jpg"
       },
       {
         title: "Iluminación Fotorrealista",
-        desc: "Simulamos las condiciones lumínicas del mundo real mediante algoritmos avanzados de Path Tracing. Capturamos la calidez de los interiores y la crudeza de los entornos exteriores tal como se vivirán.",
+        desc: "Simulamos las condiciones lumínicas del mundo real mediante software avanzado y Path Tracing. Capturamos la calidez de los interiores y la grandeza de los entornos exteriores tal como se vivirán.",
         img: "../assets/archviz/archviz_02.jpg"
       },
       {
-        title: "Optimización Inmersiva",
-        desc: "Preparamos los entornos interactivos para que fluyan en la web sin sacrificar texturas ni geometría, permitiendo que tus clientes exploren libremente en cualquier dispositivo.",
+        title: "Alta Calidad",
+        desc: "Recibirás imágenes en alta resolución listas para impresión, presentación y uso digital, con calidad optimizada en cada entrega.",
         img: "../assets/archviz/archviz_03.jpg"
       }
     ]
-  };
-</script>
-
-<!-- ═══════════════════════════════════════════════════════════════
-     SECCIÓN YOUTUBE
-     ─────────────────────────────────────────────────────────────
-     SE SUSTITUYÓ POR UN MODULO DE JAVASCRIPT, AQUÍ LLAMAMOS A ESE MODULO PARA QUE SE ADAPTE A LOS COLORES DE LA PÁGINA Y
-     EDITAR LOS TEXTOS Y EL LINNK PARA QUE SEA PERSONALIZADO DE CADA PÁGINA
-     ═══════════════════════════════════════════════════════════════ -->
-
-  <div id="showreel-dinamico"></div>
-
-<script>
-  window.showreelConfig = {
-    label: "RECORRIDO VIRTUAL",
-    titleHtml: "Hecho por <em>OMH</em>",
-    youtubeId: "QCRoTpb8EYw",
-    bottomText: "RECORRIDO PARA ATLAS DESARROLLOS QRO.",
-    bg: "gris-oscuro" // Aquí lo dejas en fondo puramente negro
   };
 </script>
 
@@ -159,6 +141,47 @@
   };
 </script>
 
+<!-- ═══════════════════════════════════════════════════════════════
+     SECCIÓN YOUTUBE
+     ─────────────────────────────────────────────────────────────
+     SE SUSTITUYÓ POR UN MODULO DE JAVASCRIPT, AQUÍ LLAMAMOS A ESE MODULO PARA QUE SE ADAPTE A LOS COLORES DE LA PÁGINA Y
+     EDITAR LOS TEXTOS Y EL LINNK PARA QUE SEA PERSONALIZADO DE CADA PÁGINA
+     ═══════════════════════════════════════════════════════════════ -->
+
+  <div id="showreel-dinamico"></div>
+
+<script>
+  window.showreelConfig = {
+    label: "RECORRIDO VIRTUAL",
+    titleHtml: "Hecho por <em>OMH</em>",
+    youtubeId: "QCRoTpb8EYw",
+    bottomText: "RECORRIDO PARA ATLAS DESARROLLOS QRO.",
+    bg: "gris-oscuro" // Aquí lo dejas en fondo puramente negro
+  };
+</script>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     BANNER DE CALL TO ACTION
+     ─────────────────────────────────────────────────────────────
+     SE SUSTITUYÓ POR UN MODULO DE JAVASCRIPT, AQUÍ LLAMAMOS A ESE MODULO PARA QUE SE ADAPTE A LOS COLORES DE LA PÁGINA Y
+     EDITAR LOS TEXTOS Y EL LINNK PARA QUE SEA PERSONALIZADO DE CADA PÁGINA
+     ═══════════════════════════════════════════════════════════════ -->
+
+<div id="banner-cta-dinamico"></div>
+<script>
+  window.bannerCtaConfig = {
+    id: "cta",
+    bg: "var(--negro)",       // Controla el fondo
+    padding: "6rem 0",        // Controla el espaciado superior e inferior
+    label: "Trabajemos juntos",
+    titleHtml: "¿Quieres llevar<br><span>tu proyecto</span><br>al siguiente nivel?",
+    subtitleHtml: "Descubre como integrar la interactividad a tus espacios y convertirlos en una <em>experiencia inolvidable.</em>",
+    buttons: [
+      { text: "🥽 Experiencias inmersivas", url: "ar_vr.html", class: "bf-btn-secondary" }
+    ]
+  };
+</script>
+
 <!-- ===================================================================
     BOTON DE REGRESAR AL INICIO
      ===================================================================-->
@@ -171,7 +194,7 @@
     padding: "5rem 0 5rem 0",     
     align: "center",              
     
-    tituloText: "¡HABLANOS DE TU PROYECTO!",
+    tituloText: "¡HÁBLANOS DE TU PROYECTO!",
     subtituloText: "", 
     
     botones: [
@@ -215,6 +238,7 @@
 <script src="../js/youtubelink.js"></script>
 <script src="../js/portfolio-behance.js"></script>
 <script src="../js/techgrid.js"></script>
+<script src="../js/banner-form.js"></script>
 <script src="../js/botonera.js"></script>
 <script src="../data/contacto.js"></script>
 <script src="../js/footer.js"></script>

@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>OMH Estudio | Tecnología Inmobiliaria</title>
+
+<link rel="icon" type="image/png" href="../assets/logos/favicon_omh.png">
+<link href="https://fonts.googleapis.com/css2?family=Lexend+Tera:wght@400;700;900&family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Raleway:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/colores.css">
+
+<style>
+  /* ─── ESTILOS EXCLUSIVOS DE LA SUBPÁGINA ─── */
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--negro); color: var(--blanco); font-family: 'Raleway', sans-serif; cursor: none; overflow-x: hidden;}
+
+  /* Animaciones heredadas para elementos nativos */
+  .reveal { opacity: 0; transform: translateY(30px); transition: opacity 0.8s ease, transform 0.8s ease; }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+</style>
+</head>
+
+<!-- ===================================================================
+    DEFINIR LA CATEGORÍA DE LA PAGINA PARA QUE SE SELECCIONE EL COLOR
+    Para editar los colores:
+    -Revisar el archivo .../css/colores.css
+    -Modificar el color correspondiente a la página
+     ===================================================================-->
+
+<body class="page-inmob page-sub">
+
+<!-- ===================================================================
+    BARRA DE NAVEGACIÓN, LLAMADA A ARCHIVO JS PARA INSERTARLO EN LA PÁGINA
+     ===================================================================-->
+
+<div id="navbar-dinamico"></div>
+
+<!-- ===================================================================
+    ENCABEZADO O HERO, LLAMADA A ARCHIVO JS PARA INSERTARLO EN LA PÁGINA
+     ===================================================================-->
+
+<div id="hero-dinamico"></div>
+
+<!-- AQUÍ EDITAMOS LOS TEXTOS, EL VIDEO Y LA OPACIDAD EL OVERLAY-->
+<script>
+  window.heroConfig = {
+    label: "Prop-Tech", 
+    title: "TECNOLOGÍA<br>INMOBILIARIA", 
+    videoPath: "../assets/inmob/inmob_bg.mp4", 
+    overlayOpacity: 0.4
+  };
+</script>
+
+<!-- ===================================================================
+    GALERÍA DE SERVICIOS, CON PROBLEMA Y SOLUCIÓN AL INICIO | grid-galeria2.js
+     ===================================================================-->
+<div id="modulo-servicios-dinamico"></div>
+
+<script>
+  window.gridServiciosConfig = {
+    problem: {
+      title: "EL COSTO DE UN PROCESO FRAGMENTADO",
+      metrics: [
+      
+        { number: "3 Etapas", description: "De interacción comercial vulnerables a perder el interés del cliente por falta de claridad." },
+        { number: "100%", description: "De efectividad cuando centralizas renderizado, interactivos y marketing en un solo partner." }
+      ]
+    },
+    solution: {
+      title: "TU PARTNER TECNOLÓGICO-CREATIVO",
+      subtitle: "Un ecosistema visual continuo. <br>Transformamos la manera de proyectar, construir y comercializar desarrollos inmobiliarios a través de tecnología interactiva y narrativa visual."
+    },
+    services: [
+      /* Columna 1 */
+      { size: "card-tall", title: "VISUALIZACIÓN", mediaPath: "../assets/inmob/render.jpg", url: "archviz.html" },
+      /* Columna 2 (Apiladas) */
+      { size: "card-square", title: "ANIMACIÓN Y MOTION GRAPHICS", mediaPath: "../assets/inmob/anim.jpg", url: "anim_vfx.html" },
+      { size: "card-square", title: "DOCUMENTACIÓN Y PROCESOS", mediaPath: "../assets/inmob/produccion.jpg", url: "audiovisual.html" },
+      /* Columna 3 */
+      { size: "card-tall", title: "REALIDAD VIRTUAL", mediaPath: "../assets/inmob/vr.jpg", url: "ar_vr.html" },
+      /* Columna 4 (Apiladas) */
+      { size: "card-square", title: "TOURS 360", mediaPath: "../assets/inmob/foto360.jpg", url: "tours_360.html" },
+      { size: "card-square", title: "REALIDAD AUMENTADA", mediaPath: "../assets/inmob/ar.jpg", url: "ar_vr.html" },
+      /* Columna 5 */
+      { size: "card-tall", title: "DIGITALIZACIÓN", mediaPath: "../assets/inmob/digital.jpg", url: "escaneos.html" }
+    ]
+  };
+</script>
+
+<!--===================================================================
+    SECCIÓN DE NUESTROS ALIADOS / CLIENTES
+    Agregar logos para que la barra se esté moviendo
+    continuamente, los logos se nombran como
+    logo1.png , logo2.png, etc
+    ===================================================================-->
+
+<div id="marquee-clientes-dinamico"></div>
+
+<script>
+  window.clientesMarqConfig = {
+    title: "Empresas que confían en nosotros",
+    bg: "negro",
+    padding: "4rem 0",
+    mostrarBordes: false
+  };
+</script>
+
+ <!-- ══════════════════════════════════════════════════════
+       MÓDULO TIMELINE (Scroll-Driven)
+       ══════════════════════════════════════════════════════ -->
+  <div id="timeline-dinamico"></div>
+ 
+  <script>
+    window.timelineConfig = {
+      anclaId: 'timeline-dinamico',
+      totalRotation: -240, 
+      numerosOpacity: 0.25,
+      etapas: [
+        {
+          numero: '01',
+          fase: 'ETAPA 1',
+          titulo: 'Captación & Preventa',
+          descripcion: 'Ayudamos a que los clientes visualicen un espacio antes de existir.',
+          videoPath: '../assets/inmob/etapa1.mp4', // Pon aquí la ruta de tu video
+          servicios: [
+            { nombre: 'Render', url: 'archviz.html' },
+            { nombre: 'Realidad Virtual y Aumentada', url: 'ar_vr.html' },
+            { nombre: 'Animación 3D', url: 'anim_vfx.html' },
+            { nombre: 'Recorridos Virtuales', url: 'ar_vr.html' },
+            { nombre: 'Tours 360°', url: 'tours_360.html' }
+          ]
+        },
+        {
+          numero: '02',
+          fase: 'ETAPA 2',
+          titulo: 'Construcción & Seguimiento',
+          descripcion: 'Convertimos el proceso constructivo en una herramienta de comunicación y confianza.',
+          videoPath: '../assets/inmob/etapa2.mp4', 
+          servicios: [
+            { nombre: 'Documentación de Obra', url: 'audiovisual.html' },
+            { nombre: 'Visualización con IA', url: 'audiovisual.html' },
+            { nombre: 'Mixed Reallity', url: 'escaneos.html' },
+            { nombre: 'Tours 360° con IA', url: 'tours_360.html' },
+          ]
+        },
+        {
+          numero: '03',
+          fase: 'ETAPA 3',
+          titulo: 'Comercialización Final',
+          descripcion: 'Creamos experiencias visuales que ayudan a destacar propiedades en un mercado saturado.',
+          videoPath: '../assets/inmob/etapa3.mp4', 
+          servicios: [
+            { nombre: 'Video Cinematográfico', url: 'audiovisual.html' },
+            { nombre: 'Fotografía Profesional', url: 'audiovisual.html' },
+            { nombre: 'Captura 3D / Splatting', url: 'escaneos.html' },
+            { nombre: 'Tours 360°', url: 'escaneos.html' },
+            { nombre: 'Street View Integration', url: 'escaneos.html' },
+            { nombre: 'PropTech Marketing', url: 'mkt.html' }
+          ]
+        }
+      ]
+    };
+  </script>
+
+  <!-- ____________________________________________________________
+ FORMULARIO DE CONTACTO CON FORMSPREE, AGREGADO POR OSCAR
+ ___________________________________________________________________-->
+
+<section id="contacto" style="padding: 80px 20px; max-width: 900px; margin: 0 auto; border-top: 1px solid #222;">
+    <h2 style="color: #fff; font-family: sans-serif; font-size: 1.5rem; letter-spacing: 2px; text-align: center; margin-bottom: 40px;">
+        ¿DUDAS? <span style="color: #C5A059;">¡PONTE EN CONTACTO!</span>
+    </h2>
+    
+    <form action="https://formspree.io/f/mojrgdvj" method="POST" style="display: flex; flex-direction: column; gap: 15px;">
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+            <input type="text" name="nombre" placeholder="NOMBRE" required 
+                   style="background: transparent; border: 1px solid #333; color: #fff; padding: 15px; font-family: sans-serif; font-size: 0.8rem;">
+            
+            <input type="email" name="_replyto" placeholder="TU EMAIL" required 
+                   style="background: transparent; border: 1px solid #333; color: #fff; padding: 15px; font-family: sans-serif; font-size: 0.8rem;">
+        </div>
+
+        <input type="text" name="asunto" placeholder="ASUNTO" required 
+               style="background: transparent; border: 1px solid #333; color: #fff; padding: 15px; font-family: sans-serif; font-size: 0.8rem;">
+
+        <textarea name="mensaje" placeholder="¿EN QUE TE PODEMOS AYUDAR?" rows="4" required 
+                  style="background: transparent; border: 1px solid #333; color: #fff; padding: 15px; font-family: sans-serif; font-size: 0.8rem; resize: none;"></textarea>
+
+        <input type="hidden" name="_subject" value="Nuevo contacto desde la web OMH">
+
+        <button type="submit" style="background: #fff; color: #000; border: none; padding: 15px; font-weight: bold; letter-spacing: 2px; cursor: pointer; transition: 0.3s; margin-top: 10px;">
+            ENVIAR<span>♥</span>
+        </button>
+    </form>
+</section>
+
+<!-- ===================================================================
+    BOTON DE REGRESAR AL INICIO
+     ===================================================================-->
+
+<div id="botonera-dinamica"></div>
+
+<script>
+  window.botoneraConfig = {
+    bg: "gris",                   
+    padding: "5rem 0 5rem 0",     
+    align: "center",              
+    
+    tituloText: "¡HÁBLANOS DE TU PROYECTO!",
+    subtituloText: "", 
+    
+    botones: [
+      { 
+        text: "¡COMENCEMOS! →", 
+        url: "whatsapp",         // <--- Solo pones "whatsapp" y el JS jala el número de contacto.js
+        msj: "¡Hola OMH Estudio! Me interesa solicitar una cotización para una inmobiliaria", // <--- Tu mensaje personalizado por subpágina
+        type: "solido",          
+        targetBlank: true 
+      },
+      { 
+        text: "← VOLVER AL INICIO", 
+        url: "../index.html", 
+        type: "outline",         
+        targetBlank: false 
+      }
+    ]
+  };
+</script>
+
+<!-- ===================================================================
+    FOOTER O PIE DE PAGINA (AQUÍ NO HAY QUE EDITAR NADA PERSONALIZADO
+    EL FOOTER SIEMPRE ES IGUAL EN TODAS LAS PAGINAS
+    Para cambiar un link: Editar el archivo footer.js) 
+    LLAMADA A ARCHIVO JS PARA INSERTARLO EN LA PÁGINA
+     ===================================================================-->
+
+<div id="footer-dinamico"></div>
+
+<!-- ===================================================================
+    SECCIÓN PARA LA CARGA DE LOS ARCHIVOS JS
+    Si se agrega algun elemento JS o Widget:
+    -Primero colocar en el cuerpo donde queremos que aparezca
+    -Hacer la llamada al widget en esta sección
+     ===================================================================-->
+
+<script src="../js/navbar.js"></script>
+<script src="../js/hero.js"></script>
+<script src="../js/grid-galeria2.js"></script>
+<script src="../js/clientesmarq.js"></script>
+<script src="../js/timeline-etapas01.js"></script>
+<script src="../js/botonera.js"></script>
+<script src="../js/footer.js"></script>
+
+</body>
+</html>

@@ -5,905 +5,224 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="facebook-domain-verification" content="v8z75ap2p165axez0kvecm3z39tufw" />
 
-<!-- ════════════════════════════════════════════════════════════
-     TÍTULO DE LA PESTAÑA DEL NAVEGADOR
-     Cambia el texto entre las etiquetas <title> </title>
-     ════════════════════════════════════════════════════════════ -->
 <title>OMH Estudio</title>
 <link rel="icon" type="image/png" href="assets/logos/favicon_omh.png">
 
-<!-- ════════════════════════════════════════════════════════════
-     FUENTES — vienen de Google Fonts (internet)
-     Para cambiar una fuente:
-       1. Ve a fonts.google.com
-       2. Elige una fuente → clic en "Get font" → "Get embed code"
-       3. Reemplaza el <link href="..."> de abajo con el nuevo
-       4. Luego busca el nombre de la fuente en el CSS y reemplázalo
-
-     Fuentes actuales:
-       Títulos grandes   → Lexend Tera
-       Subtítulos        → Playfair Display
-       Textos generales  → Raleway
-     ════════════════════════════════════════════════════════════ -->
 <link href="https://fonts.googleapis.com/css2?family=Lexend+Tera:wght@400;700;900&family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Raleway:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/colores.css">
 
 <style>
   /* ════════════════════════════════════════════════════════════
-     COLORES PRINCIPALES — cambia solo aquí y se actualiza TODO
-     Formato: #RRGGBB (código hexadecimal de color)
-     Puedes buscar "color picker" en Google para elegir colores
+     ESTILOS GLOBALES Y SECCIONES ESTÁTICAS (CTA y FORM)
+     Todo lo modular fue eliminado de aquí.
      ════════════════════════════════════════════════════════════ */
-
-
   * { margin: 0; padding: 0; box-sizing: border-box; }
   html { scroll-behavior: smooth; }
 
   body {
     background: var(--negro);
     color: var(--blanco);
-    font-family: 'Raleway', sans-serif; /* ← fuente general */
+    font-family: 'Raleway', sans-serif;
     font-weight: 400;
     overflow-x: hidden;
-    cursor: none; /* oculta cursor normal, se reemplaza por cursor personalizado */
+    cursor: none; 
   }
 
-  /* ─── ESTILOS DEL BOTÓN HAMBURGUESA ─── */
-  .menu-hamburger {
-      background: transparent; border: none; cursor: none;
-      display: flex; flex-direction: column; justify-content: space-between;
-      width: 25px; height: 18px; padding: 0; position: relative; z-index: 3001;
-  }
-  .menu-hamburger span {
-      width: 100%; height: 2px; background-color: var(--blanco);
-      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); transform-origin: left center;
-  }
-  .menu-hamburger.open span:nth-child(1) { transform: rotate(45deg) translate(2px, -1px); background-color: var(--rojo); }
-  .menu-hamburger.open span:nth-child(2) { width: 0%; opacity: 0; }
-  .menu-hamburger.open span:nth-child(3) { transform: rotate(-45deg) translate(2px, 1px); background-color: var(--rojo); }
-
-  /* ─── ESTILOS DEL MENÚ DESPLEGABLE (CAJA) ─── */
-  .menu-dropdown {
-      position: fixed;
-      top: 90px; /* Queda justo debajo de la navbar */
-      right: 4rem; /* Alineado al padding derecho de tu navbar */
-      background-color: var(--gris-oscuro);
-      border: 1px solid var(--gris-borde);
-      border-radius: 12px;
-      padding: 2rem;
-      z-index: 3000;
-      min-width: 340px;
-      box-shadow: 0 15px 40px rgba(0,0,0,0.9);
-      
-      /* Animación de entrada de arriba hacia abajo */
-      opacity: 0;
-      visibility: hidden;
-      transform: translateY(-20px);
-      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-
-  .menu-dropdown.active {
-      opacity: 1;
-      visibility: visible;
-      transform: translateY(0);
-  }
-
-  .menu-subtitle { 
-      font-family: 'Raleway', sans-serif; font-size: 0.65rem; font-weight: 700; 
-      letter-spacing: 0.2em; text-transform: uppercase; color: var(--rojo); 
-      margin-bottom: 1.5rem; border-bottom: 1px solid var(--gris-borde); padding-bottom: 1rem;
-  }
-  .menu-nav-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 1.2rem; }
-  
-  .menu-link { 
-      font-family: 'Lexend Tera', sans-serif; font-size: 0.75rem; font-weight: 700; 
-      color: var(--blanco); text-decoration: none; text-transform: uppercase; 
-      display: flex; align-items: center; gap: 1rem; 
-      transition: color 0.3s, transform 0.3s; cursor: none; letter-spacing: 0.05em;
-  }
-  
-  /* Efecto al pasar el cursor: Cambia a amarillo y se desliza ligeramente a la derecha */
-  .menu-link:hover { color: var(--amarillo); transform: translateX(8px); }
-  .menu-link span { font-size: 1.1rem; } /* Tamaño del emoji */
-
-  /* ─── RESPONSIVE: ADAPTACIÓN A CELULARES ─── */
-  @media (max-width: 900px) {
-    .nav-links { display: none !important; }
-    .menu-dropdown {
-        right: 1.5rem; /* Márgenes para móvil */
-        left: 1.5rem;
-        top: 80px;
-        min-width: auto;
-    }
-  }
-
-  /* ─── CURSOR PERSONALIZADO ─── */
+  /* ─── CURSOR PERSONALIZADO GLOBAL ─── */
   #cursor {
-    position: fixed;
-    width: 10px; height: 10px;
-    background: var(--rojo);
-    border-radius: 50%;
-    pointer-events: none;
-    z-index: 9999;
-    transform: translate(-50%, -50%);
-    transition: transform 0.1s, background 0.2s;
+    position: fixed; width: 10px; height: 10px; background: var(--color-seccion);
+    border-radius: 50%; pointer-events: none; z-index: 9999;
+    transform: translate(-50%, -50%); transition: transform 0.1s, background 0.2s;
   }
   #cursor-ring {
-    position: fixed;
-    width: 36px; height: 36px;
-    border: 1px solid rgba(204,0,0,0.4);
-    border-radius: 50%;
-    pointer-events: none;
-    z-index: 9998;
-    transform: translate(-50%, -50%);
-    transition: transform 0.15s ease, border-color 0.2s;
+    position: fixed; width: 36px; height: 36px; border: 1px solid rgba(204,0,0,0.4);
+    border-radius: 50%; pointer-events: none; z-index: 9998;
+    transform: translate(-50%, -50%); transition: transform 0.15s ease, border-color 0.2s;
   }
 
-  /* ─── BARRA DE NAVEGACIÓN (menú superior) ─── */
-  nav {
-    position: fixed;
-    top: 0; left: 0; right: 0;
-    z-index: 100;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 1.5rem 4rem;
-    background: linear-gradient(to bottom, rgba(0,0,0,0.9), transparent);
-    transition: background 0.3s;
-  }
-  nav.scrolled {
-    background: rgba(0,0,0,0.95);
-    border-bottom: 1px solid var(--gris-borde);
-  }
-  .nav-logo { display: flex; align-items: center; gap: 0.75rem; text-decoration: none; }
-  .nav-logo img { height: 36px; object-fit: contain; }
-  .nav-links { display: flex; gap: 2.5rem; list-style: none; }
-  .nav-links a {
-    color: rgba(255,255,255,0.7);
-    text-decoration: none;
-    font-family: 'Raleway', sans-serif;
-    font-size: 0.75rem;
-    font-weight: 600;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    transition: color 0.2s;
-  }
-  .nav-links a:hover { color: var(--amarillo); }
-  .nav-cta {
-    background: transparent;
-    border: 1px solid var(--rojo);
-    color: var(--blanco);
-    padding: 0.6rem 1.5rem;
-    font-family: 'Raleway', sans-serif;
-    font-size: 0.7rem;
-    font-weight: 600;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    text-decoration: none;
-    transition: background 0.2s, color 0.2s;
-    cursor: none;
-  }
-  .nav-cta:hover { background: var(--rojo); }
-
-  /* ─── HERO (pantalla de inicio con video) ─── */
-  #hero {
-    position: relative;
-    height: 100vh;
-    min-height: 700px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-  }
-  /* Contenedor del video de fondo */
-  .hero-video-bg {
-    position: absolute;
-    inset: 0;
-    z-index: 0;
-    background: var(--negro);
-  }
-  .hero-video-bg video {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;   /* el video llena toda la pantalla sin deformarse */
-    opacity: 0.95;       /* ← ajusta la transparencia del video: 0=invisible, 1=opaco */
-  }
-  /* Capa oscura encima del video para que el texto sea legible */
-  .hero-overlay {
-    position: absolute;
-    inset: 0;
-    background: rgba(0,0,0,0.35); /* ← ajusta el 0.35 para más o menos oscuridad */
-    z-index: 1;
-  }
-  /* Viñeta (bordes más oscuros, efecto cinematográfico) */
-  .hero-vignette {
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,0.7) 100%);
-    z-index: 2;
-  }
-  /* Contenido del hero (texto y botones) encima del video */
-  .hero-content {
-    position: relative;
-    z-index: 3;
-    text-align: center;
-    max-width: 900px;
-    padding: 0 2rem;
-    animation: hero-in 1.4s cubic-bezier(0.16,1,0.3,1) both;
-    animation-delay: 0.3s;
-  }
-  @keyframes hero-in {
-    from { opacity: 0; transform: translateY(30px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-
-  /* ════════════════════════════════════════════════════════════
-     TEXTOS DEL HERO — para editar los textos busca la sección
-     <!-- HERO --> más abajo en el HTML
-     ════════════════════════════════════════════════════════════ */
-  .hero-label {
-    font-family: 'Raleway', sans-serif;
-    font-size: 0.7rem;
-    font-weight: 600;
-    letter-spacing: 0.3em;
-    text-transform: uppercase;
-    color: var(--rojo);
-    margin-bottom: 18rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 1rem;
-  }
-  .hero-label::before, .hero-label::after {
-    content: ''; display: block; width: 40px; height: 1px; background: var(--rojo);
-  }
-  .hero-tagline {
-    font-family: 'Raleway', sans-serif;
-    font-size: clamp(1rem, 2.5vw, 1.5rem);
-    font-weight: 400;
-    font-style: italic;
-    color: rgba(255,255,255,0.8);
-    line-height: 1.6;
-    max-width: 600px;
-    margin: 0 auto 3rem;
-    text-shadow: 0 2px 20px rgba(0,0,0,0.8);
-    text-align: center
-  }
-  .hero-tagline em { color: var(--amarillo); font-style: normal; }
-
-  /* Botones del hero */
-  .hero-ctas { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
-  .btn-primary {
-    background: var(--rojo);
-    color: var(--blanco);
-    padding: 0.9rem 2.5rem;
-    text-decoration: none;
-    font-family: 'Raleway', sans-serif;
-    font-size: 0.75rem;
-    font-weight: 700;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    transition: transform 0.2s, box-shadow 0.2s;
-    cursor: none;
-  }
-  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(204,0,0,0.4); }
-  .btn-secondary {
-    background: transparent;
-    color: var(--blanco);
-    padding: 0.9rem 2.5rem;
-    text-decoration: none;
-    font-family: 'Raleway', sans-serif;
-    font-size: 0.75rem;
-    font-weight: 700;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    border: 1px solid rgba(255,255,255,0.3);
-    transition: border-color 0.2s, color 0.2s;
-    cursor: none;
-  }
-  .btn-secondary:hover { border-color: var(--amarillo); color: var(--amarillo); }
-
-  /* Indicador de scroll */
-  .hero-scroll {
-    position: absolute;
-    bottom: 2.5rem; left: 50%;
-    transform: translateX(-50%);
-    z-index: 3;
-    display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
-    opacity: 0.5;
-  }
-  .hero-scroll span { font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; }
-  .scroll-line {
-    width: 1px; height: 40px;
-    background: linear-gradient(to bottom, var(--blanco), transparent);
-    animation: scroll-drop 1.5s ease-in-out infinite;
-  }
-  @keyframes scroll-drop {
-    0%, 100% { opacity: 0.4; transform: translateY(0); }
-    50% { opacity: 1; transform: translateY(6px); }
-  }
-
-  /* ─── SECCIONES GENERALES ─── */
+  /* ─── CLASES ESTRUCTURALES GLOBALES ─── */
   section { padding: 7rem 0; }
   .container { max-width: 1200px; margin: 0 auto; padding: 0 4rem; }
+  
   .section-label {
-    font-family: 'Raleway', sans-serif;
-    font-size: 0.65rem; font-weight: 700;
-    letter-spacing: 0.3em; text-transform: uppercase;
-    color: var(--rojo); margin-bottom: 1.5rem;
-    display: flex; align-items: center; gap: 1rem;
+    font-family: 'Raleway', sans-serif; font-size: 0.65rem; font-weight: 700;
+    letter-spacing: 0.3em; text-transform: uppercase; color: var(--color-seccion); 
+    margin-bottom: 1.5rem; display: flex; align-items: center; gap: 1rem;
   }
-  .section-label::before { content: ''; display: block; width: 24px; height: 1px; background: var(--rojo); }
+  .section-label::before { content: ''; display: block; width: 24px; height: 1px; background: var(--color-seccion); }
+  
   .section-title {
-    font-family: 'Lexend Tera', sans-serif; /* ← fuente de títulos grandes */
-    font-size: clamp(2rem, 5vw, 3.5rem);
-    font-weight: 900; line-height: 0.95;
-    letter-spacing: -0.02em; text-transform: uppercase;
-    margin-bottom: 1.5rem;
+    font-family: 'Lexend Tera', sans-serif; font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 900; line-height: 0.95; letter-spacing: -0.02em; text-transform: uppercase; margin-bottom: 1.5rem;
   }
-  .section-title em { color: var(--rojo); font-style: normal; }
-  .section-title .amarillo { color: var(--amarillo); }
+  .section-title em { color: var(--color-seccion); font-style: normal; }
+  .section-title .amarillo { color: var(--color-secundario); }
+  
   .section-sub {
-    font-family: 'Playfair Display', serif; /* ← fuente de subtítulos */
-    font-size: 1.15rem; font-style: italic;
+    font-family: 'Playfair Display', serif; font-size: 1.15rem; font-style: italic;
     color: rgba(255,255,255,0.5); line-height: 1.7; max-width: 560px;
   }
 
-  /* ─── SHOWREEL ─── */
-  #showreel { background: var(--negro); padding: 5rem 0; }
-  .showreel-wrapper { position: relative; max-width: 1100px; margin: 3rem auto 0; padding: 0 4rem; }
-  .video-frame {
-    position: relative; aspect-ratio: 16/9;
-    background: var(--gris-suave); border: 1px solid var(--gris-borde); overflow: hidden;
+  /* ─── BOTONES GLOBALES (Usados en CTA y Formularios) ─── */
+  .btn-primary {
+    background: var(--color-seccion); color: var(--blanco); padding: 0.9rem 2.5rem;
+    text-decoration: none; font-family: 'Raleway', sans-serif; font-size: 0.75rem;
+    font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase;
+    transition: transform 0.2s, box-shadow 0.2s; cursor: none;
   }
-  .video-frame .bracket { position: absolute; width: 24px; height: 24px; z-index: 3; pointer-events: none; }
-  .video-frame .bracket.tl { top:12px; left:12px; border-top:2px solid var(--rojo); border-left:2px solid var(--rojo); }
-  .video-frame .bracket.tr { top:12px; right:12px; border-top:2px solid var(--rojo); border-right:2px solid var(--rojo); }
-  .video-frame .bracket.bl { bottom:12px; left:12px; border-bottom:2px solid var(--rojo); border-left:2px solid var(--rojo); }
-  .video-frame .bracket.br { bottom:12px; right:12px; border-bottom:2px solid var(--rojo); border-right:2px solid var(--rojo); }
-  .video-frame iframe { width:100%; height:100%; border:none; display:block; }
-  .video-placeholder {
-    position:absolute; inset:0;
-    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1.5rem;
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(204,0,0,0.4); }
+  
+  .btn-secondary {
+    background: transparent; color: var(--blanco); padding: 0.9rem 2.5rem;
+    text-decoration: none; font-family: 'Raleway', sans-serif; font-size: 0.75rem;
+    font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase;
+    border: 1px solid rgba(255,255,255,0.3); transition: border-color 0.2s, color 0.2s; cursor: none;
   }
-  .play-btn {
-    width:80px; height:80px; border:2px solid var(--rojo); border-radius:50%;
-    display:flex; align-items:center; justify-content:center;
-    transition:background 0.2s, transform 0.2s; cursor:none;
-  }
-  .play-btn:hover { background:rgba(204,0,0,0.15); transform:scale(1.1); }
-  .play-btn svg { width:28px; height:28px; fill:var(--blanco); margin-left:4px; }
-  .video-placeholder p { font-size:0.75rem; letter-spacing:0.2em; text-transform:uppercase; color:rgba(255,255,255,0.3); }
+  .btn-secondary:hover { border-color: var(--color-secundario); color: var(--color-secundario); }
 
-  /* ─── SERVICIOS ─── */
-  #servicios { background: var(--gris-oscuro); }
-  .servicios-header { display:grid; grid-template-columns:1fr 1fr; gap:4rem; margin-bottom:5rem; align-items:end; }
-  .servicios-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:var(--gris-borde); border:1px solid var(--gris-borde); }
-  .servicio-card { background:var(--negro); padding:2.5rem 2rem; position:relative; overflow:hidden; transition:background 0.3s; }
-  .servicio-card::before {
-    content:''; position:absolute; top:0; left:0; width:100%; height:2px;
-    background:var(--rojo); transform:scaleX(0); transform-origin:left; transition:transform 0.3s;
+  /* ─── FRASE HERO (Tagline estático) ─── */
+  .hero-tagline {
+    font-family: 'Raleway', sans-serif; font-size: clamp(1rem, 2.5vw, 1.5rem);
+    font-weight: 400; font-style: italic; color: rgba(255,255,255,0.8);
+    line-height: 1.6; max-width: 600px; margin: 0 auto 3rem;
+    text-shadow: 0 2px 20px rgba(0,0,0,0.8); text-align: center
   }
-  .servicio-card:hover { background: var(--gris-suave); }
-  .servicio-card:hover::before { transform: scaleX(1); }
-  .servicio-num { font-family:'Lexend Tera',sans-serif; font-size:0.6rem; letter-spacing:0.2em; color:var(--rojo); margin-bottom:1.5rem; opacity:0.8; }
-  .servicio-icon { font-size:2rem; margin-bottom:1.2rem; display:block; }
-  .servicio-titulo { font-family:'Lexend Tera',sans-serif; font-size:0.85rem; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:0.75rem; line-height:1.3; }
-  .servicio-desc { font-family:'Raleway',sans-serif; font-size:0.85rem; color:var(--gris-texto); line-height:1.7; }
-  .servicio-tags { margin-top:1.2rem; display:flex; flex-wrap:wrap; gap:0.4rem; }
-  .tag { font-size:0.6rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--amarillo); border:1px solid rgba(244,212,49,0.2); padding:0.2rem 0.5rem; }
+  .hero-tagline em { color: var(--color-secundario); font-style: normal; }
 
-  /* ─── PROYECTOS ─── */
-  #proyectos { background: var(--negro); }
-  .proyectos-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:var(--gris-borde); margin-top:4rem; border:1px solid var(--gris-borde); }
-  .proyecto-card { position:relative; aspect-ratio:4/3; overflow:hidden; background:var(--gris-medio); cursor:none; }
-  .proyecto-card:first-child { grid-column:span 2; aspect-ratio:8/5; }
-  .proyecto-bg {
-    position:absolute; inset:0;
-    background-size:cover; background-position:center;
-    transition:transform 0.5s cubic-bezier(0.16,1,0.3,1);
-  }
-  .proyecto-card:hover .proyecto-bg { transform:scale(1.05); }
-  .proyecto-placeholder { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; opacity:0.06; }
-  .proyecto-placeholder svg { width:70px; height:70px; }
-  .proyecto-add-label {
-    position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
-    flex-direction:column; gap:0.5rem; opacity:0.12;
-    font-family:'Raleway',sans-serif; font-size:0.7rem; letter-spacing:0.2em; text-transform:uppercase; z-index:1;
-  }
-  .proyecto-overlay {
-    position:absolute; inset:0;
-    background:linear-gradient(to top, rgba(0,0,0,0.92) 0%, transparent 60%);
-    z-index:2; display:flex; flex-direction:column; justify-content:flex-end; padding:2rem;
-    transform:translateY(8px); opacity:0; transition:opacity 0.3s, transform 0.3s;
-  }
-  .proyecto-card:hover .proyecto-overlay { opacity:1; transform:translateY(0); }
-  .proyecto-cat { font-size:0.6rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--amarillo); margin-bottom:0.4rem; }
-  .proyecto-nombre { font-family:'Lexend Tera',sans-serif; font-size:0.9rem; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; }
-  .proyecto-label-static { position:absolute; bottom:1.5rem; left:1.5rem; z-index:3; pointer-events:none; }
-  .proyecto-cat-static { font-size:0.55rem; letter-spacing:0.2em; text-transform:uppercase; color:rgba(244,212,49,0.5); margin-bottom:0.3rem; }
-  .proyecto-nombre-static { font-family:'Lexend Tera',sans-serif; font-size:0.75rem; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; color:rgba(255,255,255,0.4); }
-
-  /* ─── FILOSOFÍA ─── */
-  #filosofia { background:var(--gris-oscuro); position:relative; overflow:hidden; }
-  .filosofia-bg-text {
-    position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
-    font-family:'Lexend Tera',sans-serif; font-size:clamp(6rem,14vw,14rem); font-weight:900;
-    text-transform:uppercase; letter-spacing:-0.05em; color:rgba(255,255,255,0.018);
-    white-space:nowrap; pointer-events:none; user-select:none; z-index:0;
-  }
-  .filosofia-content { position:relative; z-index:1; display:grid; grid-template-columns:1fr 1fr; gap:6rem; align-items:center; }
-  .filosofia-quote {
-    font-family:'Playfair Display',serif; font-size:clamp(1.5rem,3vw,2.2rem);
-    font-weight:400; font-style:italic; line-height:1.4; color:var(--blanco);
-    border-left:2px solid var(--rojo); padding-left:2rem;
-  }
-  .filosofia-quote em { color:var(--amarillo); font-style:italic; }
-  .filosofia-pilares { display:flex; flex-direction:column; gap:1.5rem; }
-  .pilar { display:flex; gap:1.2rem; align-items:flex-start; }
-  .pilar-num { font-family:'Lexend Tera',sans-serif; font-size:0.6rem; font-weight:700; color:var(--rojo); margin-top:0.15rem; min-width:2rem; }
-  .pilar-txt h4 { font-family:'Raleway',sans-serif; font-size:0.85rem; font-weight:700; text-transform:uppercase; letter-spacing:0.1em; margin-bottom:0.3rem; }
-  .pilar-txt p { font-size:0.85rem; color:var(--gris-texto); line-height:1.6; }
-
-  /* ─── TECNOLOGÍA ─── */
-  #tecnologia { background:var(--negro); }
-  .tech-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:var(--gris-borde); border:1px solid var(--gris-borde); margin-top:4rem; }
-  .tech-item { background:var(--negro); padding:2.5rem 1.5rem; text-align:center; transition:background 0.25s; }
-  .tech-item:hover { background:var(--gris-suave); }
-  .tech-icon { font-size:2.2rem; margin-bottom:1rem; display:block; }
-  .tech-name { font-family:'Lexend Tera',sans-serif; font-size:0.65rem; font-weight:700; text-transform:uppercase; letter-spacing:0.1em; color:var(--blanco); margin-bottom:0.4rem; }
-  .tech-desc { font-size:0.8rem; color:var(--gris-texto); line-height:1.5; }
-
-  /* ─── CTA FINAL ─── */
+  /* ─── CTA FINAL ESTÁTICO ─── */
   #cta { background:var(--negro); padding:8rem 0; position:relative; overflow:hidden; }
   .cta-bg { position:absolute; inset:0; background:radial-gradient(ellipse 60% 50% at 50% 50%, rgba(204,0,0,0.06) 0%, transparent 70%); z-index:0; }
   .cta-content { position:relative; z-index:1; text-align:center; max-width:700px; margin:0 auto; padding:0 2rem; }
   .cta-title { font-family:'Lexend Tera',sans-serif; font-size:clamp(2rem,5vw,3.5rem); font-weight:900; text-transform:uppercase; letter-spacing:-0.02em; line-height:0.95; margin-bottom:1.5rem; }
-  .cta-title span { color:var(--rojo); }
+  .cta-title span { color:var(--color-seccion); }
   .cta-sub { font-family:'Playfair Display',serif; font-size:1.1rem; font-style:italic; color:rgba(255,255,255,0.45); margin-bottom:3rem; line-height:1.7; }
-  .cta-sub em { color:var(--amarillo); font-style:normal; }
+  .cta-sub em { color:var(--color-secundario); font-style:normal; }
   .cta-btns { display:flex; gap:1rem; justify-content:center; flex-wrap:wrap; }
 
-  /* ─── BARRA DE REDES SOCIALES ─── */
-  .social-strip {
-    background:var(--gris-oscuro);
-    border-top:1px solid var(--gris-borde); border-bottom:1px solid var(--gris-borde);
-    padding:2rem 4rem; display:flex; align-items:center; justify-content:center; gap:2rem; flex-wrap:wrap;
-  }
-  .social-strip p { font-size:0.65rem; letter-spacing:0.2em; text-transform:uppercase; color:rgba(255,255,255,0.3); }
-  .social-links { display:flex; gap:1.5rem; align-items:center; flex-wrap:wrap; justify-content:center; }
-  .social-link {
-    display:flex; align-items:center; gap:0.5rem;
-    color:rgba(255,255,255,0.4); text-decoration:none;
-    font-size:0.7rem; letter-spacing:0.1em; text-transform:uppercase; font-weight:600;
-    transition:color 0.2s; cursor:none;
-  }
-  .social-link:hover { color:var(--amarillo); }
-  .social-link svg { width:18px; height:18px; fill:currentColor; }
-
-  /* ─── FOOTER ─── */
-  footer { background:var(--negro); padding:4rem; border-top:1px solid var(--gris-borde); }
-  .footer-inner { max-width:1200px; margin:0 auto; display:grid; grid-template-columns:2fr 1fr 1fr; gap:4rem; align-items:start; margin-bottom:4rem; }
-  .footer-logo img { height:32px; margin-bottom:1.2rem; display:block; }
-  .footer-desc { font-size:0.85rem; color:var(--gris-texto); line-height:1.8; max-width:300px; }
-  .footer-col h5 { font-family:'Lexend Tera',sans-serif; font-size:0.6rem; font-weight:700; letter-spacing:0.2em; text-transform:uppercase; color:rgba(255,255,255,0.3); margin-bottom:1.2rem; }
-  .footer-col ul { list-style:none; }
-  .footer-col ul li { margin-bottom:0.7rem; }
-  .footer-col ul li a { font-size:0.85rem; color:var(--gris-texto); text-decoration:none; transition:color 0.2s; cursor:none; }
-  .footer-col ul li a:hover { color:var(--blanco); }
-  .footer-bottom { max-width:1200px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; border-top:1px solid var(--gris-borde); padding-top:2rem; flex-wrap:wrap; gap:1rem; }
-  .footer-copy { font-size:0.75rem; color:rgba(255,255,255,0.2); letter-spacing:0.05em; }
-  .footer-copy span { color:var(--rojo); }
-  .footer-brand { font-family:'Lexend Tera',sans-serif; font-size:0.6rem; font-weight:700; letter-spacing:0.2em; text-transform:uppercase; color:rgba(255,255,255,0.15); }
-
-  /* ─── ANIMACIONES DE APARICIÓN AL HACER SCROLL ─── */
+  /* ─── ANIMACIONES DE APARICIÓN SCROLL ─── */
   .reveal { opacity:0; transform:translateY(30px); transition:opacity 0.7s cubic-bezier(0.16,1,0.3,1), transform 0.7s cubic-bezier(0.16,1,0.3,1); }
   .reveal.visible { opacity:1; transform:translateY(0); }
   .reveal-delay-1 { transition-delay:0.1s; }
   .reveal-delay-2 { transition-delay:0.2s; }
   .reveal-delay-3 { transition-delay:0.3s; }
 
-  /* ════════════════════════════════════════════════════════════
-     RESPONSIVE — adaptaciones automáticas por tamaño de pantalla
-     @media (max-width: 900px) = tablets
-     @media (max-width: 600px) = smartphones
-     No necesitas editar esto a menos que quieras cambiar
-     cómo se ven las secciones en móvil.
-     ════════════════════════════════════════════════════════════ */
+  /* ─── RESPONSIVE BÁSICO ─── */
   @media (max-width: 900px) {
-    nav { padding:1.2rem 1.5rem; }
-    .nav-links { display:none; }
     .container { padding:0 1.5rem; }
-    .servicios-header { grid-template-columns:1fr; gap:2rem; }
-    .servicios-grid { grid-template-columns:1fr 1fr; }
-    .proyectos-grid { grid-template-columns:1fr 1fr; }
-    .proyecto-card:first-child { grid-column:span 2; }
-    .filosofia-content { grid-template-columns:1fr; gap:3rem; }
-    .tech-grid { grid-template-columns:repeat(2,1fr); }
-    .footer-inner { grid-template-columns:1fr; gap:2.5rem; }
-    .footer-bottom { flex-direction:column; text-align:center; }
-    .social-strip { padding:1.5rem; }
-    footer { padding:3rem 1.5rem; }
   }
   @media (max-width: 600px) {
     section { padding:5rem 0; }
-    .servicios-grid { grid-template-columns:1fr; }
-    .proyectos-grid { grid-template-columns:1fr; }
-    .proyecto-card:first-child { grid-column:span 1; aspect-ratio:4/3; }
-    .tech-grid { grid-template-columns:repeat(2,1fr); }
-    .hero-ctas { flex-direction:column; align-items:center; }
-    .showreel-wrapper { padding:0 1.5rem; }
   }
 </style>
 </head>
-<body>
-  <body class="page-index"></body>
 
-<!-- ═══════════════════════════════════════════════════════════════
-     CURSORES PERSONALIZADOS — no editar
-     ═══════════════════════════════════════════════════════════════ -->
+<body class="page-index">
+
 <div id="cursor"></div>
 <div id="cursor-ring"></div>
 
-
-<!-- ═══════════════════════════════════════════════════════════════
-     BARRA DE NAVEGACIÓN SUPERIOR
-     Para cambiar los textos del menú: edita el texto entre <a> </a>
-     Para cambiar a dónde lleva cada enlace: cambia el href="#nombre"
-       (el # apunta a la sección con ese id más abajo en la página)
-     ═══════════════════════════════════════════════════════════════ -->
-
-     <!-- LLAMADA AL CODIGO DE JS PARA QUE EL MENU SUPERIOR SEA PARAMETRICO-->
 <div id="navbar-dinamico"></div>
 
+<div id="hero-index-dinamico"></div>
+<script>
+  window.heroIndexConfig = {
+    videoPath: "assets/videos/OMH_Introloop.mp4",
+    label: "Estudio Creativo · Producción Visual",
+    mainLogoPath: "", 
+    centerGap: "50vh",
 
-<!-- ═══════════════════════════════════════════════════════════════
-     SECCIÓN HERO — PANTALLA DE INICIO CON VIDEO EN LOOP
-     El video llena toda la pantalla como fondo.
-     ─────────────────────────────────────────────────────────────
-     PARA CAMBIAR EL VIDEO:
-       Reemplaza "assets/videos/OMH_Introloop.mp4" con la ruta
-       a tu nuevo archivo de video.
+// ¡AQUÍ ESTÁ LA MAGIA INTERACTIVA!
+    videoOpacity: 1.0,     // 1.0 = Video brillante al 100% de su capacidad original
+    overlayOpacity: 0.0,   // 0.0 = Remueve por completo la cortina oscura transparente
+    vignetteOpacity: 1.0,  // 0.0 = Elimina el degradado oscuro circular de las esquinas
 
-     PARA AJUSTAR LA OPACIDAD DEL VIDEO:
-       En el CSS busca: opacity: 0.85
-       Sube el número (máx 1.0) para más brillo, bájalo para más oscuro.
+    btnPrimary: { text: "Ver servicios", url: "#servicios" },
+    btnSecondary: { text: "▶&nbsp; Showreel", url: "#showreel" }
+  };
+</script>
 
-     PARA AJUSTAR EL OVERLAY OSCURO ENCIMA DEL VIDEO:
-       En el CSS busca: background: rgba(0,0,0,0.35)
-       Sube el último número para más oscuridad, bájalo para menos.
-     ═══════════════════════════════════════════════════════════════ -->
-<section id="hero">
+<p class="hero-tagline">
+  "Transformamos ideas, experiencias y conceptos en
+  <em>contenido visual de alto impacto</em>.
+  Narrativa, diseño y tecnología al servicio de tu marca"
+</p>
 
-  <!-- VIDEO DE FONDO EN LOOP -->
-  <div class="hero-video-bg">
-    <video autoplay muted loop playsinline>
-      <!--
-        src = ruta al video
-        Si el video no carga, el navegador muestra el fondo negro
-        autoplay = empieza solo
-        muted = sin sonido (requerido para autoplay en navegadores)
-        loop = se repite indefinidamente
-        playsinline = funciona en iPhone sin pantalla completa
-      -->
-      <source src="assets/videos/OMH_Introloop.mp4" type="video/mp4">
-    </video>
-  </div>
-
-  <!-- Capa oscura sobre el video (mejora legibilidad del texto) -->
-  <div class="hero-overlay"></div>
-  <!-- Efecto de viñeta en los bordes -->
-  <div class="hero-vignette"></div>
-
-  <!-- CONTENIDO DEL HERO (texto y botones) -->
-  <div class="hero-content">
-
-    <!-- ── Etiqueta pequeña arriba del eslogan ──────────────────
-         Cambia el texto si quieres otra descripción corta       -->
-    <div class="hero-label">Estudio Creativo · Producción Visual</div>
-
-    <!-- ── Botones de acción ─────────────────────────────────────
-         href="#servicios" → scroll a la sección de servicios
-         href="#showreel"  → scroll al showreel
-         Puedes cambiar el texto de los botones libremente        -->
-    <div class="hero-ctas">
-      <a href="#servicios" class="btn-primary">Ver servicios</a>
-      <a href="#showreel" class="btn-secondary">▶&nbsp; Showreel</a>
-    </div>
-
-  </div>
-
-  <!-- Indicador de scroll (flecha animada abajo) -->
-  <div class="hero-scroll">
-    <span>Scroll</span>
-    <div class="scroll-line"></div>
-  </div>
-
-</section>
-
-    <!-- ── Frase principal / tagline ────────────────────────────
-         El texto entre <em> aparece en color amarillo          -->
-    <p class="hero-tagline">
-      "Transformamos ideas, experiencias y conceptos en
-      <em>contenido visual de alto impacto</em>.
-      Narrativa, diseño y tecnología al servicio de tu marca"
-    </p>
-
-<!-- ═══════════════════════════════════════════════════════════════
-     SECCIÓN SHOWREEL
-     ─────────────────────────────────────────────────────────────
-     SE SUSTITUYÓ POR UN MODULO DE JAVASCRIPT, AQUÍ LLAMAMOS A ESE MODULO PARA QUE SE ADAPTE A LOS COLORES DE LA PÁGINA Y
-     EDITAR LOS TEXTOS Y EL LINNK PARA QUE SEA PERSONALIZADO DE CADA PÁGINA
-     ═══════════════════════════════════════════════════════════════ -->
 <div id="showreel-dinamico"></div>
-
 <script>
   window.showreelConfig = {
     label: "Showreel",
     titleHtml: "Nuestro <em>trabajo</em>",
     youtubeId: "qUj9q0LFO7g",
     bottomText: "PRODUCTION REEL 2026",
-    bg: "negro" // Aquí lo dejas en fondo puramente negro
+    bg: "negro"
   };
 </script>
 
+<div id="video-showcase-dinamico"></div>
+<script>
+  window.videoShowcaseConfig = {
+    label: "Portafolio",
+    titleHtml: "Showcase <span style='color: var(--color-secundario);'>OMH</span>",
+    btnText: "Ver más en Instagram",
+    btnUrl: "https://www.instagram.com/omh_estudio/",
+    items: [
+      { 
+        linkUrl: "/pages/archviz.html", /* 🔗 AQUÍ PONES TU ENLACE INTERNO O EXTERNO */
+        linkTarget: "_self",                   /* Usa "_blank" si quieres que abra en otra pestaña */
+        videoSrc: "../assets/videos/vid_gallery01.mp4", 
+        catStatic: "", nameStatic: "", 
+        catHover: "Contenido digital e interactivo", nameHover: "Experiencias memorables" 
+      },
+      { 
+        linkUrl: "/pages/anim_vfx.html", /* 🔗 ENLACE EXTERNO DE EJEMPLO */
+        linkTarget: "_blank", 
+        videoSrc: "../assets/videos/vid_gallery02.mp4", 
+        catStatic: "", nameStatic: "", 
+        catHover: "Ver Trailer", nameHover: "DAWN OF THE CAN | Animated Shortfilm" 
+      },
+      { 
+        linkUrl: "/pages/audiovisual.html", /* 🔗 ENLACE EXTERNO DE EJEMPLO */
+        linkTarget: "_self",
+        videoSrc: "../assets/videos/vid_gallery03.mp4", 
+        catStatic: "", nameStatic: "", 
+        catHover: "Producción Audiovisual e IA aplicada", nameHover: "Documentación para situaciones reales" 
+      },
+      { 
+        linkUrl: "/pages/escaneos.html", /* 🔗 ENLACE EXTERNO DE EJEMPLO */
+        linkTarget: "_self",
+        videoSrc: "../assets/videos/vid_gallery04.mp4", 
+        catStatic: "", nameStatic: "", 
+        catHover: "Documentación y Captura 3D", nameHover: "Tecnología y perspectiva" 
+      },
+      { 
+        linkUrl: "/pages/nosotros.html", /* 🔗 ENLACE EXTERNO DE EJEMPLO */
+        linkTarget: "_self",
+        videoSrc: "../assets/videos/vid_gallery05.mp4", 
+        catStatic: "", nameStatic: "", 
+        catHover: "Categoría 05", nameHover: "Nombre Proyecto 05" 
+      }
+    ]
+  };
+</script>
 
-<!-- ═══════════════════════════════════════════════════════════════
-     SECCIÓN SERVICIOS
-     Para editar cada tarjeta de servicio busca los bloques
-     <div class="servicio-card"> ... </div>
-     Dentro de cada uno puedes cambiar:
-       - El emoji del ícono (servicio-icon)
-       - El título (servicio-titulo)
-       - La descripción (servicio-desc)
-       - Las etiquetas/tags al final
-     ═══════════════════════════════════════════════════════════════ -->
-<section id="servicios">
-  <div class="container">
-    <div class="servicios-header">
-      <div>
-        <div class="section-label reveal">Lo que hacemos</div>
-        <h2 class="section-title reveal reveal-delay-1">Nuestros<br><em>Servicios</em></h2>
-      </div>
-      <div>
-        <!-- Subtítulo de la sección — cámbialo libremente -->
-        <p class="section-sub reveal reveal-delay-2">
-          Producción visual de alto impacto para marcas, espacios y proyectos que exigen excelencia creativa.
-        </p>
-      </div>
-    </div>
-
-    <div class="servicios-grid reveal">
-
-      <!-- ── SERVICIO 01 ── cambia emoji, título, descripción y tags -->
-      <div class="servicio-card">
-        <div class="servicio-num">01</div>
-        <span class="servicio-icon">🏛️</span>
-        <h3 class="servicio-titulo">Visualización Arquitectónica</h3>
-        <p class="servicio-desc">Renders hiperrealistas, animaciones y recorridos que transforman planos en experiencias visuales memorables.</p>
-        <div class="servicio-tags">
-          <span class="tag">Renders 3D</span>
-          <span class="tag">Animación</span>
-          <span class="tag">CGI</span>
-        </div>
-      </div>
-
-      <!-- ── SERVICIO 02 ── -->
-      <div class="servicio-card">
-        <div class="servicio-num">02</div>
-        <span class="servicio-icon">🎬</span>
-        <h3 class="servicio-titulo">Producción Audiovisual</h3>
-        <p class="servicio-desc">Video comercial, fotografía de producto, motion graphics y dirección visual para marcas con identidad.</p>
-        <div class="servicio-tags">
-          <span class="tag">Video</span>
-          <span class="tag">Fotografía</span>
-          <span class="tag">Motion</span>
-        </div>
-      </div>
-
-      <!-- ── SERVICIO 03 ── -->
-      <div class="servicio-card">
-        <div class="servicio-num">03</div>
-        <span class="servicio-icon">🥽</span>
-        <h3 class="servicio-titulo">Experiencias Inmersivas</h3>
-        <p class="servicio-desc">Realidad aumentada, realidad virtual y recorridos 360° que sumergen al usuario en tus espacios y productos.</p>
-        <div class="servicio-tags">
-          <span class="tag">AR / VR</span>
-          <span class="tag">XR</span>
-          <span class="tag">360°</span>
-        </div>
-      </div>
-
-      <!-- ── SERVICIO 04 ── -->
-      <div class="servicio-card">
-        <div class="servicio-num">04</div>
-        <span class="servicio-icon">📡</span>
-        <h3 class="servicio-titulo">Escaneo 3D</h3>
-        <p class="servicio-desc">Escaneos tridimensionales de alta precisión para documentación, prop tech y gemelos digitales de espacios reales.</p>
-        <div class="servicio-tags">
-          <span class="tag">3D Scan</span>
-          <span class="tag">Prop Tech</span>
-          <span class="tag">Matterport</span>
-        </div>
-      </div>
-
-      <!-- ── SERVICIO 05 ── -->
-      <div class="servicio-card">
-        <div class="servicio-num">05</div>
-        <span class="servicio-icon">✦</span>
-        <h3 class="servicio-titulo">Contenido Digital para Marcas</h3>
-        <p class="servicio-desc">Estrategia y producción de contenido visual B2B: desde identidad hasta campañas digitales completas.</p>
-        <div class="servicio-tags">
-          <span class="tag">Branding</span>
-          <span class="tag">B2B</span>
-          <span class="tag">Digital</span>
-        </div>
-      </div>
-
-      <!-- ── SERVICIO 06 ── -->
-      <div class="servicio-card">
-        <div class="servicio-num">06</div>
-        <span class="servicio-icon">🤖</span>
-        <h3 class="servicio-titulo">IA Aplicada a Visual</h3>
-        <p class="servicio-desc">Exploración e integración de herramientas de inteligencia artificial para acelerar y expandir la producción visual.</p>
-        <div class="servicio-tags">
-          <span class="tag">Generative AI</span>
-          <span class="tag">Workflow</span>
-          <span class="tag">Innovation</span>
-        </div>
-      </div>
-
-    </div>
-  </div>
-</section>
-
-
-<!-- ═══════════════════════════════════════════════════════════════
-     SECCIÓN PROYECTOS / PORTAFOLIO
-     ─────────────────────────────────────────────────────────────
-     Para agregar una imagen de proyecto:
-       1. Copia la imagen a la carpeta  assets/images/
-       2. En el div class="proyecto-bg" cambia el style así:
-
-          ANTES (placeholder):
-          style="background: linear-gradient(135deg, #1a0000, #0d0d0d);"
-
-          DESPUÉS (con tu imagen):
-          style="background-image: url('assets/images/tu-imagen.jpg');
-                 background-size: cover; background-position: center;"
-
-       3. Cambia también el texto de categoria y nombre en:
-          - .proyecto-cat-static (categoría, siempre visible)
-          - .proyecto-nombre-static (nombre, siempre visible)
-          - .proyecto-cat (categoría en hover)
-          - .proyecto-nombre (nombre en hover)
-
-     Para agregar más tarjetas, duplica un bloque <div class="proyecto-card">
-     ═══════════════════════════════════════════════════════════════ -->
-<section id="proyectos">
-  <div class="container">
-    <div class="section-label reveal">Portafolio</div>
-    <h2 class="section-title reveal reveal-delay-1">Showcase <span class="amarillo">OMH</span></h2>
-  </div>
-  <div class="container" style="padding-top:0;">
-    <div class="proyectos-grid reveal">
-
-      <!-- ── PROYECTO 01 — tarjeta GRANDE (ocupa 2 columnas) ──
-           Reemplaza el background gradient con tu imagen       -->
-      <div class="proyecto-card">
-        <div class="proyecto-bg"
-             style="background: linear-gradient(135deg, #1a0000 0%, #0d0d0d 100%);">
-          <!--
-            PARA PONER TU IMAGEN aquí:
-            Borra las dos líneas de arriba y pon esto:
-            <div class="proyecto-bg"
-                 style="background-image: url('assets/images/proyecto-01.jpg');
-                        background-size: cover; background-position: center;">
-          -->
-          
-          <!-- AQUI AGREGUE EL VIDEO DEL PRIMER RECUADRO-->
-           <video autoplay muted loop playsinline class="proyecto-bg" style="object-fit: cover; width: 100%; height: 100%; position: absolute; inset: 0;">
-           <source src="assets/videos/vid_gallery01.mp4" type="video/mp4">
-            </video>             
-        </div>
-        
-        <!-- Texto siempre visible — cámbialo con el nombre real -->
-        <div class="proyecto-label-static">
-          <div class="proyecto-cat-static"></div>
-          <div class="proyecto-nombre-static"></div>
-        </div>
-        <!-- Texto en hover -->
-        <div class="proyecto-overlay">
-          <div class="proyecto-cat">Contenido digital e interactivo</div>
-          <div class="proyecto-nombre">Experiencias memorables</div>
-        </div>
-      </div>
-
-      <!-- ── PROYECTO 02 ── -->
-      <div class="proyecto-card" style="aspect-ratio: 4/5;">
-        
-        <video autoplay muted loop playsinline class="proyecto-bg" style="object-fit: cover; width: 100%; height: 100%; position: absolute; inset: 0;">
-          <source src="assets/videos/vid_gallery02.mp4" type="video/mp4">
-        </video>
-
-        <div class="proyecto-label-static">
-          <div class="proyecto-cat-static"></div>
-          <div class="proyecto-nombre-static"></div>
-        </div>
-
-        <div class="proyecto-overlay">
-          <div class="proyecto-cat">Ver Trailer</div>
-          <div class="proyecto-nombre">DAWN OF THE CAN | Animated Shortfilm</div>
-        </div>
-
-      </div>
-
-      <!-- ── PROYECTO 03 ── -->
-      <div class="proyecto-card">
-        <video autoplay muted loop playsinline class="proyecto-bg" style="object-fit: cover; width: 100%; height: 100%; position: absolute; inset: 0;">
-          <source src="assets/videos/vid_gallery03.mp4" type="video/mp4">
-        </video>
-        <div class="proyecto-label-static">
-          <div class="proyecto-cat-static"></div>
-          <div class="proyecto-nombre-static"></div>
-        </div>
-        <div class="proyecto-overlay">
-          <div class="proyecto-cat">Producción Audiovisual e IA aplicada</div>
-          <div class="proyecto-nombre">Documentación para situaciones reales</div>
-        </div>
-      </div>
-
-      <!-- ── PROYECTO 04 ── -->
-      <div class="proyecto-card" >
-        <video autoplay muted loop playsinline class="proyecto-bg" style="object-fit: cover; width: 100%; height: 100%; position: absolute; inset: 0;">
-          <source src="assets/videos/vid_gallery04.mp4" type="video/mp4">
-        </video>
-        <div class="proyecto-label-static">
-          <div class="proyecto-cat-static"></div>
-          <div class="proyecto-nombre-static"></div>
-        </div>
-        <div class="proyecto-overlay">
-          <div class="proyecto-cat">Documentación y Captura 3D</div>
-          <div class="proyecto-nombre">Tecnología y perspectiva</div>
-        </div>
-      </div>
-
-      <!-- ── PROYECTO 05 ── -->
-      <div class="proyecto-card">
-        <video autoplay muted loop playsinline class="proyecto-bg" style="object-fit: cover; width: 100%; height: 100%; position: absolute; inset: 0;">
-          <source src="assets/videos/vid_gallery05.mp4" type="video/mp4">
-        </video>
-        <div class="proyecto-label-static">
-          <div class="proyecto-cat-static"></div>
-          <div class="proyecto-nombre-static"></div>
-        </div>
-        <div class="proyecto-overlay">
-          <div class="proyecto-cat">Categoría 05</div>
-          <div class="proyecto-nombre">Nombre Proyecto 05</div>
-        </div>
-      </div>
-
-    </div>
-
-    <!-- Botón para ver más — cambia el href si tienes una galería aparte -->
-    <div style="text-align:center; margin-top:3rem;">
-      <a href="https://www.instagram.com/omh_estudio/" target="_blank" class="btn-secondary">
-        Ver más en Instagram
-      </a>
-    </div>
-
-  </div>
-</section>
-
-<!--===================================================================
-    SECCIÓN DE NUESTROS ALIADOS / CLIENTES
-    Agregar logos para que la barra se esté moviendo
-    continuamente, los logos se nombran como
-    logo1.png , logo2.png, etc
-    ===================================================================-->
+<div id="icon-cards-dinamico"></div>
+<script>
+  window.iconCardsConfig = {
+    label: "Lo que hacemos",
+    titleHtml: "Nuestros<br><em style='color: var(--color-seccion); font-style: normal;'>Servicios</em>",
+    subtitle: "Producción visual de alto impacto para marcas, espacios y proyectos que exigen excelencia creativa.",
+    items: [
+      { icon: "🏛️", title: "Visualización Arquitectónica", desc: "Renders hiperrealistas, animaciones y recorridos que transforman planos en experiencias visuales memorables.", tags: ["Renders 3D", "Animación", "CGI", "IA"] },
+      { icon: "🎬", title: "Producción Audiovisual", desc: "Video comercial, fotografía de producto y dirección visual con identidad para marcas y espacios.", tags: ["Video", "Fotografía", "Dron"] },
+      { icon: "🥽", title: "Experiencias Inmersivas +360°", desc: "Realidad aumentada, realidad virtual y recorridos 360° que sumergen al usuario en tus espacios y productos.", tags: ["AR / VR", "XR", "360°"] },
+      { icon: "📡", title: "Escaneo 3D", desc: "Escaneo tridimensional de alta precisión para documentación: Prop-tech, productos y copias digitales de espacios reales.", tags: ["3D Scan", "Prop Tech", "Reallity Scan", "Gaussian Splatting"] },
+      { icon: "✦", title: "Contenido Digital para Marcas", desc: "Estrategia y producción de contenido visual B2B: desde identidad hasta campañas digitales completas.", tags: ["Branding", "B2B", "Digital", "MKT"] },
+      { icon: "🤖", title: "Animación y VFX", desc: "Animación digital, efectos visuales y motion graphics que combinan narrativa, técnica y estética para producciones de alto impacto.", tags: ["3D", "VFX", "MOTION", "COMPOSITING"] }
+    ]
+  };
+</script>
 
 <div id="marquee-clientes-dinamico"></div>
-
 <script>
   window.clientesMarqConfig = {
     title: "Empresas que confían en nosotros",
@@ -913,296 +232,91 @@
   };
 </script>
 
-<!-- ===================================================================
- SECCIÓN DE FAQ 
- revisar las preguntas frecuentes
- =======================================================================-->
-
-<section id="faq" class="faq-fade-in" style="background: var(--negro); padding: 7rem 0;">
-  <div class="container" style="max-width: 1100px; margin: 0 auto;">
-    
-    <div style="font-family: 'Raleway', sans-serif; font-size: 0.65rem; font-weight: 700; letter-spacing: 0.3em; text-transform: uppercase; color: var(--gris-texto); text-align: center; margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: center; gap: 1rem;">
-      <span style="width: 24px; height: 1px; background: var(--rojo);"></span>¿Dudas? ¡Tenemos la respuesta!<span style="width: 24px; height: 1px; background: var(--rojo);"></span>
-    </div>
-    
-    <h2 style="font-family: 'Lexend Tera', sans-serif; font-size: clamp(1.8rem, 4vw, 2.8rem); font-weight: 900; letter-spacing: -0.02em; text-align: center; margin-bottom: 1.5rem; text-transform: uppercase; line-height: 1.1;">
-        TRAEMOS TUS IDEAS <span style="color: var(--rojo);">A LA VIDA</span>
-    </h2>
-    
-    <p style="font-family: 'Playfair Display', serif; font-size: 1.1rem; font-style: italic; color: rgba(255,255,255,0.5); text-align: center; max-width: 700px; margin: 0 auto 5rem auto; line-height: 1.6;">
-        ¿Te preguntas cómo hacemos magia? Descubre información sobre plazos, revisiones y cómo transformar tu visión en imágenes cautivadoras.
-    </p>
-    
-    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px 30px; margin-bottom: 5rem;">
-        
-        <div class="faq-card" style="border-left: 1px solid var(--gris-borde); padding-left: 20px; transition: transform 0.3s cubic-bezier(0.16,1,0.3,1), border-color 0.3s ease;">
-            <h4 style="font-family: 'Raleway', sans-serif; color: var(--blanco); font-size: 0.85rem; font-weight: 700; margin-top: 0; margin-bottom: 15px; letter-spacing: 0.1em; text-transform: uppercase; transition: color 0.3s ease;">¿QUÉ REALIZAN?</h4>
-            <p style="font-family: 'Raleway', sans-serif; color: var(--gris-texto); font-size: 0.85rem; line-height: 1.7; text-align: justify; margin: 0;">
-                Creamos representaciones fotorrealistas, animaciones 3D, tomas con dron, recorridos de 360° y contenido de video profesional: todo para que tu proyecto destaque.
-            </p>
-        </div>
-
-        <div class="faq-card" style="border-left: 1px solid var(--gris-borde); padding-left: 20px; transition: transform 0.3s cubic-bezier(0.16,1,0.3,1), border-color 0.3s ease;">
-            <h4 style="font-family: 'Raleway', sans-serif; color: var(--blanco); font-size: 0.85rem; font-weight: 700; margin-top: 0; margin-bottom: 15px; letter-spacing: 0.1em; text-transform: uppercase; transition: color 0.3s ease;">¿QUÉ TAN RÁPIDO ENTREGAN?</h4>
-            <p style="font-family: 'Raleway', sans-serif; color: var(--gris-texto); font-size: 0.85rem; line-height: 1.7; text-align: justify; margin: 0;">
-                La mayoría de los proyectos se realizan en 1 a 3 semanas. ¿Tienes un plazo ajustado? Hablemos y aceleremos el proceso.
-            </p>
-        </div>
-
-        <div class="faq-card" style="border-left: 1px solid var(--gris-borde); padding-left: 20px; transition: transform 0.3s cubic-bezier(0.16,1,0.3,1), border-color 0.3s ease;">
-            <h4 style="font-family: 'Raleway', sans-serif; color: var(--blanco); font-size: 0.85rem; font-weight: 700; margin-top: 0; margin-bottom: 15px; letter-spacing: 0.1em; text-transform: uppercase; transition: color 0.3s ease;">¿PUEDO MODIFICAR MIS ENTREGABLES?</h4>
-            <p style="font-family: 'Raleway', sans-serif; color: var(--gris-texto); font-size: 0.85rem; line-height: 1.7; text-align: justify; margin: 0;">
-                ¡Claro! Incluimos rondas de revisión para que tus visuales queden perfectos.
-            </p>
-        </div>
-
-        <div class="faq-card" style="border-left: 1px solid var(--gris-borde); padding-left: 20px; transition: transform 0.3s cubic-bezier(0.16,1,0.3,1), border-color 0.3s ease;">
-            <h4 style="font-family: 'Raleway', sans-serif; color: var(--blanco); font-size: 0.85rem; font-weight: 700; margin-top: 0; margin-bottom: 15px; letter-spacing: 0.1em; text-transform: uppercase; transition: color 0.3s ease;">¿QUÉ ARCHIVOS OBTENGO?</h4>
-            <p style="font-family: 'Raleway', sans-serif; color: var(--gris-texto); font-size: 0.85rem; line-height: 1.7; text-align: justify; margin: 0;">
-                Recibirás imágenes, vídeos o archivos interactivos de alta resolución, listos para la web, la impresión o presentaciones. Formatos a tu medida.
-            </p>
-        </div>
-
-        <div class="faq-card" style="border-left: 1px solid var(--gris-borde); padding-left: 20px; transition: transform 0.3s cubic-bezier(0.16,1,0.3,1), border-color 0.3s ease;">
-            <h4 style="font-family: 'Raleway', sans-serif; color: var(--blanco); font-size: 0.85rem; font-weight: 700; margin-top: 0; margin-bottom: 15px; letter-spacing: 0.1em; text-transform: uppercase; transition: color 0.3s ease;">¿TRABAJAS CON CLIENTES EN EL EXTRANJERO?</h4>
-            <p style="font-family: 'Raleway', sans-serif; color: var(--gris-texto); font-size: 0.85rem; line-height: 1.7; text-align: justify; margin: 0;">
-                ¡Por supuesto! Colaboramos a nivel mundial. Nuestro proceso remoto hace que la distancia no sea un problema.
-            </p>
-        </div>
-
-        <div class="faq-card" style="border-left: 1px solid var(--gris-borde); padding-left: 20px; transition: transform 0.3s cubic-bezier(0.16,1,0.3,1), border-color 0.3s ease;">
-            <h4 style="font-family: 'Raleway', sans-serif; color: var(--blanco); font-size: 0.85rem; font-weight: 700; margin-top: 0; margin-bottom: 15px; letter-spacing: 0.1em; text-transform: uppercase; transition: color 0.3s ease;">¿CÓMO EMPIEZO?</h4>
-            <p style="font-family: 'Raleway', sans-serif; color: var(--gris-texto); font-size: 0.85rem; line-height: 1.7; text-align: justify; margin: 0;">
-                Envíanos tus ideas o planes. Te guiaremos desde el primer boceto hasta el wow final.
-            </p>
-        </div>
-
-    </div>
-
-    <div style="text-align: center;">
-        <a href="https://wa.me/524461328102?text=Hola%20OMH%20Estudio,%20me%20interesa%20solicitar%20un%20servicio." 
-           target="_blank" 
-           class="btn-primary">
-            ¡COMENCEMOS!
-        </a>
-    </div>
-  </div>
-</section>
-
-<style>
-/* Efecto de zoom y cambio de color del borde al pasar el cursor */
-.faq-card:hover {
-    transform: scale(1.03);
-    border-color: var(--rojo) !important;
-}
-
-/* AQUÍ SE HACE LA MAGIA: Al pasar el cursor sobre la tarjeta, la pregunta h4 cambia a Amarillo */
-.faq-card:hover h4 {
-    color: var(--amarillo) !important;
-}
-
-/* Configuración de scroll */
-.faq-fade-in {
-    opacity: 0;
-    transform: translateY(30px);
-    transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-    visibility: hidden;
-}
-.faq-fade-in.visible {
-    opacity: 1;
-    transform: translateY(0);
-    visibility: visible;
-}
-</style>
-
+<div id="text-cards-dinamico"></div>
 <script>
-document.addEventListener("DOMContentLoaded", function() {
-    const faqSection = document.getElementById("faq");
-
-    // 1. Detector de Scroll
-    const scrollObserver = new IntersectionObserver(entries => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                faqSection.classList.add("visible");
-                scrollObserver.unobserve(entry.target);
-            }
-        });
-    }, { threshold: 0.12 });
-    scrollObserver.observe(faqSection);
-
-    // 2. INTEGRACIÓN CON TU CURSOR ROJO: Hace crecer el anillo al pasar por el FAQ
-    const cursorCustom = document.getElementById('cursor');
-    const ringCustom   = document.getElementById('cursor-ring');
-    
-    if (cursorCustom && ringCustom) {
-        document.querySelectorAll('.faq-card').forEach(el => {
-            el.addEventListener('mouseenter', () => {
-                cursorCustom.style.transform = 'translate(-50%,-50%) scale(2)';
-                ringCustom.style.borderColor = 'rgba(244,212,49,0.5)';
-            });
-            el.addEventListener('mouseleave', () => {
-                cursorCustom.style.transform = 'translate(-50%,-50%) scale(1)';
-                ringCustom.style.borderColor = 'rgba(204,0,0,0.4)';
-            });
-        });
+  window.textCardsConfig = {
+    label: "¿Dudas? ¡Tenemos la respuesta!",
+    titleHtml: "TRAEMOS TUS IDEAS <span style='color: var(--color-seccion);'>A LA VIDA</span>",
+    subtitle: "¿Te preguntas cómo hacemos magia? Descubre información sobre plazos, revisiones y cómo transformar tu visión en imágenes cautivadoras.",
+    items: [
+      { title: "¿QUÉ REALIZAN?", text: "Creamos representaciones fotorrealistas, animaciones 3D, tomas con dron, recorridos de 360° y contenido de video profesional: todo para que tu proyecto destaque." },
+      { title: "¿QUÉ TAN RÁPIDO ENTREGAN?", text: "La mayoría de los proyectos se realizan en 1 a 3 semanas. ¿Tienes un plazo ajustado? Hablemos y aceleremos el proceso." },
+      { title: "¿PUEDO MODIFICAR MIS ENTREGABLES?", text: "¡Claro! Incluimos rondas de revisión para que tus visuales queden perfectos." },
+      { title: "¿QUÉ ARCHIVOS OBTENGO?", text: "Recibirás imágenes, vídeos o archivos interactivos de alta resolución, listos para la web, la impresión o presentaciones. Formatos a tu medida." },
+      { title: "¿TRABAJAS CON CLIENTES EN EL EXTRANJERO?", text: "¡Por supuesto! Colaboramos a nivel mundial. Nuestro proceso remoto hace que la distancia no sea un problema." },
+      { title: "¿CÓMO EMPIEZO?", text: "Envíanos tus ideas o planes. Te guiaremos desde el primer boceto hasta el wow final." }
+    ],
+    ctaBtn: {
+      text: "¡COMENCEMOS!",
+      url: "https://wa.me/524461328102?text=Hola%20OMH%20Estudio,%20me%20interesa%20solicitar%20un%20servicio.",
+      target: "_blank"
     }
-});
+  };
 </script>
 
-<!-- ═══════════════════════════════════════════════════════════════
-     SECCIÓN TECNOLOGÍA / STACK
-     Edita nombre y descripción de cada tech-item.
-     ═══════════════════════════════════════════════════════════════ -->
 <div id="tecnologia-dinamica"></div>
-
 <script>
   window.techGridConfig = {
     label: "Stack Creativo",
     titleHtml: "Tecnología &<br><em>Herramientas</em>",
-    bg: "gris", // Alterna entre "negro" y "gris" para cambiar el fondo de la sección
+    bg: "gris", 
     items: [
-      { icon: "🎯", name: "CGI & 3D", desc: "Blender, 3ds Max, Cinema 4D, renders hiperrealistas" },
+      { icon: "🎯", name: "CGI & 3D", desc: "Renders hiperrealistas, Autodesk Maya, 3Ds Max, Blender, Sketchup, Vray, D5, Twinmotion" },
       { icon: "🥽", name: "XR & Inmersivo", desc: "AR, VR, recorridos 360°, Unity, Unreal Engine" },
-      { icon: "📡", name: "Escaneo 3D", desc: "Matterport, LiDAR, fotogrametría y digital twins" },
+      { icon: "📡", name: "Escaneo 3D", desc: "LiDAR, fotogrametría, Gaussian Splatting, Reallity Scan." },
       { icon: "🎬", name: "Post Producción", desc: "After Effects, DaVinci Resolve, Premiere, Nuke" },
       { icon: "✦", name: "Motion Design", desc: "Animation, motion graphics, video mapping" },
-      { icon: "🤖", name: "IA Generativa", desc: "Midjourney, Stable Diffusion, Runway, Sora" },
-      { icon: "📸", name: "Fotografía", desc: "Comercial, arquitectónica, producto y dron" },
-      { icon: "🏗️", name: "Prop Tech", desc: "Soluciones visuales para inmobiliario y arquitectura" }
+      { icon: "🤖", name: "IA Generativa", desc: "Midjourney, Runway, Google Flow, Claude, Suno" },
+      { icon: "📸", name: "Fotografía y Video", desc: "Comercial, arquitectónica, producto y dron" },
+      { icon: "🏗️", name: "Prop Tech", desc: "Soluciones inmobiliarias y visualización arquitectónica." }
     ]
   };
 </script>
 
-<!-- ═══════════════════════════════════════════════════════════════
-     SECCIÓN CTA FINAL (llamada a la acción)
-     Edita el título, subtítulo y botones.
-     ═══════════════════════════════════════════════════════════════ -->
-<section id="cta">
-  <div class="cta-bg"></div>
-  <div class="cta-content">
-    <div class="section-label reveal" style="justify-content:center;">Trabajemos juntos</div>
-    <!-- Título — el texto entre <span> aparece en rojo -->
-    <h2 class="cta-title reveal reveal-delay-1">
-      ¿Listo para<br><span>crear algo</span><br>extraordinario?
-    </h2>
-    <!-- Subtítulo — el texto entre <em> aparece en amarillo -->
-    <p class="cta-sub reveal reveal-delay-2">
-      Cuéntanos tu proyecto. Nosotros nos encargamos de <em>hacerlo realidad.</em>
-    </p>
-    <div class="cta-btns reveal reveal-delay-3">
-      <!-- Botón WhatsApp — ya tiene tu número -->
-      <a href="https://api.whatsapp.com/send/?phone=524461328102&text&type=phone_number&app_absent=0"
-         class="btn-primary" target="_blank">WhatsApp</a>
-      <!-- Botón Email — ya tiene tu correo -->
-      <a href="mailto:contacto@omhestudio.com" class="btn-secondary">Enviar email</a>
-    </div>
-  </div>
-</section>
+<div id="banner-cta-dinamico"></div>
+<script>
+  window.bannerCtaConfig = {
+    id: "cta",
+    bg: "var(--negro)",       // Controla el fondo
+    padding: "6rem 0",        // Controla el espaciado superior e inferior
+    label: "Trabajemos juntos",
+    titleHtml: "¿LISTO PARA<br><span>CREAR ALGO</span><br>EXTRAORDINARIO?",
+    subtitleHtml: "Cuéntanos tu proyecto. Nosotros nos encargamos de <em>hacerlo realidad.</em>",
+    buttons: [
+      { text: "WhatsApp", url: "https://api.whatsapp.com/send/?phone=524461328102&text=Hola", class: "bf-btn-primary", target: "_blank" },
+      { text: "Enviar email", url: "mailto:contacto@omhestudio.com", class: "bf-btn-secondary" }
+    ]
+  };
+</script>
 
-<!-- ____________________________________________________________
- FORMULARIO DE CONTACTO CON FORMSPREE, AGREGADO POR OSCAR
- ___________________________________________________________________-->
-
-<section id="contacto" style="padding: 80px 20px; max-width: 900px; margin: 0 auto; border-top: 1px solid var(--gris-borde, #222);">
-    <h2 style="color: var(--blanco, #fff); font-family: 'Lexend Tera', sans-serif; font-size: 1.5rem; letter-spacing: 2px; text-align: center; margin-bottom: 40px;">
-        ¿DUDAS? <span style="color: var(--rojo, #ff0000);">¡PONTE EN CONTACTO!</span>
+<section id="contacto" style="padding: 80px 20px; max-width: 900px; margin: 0 auto; border-top: 1px solid var(--gris-borde);">
+    <h2 style="color: #fff; font-family: 'Lexend Tera', sans-serif; font-size: 1.5rem; letter-spacing: 2px; text-align: center; margin-bottom: 40px;">
+        ¿DUDAS? <span style="color: var(--color-seccion);">¡PONTE EN CONTACTO!</span>
     </h2>
     
-    <style>
-        /* ─── ESTILOS RESPONSIVOS DEL FORMULARIO ─── */
-        .omh-form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-        }
-        
-        /* En pantallas de móvil (Android/iOS pequeños), apila los inputs a 1 sola columna */
-        @media (max-width: 600px) {
-            .omh-form-row {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        /* Limpieza de los inputs para respetar el Color Maestro global */
-        .omh-input {
-            background: transparent;
-            border: 1px solid var(--gris-borde, #333);
-            color: var(--blanco, #fff);
-            padding: 15px;
-            font-family: 'Raleway', sans-serif;
-            font-size: 0.8rem;
-            width: 100%;
-            box-sizing: border-box;
-            transition: border-color 0.3s;
-        }
-        .omh-input:focus {
-            outline: none;
-            border-color: var(--color-seccion, #ff0000);
-        }
-
-        /* Botón integrado con las interacciones del estudio */
-        .omh-btn-submit {
-            background: var(--color-seccion, #fff);
-            color: var(--negro, #000);
-            border: none;
-            padding: 15px;
-            font-family: 'Lexend Tera', sans-serif;
-            font-size: 0.85rem;
-            font-weight: 700;
-            letter-spacing: 2px;
-            cursor: none; /* Interactúa con tu cursor global */
-            transition: transform 0.2s, box-shadow 0.2s, background 0.3s;
-            margin-top: 10px;
-            text-transform: uppercase;
-        }
-        .omh-btn-submit:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 30px rgba(204,0,0,0.3);
-        }
-        .omh-btn-submit span {
-            color: var(--rojo, #ff0000);
-        }
-    </style>
-
     <form action="https://formspree.io/f/mojrgdvj" method="POST" style="display: flex; flex-direction: column; gap: 15px;">
-        
-        <div class="omh-form-row">
-            <input type="text" name="nombre" class="omh-input" placeholder="NOMBRE" required>
-            <input type="email" name="_replyto" class="omh-input" placeholder="TU EMAIL" required>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+            <input type="text" name="nombre" placeholder="NOMBRE" required 
+                   style="background: transparent; border: 1px solid var(--gris-borde); color: #fff; padding: 15px; font-family: 'Raleway', sans-serif; font-size: 0.8rem;">
+            
+            <input type="email" name="_replyto" placeholder="TU EMAIL" required 
+                   style="background: transparent; border: 1px solid var(--gris-borde); color: #fff; padding: 15px; font-family: 'Raleway', sans-serif; font-size: 0.8rem;">
         </div>
-
-        <input type="text" name="asunto" class="omh-input" placeholder="ASUNTO" required>
-
-        <textarea name="mensaje" class="omh-input" placeholder="¿EN QUÉ TE PODEMOS AYUDAR?" rows="4" required style="resize: none;"></textarea>
-
+        <input type="text" name="asunto" placeholder="ASUNTO" required 
+               style="background: transparent; border: 1px solid var(--gris-borde); color: #fff; padding: 15px; font-family: 'Raleway', sans-serif; font-size: 0.8rem;">
+        <textarea name="mensaje" placeholder="¿EN QUE TE PODEMOS AYUDAR?" rows="4" required 
+                  style="background: transparent; border: 1px solid var(--gris-borde); color: #fff; padding: 15px; font-family: 'Raleway', sans-serif; font-size: 0.8rem; resize: none;"></textarea>
         <input type="hidden" name="_subject" value="Nuevo contacto desde la web OMH">
-
-        <button type="submit" class="omh-btn-submit">
-            ENVIAR <span>♥</span>
+        <button type="submit" style="background: var(--blanco); color: var(--negro); border: none; padding: 15px; font-weight: bold; font-family: 'Lexend Tera', sans-serif; letter-spacing: 2px; cursor: pointer; transition: 0.3s; margin-top: 10px;">
+            ENVIAR<span>♥</span>
         </button>
     </form>
 </section>
 
-<!-- ═══════════════════════════════════════════════════════════════
-     BARRA DE REDES SOCIALES
-     ─────────────────────────────────────────────────────────────
-     Para agregar YouTube u otra red:
-       1. Copia uno de los bloques <a class="social-link"> ... </a>
-       2. Cambia el href con el URL de la red
-       3. Reemplaza el SVG con el ícono de la red (busca en simpleicons.org)
-       4. Cambia el texto del enlace
+<div id="footer-dinamico"></div>
 
-     Los href ya tienen todos tus links configurados.
-     ═══════════════════════════════════════════════════════════════ -->
-
-     <div id="footer-dinamico"></div>
-
-<!-- ═══════════════════════════════════════════════════════════════
-     JAVASCRIPT — no editar a menos que sepas lo que haces
-     Controla: cursor personalizado, navbar al scroll, animaciones
-     ═══════════════════════════════════════════════════════════════ -->
 <script>
-  /* Cursor personalizado */
+  /* Cursor personalizado - Solo para elementos estáticos de index.html (CTA, botones sueltos) */
   const cursor = document.getElementById('cursor');
   const ring   = document.getElementById('cursor-ring');
   let mx = 0, my = 0, rx = 0, ry = 0;
@@ -1221,10 +335,11 @@ document.addEventListener("DOMContentLoaded", function() {
     requestAnimationFrame(animRing);
   })();
 
-  document.querySelectorAll('a, button, .servicio-card, .tech-item, .proyecto-card').forEach(el => {
+  // Aplicado a botones fijos de CTA o formularios (los módulos ya gestionan lo suyo)
+  document.querySelectorAll('a, button').forEach(el => {
     el.addEventListener('mouseenter', () => {
       cursor.style.transform = 'translate(-50%,-50%) scale(2)';
-      ring.style.borderColor = 'rgba(244,212,49,0.5)';
+      ring.style.borderColor = 'var(--color-secundario)';
     });
     el.addEventListener('mouseleave', () => {
       cursor.style.transform = 'translate(-50%,-50%) scale(1)';
@@ -1232,13 +347,7 @@ document.addEventListener("DOMContentLoaded", function() {
     });
   });
 
-  /* Navbar: se vuelve opaco al hacer scroll */
-  const nav = document.getElementById('navbar');
-  window.addEventListener('scroll', () => {
-    nav.classList.toggle('scrolled', window.scrollY > 60);
-  });
-
-  /* Animaciones de aparición al hacer scroll */
+  /* Animaciones de aparición al hacer scroll (Para el CTA final estático) */
   const reveals = document.querySelectorAll('.reveal');
   const observer = new IntersectionObserver(entries => {
     entries.forEach(e => {
@@ -1249,11 +358,15 @@ document.addEventListener("DOMContentLoaded", function() {
     });
   }, { threshold: 0.12 });
   reveals.forEach(el => observer.observe(el));
-
 </script>
 
+<script src="js/hero-index.js"></script>
 <script src="js/navbar.js"></script>
 <script src="js/youtubelink.js"></script>
+<script src="js/icon-cards.js"></script>
+<script src="js/video-showcase.js"></script>
+<script src="js/text-cards.js"></script>
+<script src="js/banner-form.js"></script>
 <script src="js/techgrid.js"></script>
 <script src="js/clientesmarq.js"></script>
 <script src="js/footer.js"></script>

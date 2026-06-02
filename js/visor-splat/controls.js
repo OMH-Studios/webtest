@@ -13,16 +13,25 @@ export class VisorControls {
 
     this.autoRot  = cfg.autoRotate;
     this._prevT   = 0;
-
-    this._fovValues = [35, 55, 75, 90];
   }
 
   init() {
+    this._applyDynamicFOV();
     this._bindMouseEvents();
     this._bindTouchEvents();
     this._bindButtons();
     this._bindResize();
     this._startLoop();
+  }
+
+  _applyDynamicFOV() {
+    const isMobile = window.innerWidth <= 768;
+    const targetFov = isMobile ? (this.cfg.fovMobile || 65) : (this.cfg.fovDesktop || 35);
+    
+    if (this.renderer.camera.fov !== targetFov) {
+      this.renderer.camera.fov = targetFov;
+      this._markDirty();
+    }
   }
 
   _bindMouseEvents() {
@@ -126,6 +135,7 @@ export class VisorControls {
     if (els.btnRst) {
       els.btnRst.addEventListener("click", () => {
         renderer.resetCamera();
+        this._applyDynamicFOV(); 
       });
     }
 
@@ -137,13 +147,10 @@ export class VisorControls {
       });
     }
 
-    if (els.btnFov) {
-      els.btnFov.addEventListener("click", () => {
-        let idx = this._fovValues.indexOf(renderer.camera.fov);
-        if (idx === -1) idx = 1;
-        renderer.camera.fov = this._fovValues[(idx + 1) % this._fovValues.length];
-        if (els.fovVal) els.fovVal.textContent = renderer.camera.fov;
-        this._markDirty();
+    if (els.btnZen) {
+      els.btnZen.addEventListener("click", () => {
+        const isZen = this.wrap.classList.toggle("zen-mode");
+        els.btnZen.innerHTML = isZen ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>` : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`;
       });
     }
 
@@ -154,23 +161,12 @@ export class VisorControls {
       );
     }
 
-    if (els.btnShare) {
-      els.btnShare.addEventListener("click", () => {
-        navigator.clipboard.writeText(window.location.href).then(() => {
-          const original = els.btnShare.innerHTML;
-          els.btnShare.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="20 6 9 17 4 12"/></svg>`;
-          setTimeout(() => { els.btnShare.innerHTML = original; }, 1500);
-        });
-      });
-    }
-
     if (els.btnTour && cfg.tourUrl) {
       els.btnTour.addEventListener("click", () => {
         window.open(cfg.tourUrl, "_blank");
       });
     }
 
-    // ── CAMBIO ENTRE SPLAT Y 360 ──
     if (els.btnExt && els.btnInt) {
       els.btnExt.addEventListener("click", () => {
         if (els.btnExt.classList.contains("active")) return;
@@ -186,23 +182,19 @@ export class VisorControls {
       });
     }
 
-    // ── CONEXIÓN DE GIROSCOPIO (CRUZA AL IFRAME) ──
     if (els.btnGiroUi) {
       els.btnGiroUi.addEventListener("click", () => {
         const iframe = els.iframe360;
         if (iframe && iframe.contentDocument) {
-          // Buscamos el botón nativo del giroscopio dentro del iframe y hacemos clic
           const btnGiroNativo = iframe.contentDocument.querySelector('.v360-btn-giro');
           if (btnGiroNativo) {
             btnGiroNativo.click();
-            // Alternamos el estado visual de nuestro botón UI
             els.btnGiroUi.classList.toggle("active");
           }
         }
       });
     }
 
-    // ── HOTSPOTS ──
     if (cfg.hotspots && cfg.hotspots.length > 0) {
       cfg.hotspots.forEach(hs => {
         const el = document.getElementById(`hs-${hs.id}`);
@@ -229,7 +221,6 @@ export class VisorControls {
       });
     }
 
-    // ── MODAL ──
     if (els.modalClose) els.modalClose.addEventListener("click", () => ui.closeModal());
     if (els.modal) {
       els.modal.addEventListener("click", (e) => {
@@ -237,7 +228,6 @@ export class VisorControls {
       });
     }
 
-    // ── PANEL DE INFORMACIÓN ──
     if (els.btnInfo) {
       els.btnInfo.addEventListener("click", (e) => {
         e.stopPropagation(); 
@@ -260,16 +250,40 @@ export class VisorControls {
     const dpr = window.devicePixelRatio || 1;
     this.els.canvas.width  = this.wrap.clientWidth * dpr;
     this.els.canvas.height = this.wrap.clientHeight * dpr;
+    this._applyDynamicFOV(); 
     this._markDirty();
   }
 
   _updateHotspots() {
     if (!this.cfg.hotspots || !this.renderer.splatCount) return;
     const dpr = window.devicePixelRatio || 1;
+    const eye = this.renderer._eye(); 
 
     this.cfg.hotspots.forEach(hs => {
       const el = document.getElementById(`hs-${hs.id}`);
       if (!el) return;
+
+      let isVisible = true;
+      if (hs.occlude !== false) { 
+        let nx = hs.position[0], ny = hs.position[1], nz = hs.position[2];
+        const nLen = Math.sqrt(nx*nx + ny*ny + nz*nz) || 1;
+        nx /= nLen; ny /= nLen; nz /= nLen;
+
+        let vx = eye[0] - hs.position[0], vy = eye[1] - hs.position[1], vz = eye[2] - hs.position[2];
+        const vLen = Math.sqrt(vx*vx + vy*vy + vz*vz) || 1;
+        vx /= vLen; vy /= vLen; vz /= vLen;
+
+        const dot = (nx * vx + ny * vy + nz * vz);
+        
+        if (dot < -0.25) {
+          isVisible = false;
+        }
+      }
+
+      if (!isVisible) {
+        el.style.display = "none";
+        return;
+      }
 
       const screenPos = this.renderer.projectToScreen(hs.position);
 
@@ -339,7 +353,7 @@ export class VisorControls {
     ctx.clearRect(0, 0, W, H);
     ctx.beginPath();
     ctx.arc(cx, cy, cx, 0, Math.PI * 2);
-    ctx.fillStyle = "rgba(0,0,0,0.4)";
+    ctx.fillStyle = "rgba(0,0,0,0)"; 
     ctx.fill();
 
     const { theta, phi } = this.renderer.camera;
@@ -369,8 +383,8 @@ export class VisorControls {
 
     const axes = [
       { label: "X", color: "#ff4444", axis: [1, 0, 0] },
-      { label: "Y", color: "#44dd44", axis: [0, 1, 0] },
-      { label: "Z", color: "#4488ff", axis: [0, 0, 1] },
+      { label: "Y", color: "#44dd44", axis: [0, -1, 0] },
+      { label: "Z", color: "#4488ff", axis: [0, 0, -1] }, 
     ].map(a => ({ ...a, ...project(a.axis) }));
 
     axes.sort((a, b) => a.depth - b.depth);

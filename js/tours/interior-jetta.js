@@ -19,8 +19,8 @@ window.tourConfig = {
       principalZona: true,
       imagen: "/assets/tours/interior-jetta/int-piloto.jpg", // Cambia a tus rutas reales
       hotspots: [
-        { tipo: "navegacion", destino: "asientos_copiloto", pitch: -18.5, yaw: 269.5, etiqueta: "Copiloto" },
-        { tipo: "navegacion", destino: "asientos_atras", pitch: -20.4, yaw: 325.3, etiqueta: "Pasajeros" }
+        { tipo: "navegacion", destino: "asientos_copiloto", pitch: -19.1, yaw: 86.8, etiqueta: "Copiloto" },
+        { tipo: "navegacion", destino: "asientos_atras", pitch: -18.3, yaw: 157.1, etiqueta: "Pasajeros" }
       ]
     },
     asientos_copiloto: {
@@ -28,8 +28,8 @@ window.tourConfig = {
       principalZona: true,
       imagen: "/assets/tours/interior-jetta/int-copiloto.jpg",
       hotspots: [
-        { tipo: "navegacion", destino: "asientos_piloto", pitch: -22.6, yaw: 88.5, etiqueta: "Piloto" },
-        { tipo: "navegacion", destino: "asientos_atras", pitch: -13.8, yaw: 34.5, etiqueta: "Pasajeros" }
+        { tipo: "navegacion", destino: "asientos_piloto", pitch: -14.5, yaw: 285.7, etiqueta: "Piloto" },
+        { tipo: "navegacion", destino: "asientos_atras", pitch: -12.9, yaw: 226.5, etiqueta: "Pasajeros" }
       ]
     },
     asientos_atras: {
@@ -37,8 +37,8 @@ window.tourConfig = {
       principalZona: true,
       imagen: "/assets/tours/interior-jetta/int-atras.jpg",
       hotspots: [
-        { tipo: "navegacion", destino: "asientos_piloto", pitch: -20.9, yaw: 155.6, etiqueta: "Piloto" },
-        { tipo: "navegacion", destino: "asientos_copiloto", pitch: -20.9, yaw: 195.2, etiqueta: "Copiloto" }
+        { tipo: "navegacion", destino: "asientos_piloto", pitch: -11.3, yaw: 339.1, etiqueta: "Piloto" },
+        { tipo: "navegacion", destino: "asientos_copiloto", pitch: -11.3, yaw: 15.2, etiqueta: "Copiloto" }
       ]
     }
   }

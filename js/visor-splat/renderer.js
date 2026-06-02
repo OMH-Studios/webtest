@@ -35,8 +35,13 @@ const FS = `
   void main() {
     float r2 = dot(v_uv, v_uv);
     if (r2 > 1.0) discard;
-    float alpha = exp(-3.0 * r2) * v_color.a;
-    if (alpha < 0.004) discard;  
+    
+    // Aumentamos de -3.0 a -4.0 para hacer el punto más pequeño y definido
+    float alpha = exp(-4.0 * r2) * v_color.a;
+    
+    // Subimos el umbral de descarte de 0.004 a 0.02 para eliminar el "manchado" o niebla en los bordes
+    if (alpha < 0.02) discard;  
+    
     gl_FragColor = vec4(v_color.rgb, alpha);
   }
 `;
@@ -188,18 +193,29 @@ export class SplatRenderer {
     }
     const cx = (x0+x1)/2, cy = (y0+y1)/2, cz = (z0+z1)/2, size = Math.max(x1-x0, y1-y0, z1-z0);
     
+    // ── NUEVO: Compensación del centro (Offset) ──
+    const ox = this.cfg.cameraTargetOffset ? this.cfg.cameraTargetOffset[0] : 0;
+    const oy = this.cfg.cameraTargetOffset ? this.cfg.cameraTargetOffset[1] : 0;
+    const oz = this.cfg.cameraTargetOffset ? this.cfg.cameraTargetOffset[2] : 0;
+
+    const tX = cx + ox;
+    const tY = cy + oy;
+    const tZ = cz + oz;
+
     // MENSAJE EN CONSOLA PARA CALIBRAR HOTSPOTS
     console.warn(`================================================`);
-    console.warn(`🎯 CENTRO EXACTO DEL MODELO: [${cx.toFixed(3)}, ${cy.toFixed(3)}, ${cz.toFixed(3)}]`);
+    console.warn(`🎯 CENTRO EXACTO DEL MODELO: [${tX.toFixed(3)}, ${tY.toFixed(3)}, ${tZ.toFixed(3)}]`);
     console.warn(`Abre tu HTML y usa estas coordenadas como punto de partida para tus Hotspots.`);
     console.warn(`================================================`);
 
-    this.camera.target = [cx, cy, cz]; 
-    this.camera.radius = size * 2.0; 
+    const mult = this.cfg.cameraRadiusMultiplier || 2.0;
+
+    this.camera.target = [tX, tY, tZ]; 
+    this.camera.radius = size * mult; 
     
     this._defaultCam = { 
-      target: [cx, cy, cz], 
-      radius: size * 2.0, 
+      target: [tX, tY, tZ], 
+      radius: size * mult, 
       theta:  this.cfg.defaultTheta, 
       phi:    this.cfg.defaultPhi 
     };

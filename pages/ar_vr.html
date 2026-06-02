@@ -54,30 +54,39 @@
 </script>
 
 <!-- ===================================================================
-    GRID DE PROYECTOS, UN PEQUEÑO TEXTO Y DOS IMAGENES, LLAMADA A ARCHIVO JS PARA INSERTARLO EN LA PÁGINA
+    COLUMNAS DIVIDIDAS, LLAMADA A ARCHIVO JS PARA INSERTARLO EN LA PÁGINA
      ===================================================================-->
 
-<div id="grid-proyectos-dinamico"></div>
-
-<script>
-  window.gridProyectosConfig = {
-    introTitle: "Trabajamos en esta <em>sección para ti</em><br>Muy pronto", 
-    introSubtitle: "Cargando una obra maestra",
+<div style="background-color: var(--negro);">
     
-    proyectos: [
-      {
-        category: "El arte nunca muere",
-        title: "Que alguien llame a la ambulancia",
-        mediaPath: "../assets/images/img_02.jpg"
-      },
-      {
-        category: "Proximamente",
-        title: "¡Bup!",
-        mediaPath: "../assets/images/img_01.jpg"
-      }
-    ]
-  };
-</script>
+    <script>
+        window.columnasDivididasConfig = {
+            eyebrowHtml: "Recorridos inmersivos para presentación comercial y experiencia interactiva",
+            titleHtml: "Realidad Virtual &<br><span class='resalte'>Aumentada</span>",
+            paragraphHtml: "Llevamos la visualización digital más allá de la pantalla mediante experiencias interactivas e inmersivas.<br><br>Aplicamos tecnologías inmersivas para crear nuevas formas de presentación, comunicación y exploración visual. Desde arquitectura y real estate hasta marketing, educación, exhibiciones y experiencias de marca.",
+            
+            paddingTop: "2rem",
+            paddingBottom: "6rem",
+            bgColor: "var(--negro)",
+            
+            // TODOS los textos restaurados
+            columnaIzq: [
+                { titulo: "Arquitectura y Real State", texto: "Recorridos virtuales, preventa y<br>exploración de espacios." },
+                { titulo: "Experiencias de Marca", texto: "Activaciones interactivas y<br>experiencias memorables para<br>campañas." },
+                { titulo: "Educación y Capacitación", texto: "Simulación de procesos, espacios y<br>aprendizaje inmersivo." }
+            ],
+            
+            columnaDer: [
+                { titulo: "Exhibiciones y Eventos", texto: "Instalaciones digitales para museos,<br>ferias y presentaciones." },
+                { titulo: "Producto y Retail", texto: "Visualización interactiva de productos<br>y configuradores digitales." },
+                { titulo: "Storytelling y Entretenimiento", texto: "Narrativas interactivas y experiencias<br>experimentales." }
+            ]
+        };
+    </script>
+
+    <div id="modulo-columnas-divididas"></div>
+
+</div>
 
 <!-- ═══════════════════════════════════════════════════════════════
      SECCIÓN YOUTUBE
@@ -90,11 +99,73 @@
 
 <script>
   window.showreelConfig = {
-    label: "UNA PEQUEÑA MUESTRA DE NUESTRO TRABAJO",
+    label: "Recorridos inmersivos para presentación comercial y experiencia interactiva",
     titleHtml: "REALIDAD VIRTUAL <em>INMOBILIARIA</em>",
     youtubeId: "lCC0Zkx-8SU",
     bottomText: "EXPERIENCIAS INMERSIVAS E INTERACTIVAS",
     bg: "gris-oscuro" // Aquí lo dejas en fondo puramente negro
+  };
+</script>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     TECH GRID
+     ─────────────────────────────────────────────────────────────
+     SE SUSTITUYÓ POR UN MODULO DE JAVASCRIPT, AQUÍ LLAMAMOS A ESE MODULO PARA QUE SE ADAPTE A LOS COLORES DE LA PÁGINA Y
+     EDITAR LOS TEXTOS Y EL LINNK PARA QUE SEA PERSONALIZADO DE CADA PÁGINA
+     ═══════════════════════════════════════════════════════════════ -->
+
+<div id="tecnologia-dinamica"></div>
+<script>
+  window.techGridConfig = {
+    // Si los dejas vacíos, no se generará espacio en blanco
+    label: "",
+    titleHtml: "",
+    
+    // Controles de Personalización
+    paddingTop: "1rem",      // Ajusta la separación superior
+    paddingBottom: "5rem",   // Ajusta la separación inferior
+    bgColor: "var(--gris-oscuro)", // Puedes usar bgColor para forzar variables CSS directamente
+    
+    items: [
+      { icon: "🥽", name: "REALIDAD VIRTUAL", desc: "" },
+      { icon: "📱", name: "REALIDAD AUMENTADA", desc: "" },
+      { icon: "🚶‍♀️", name: "INTERACTIVE WALKTHROUGHS", desc: "" },
+      { icon: "🔗", name: "INTERACTIVE INTERFACES", desc: "" },
+      { icon: "🏘️", name: "ESPACIAL EXPERIENCES", desc: "" },
+      { icon: "🤖", name: "REAL TIME RENDERING", desc: "" },
+      { icon: "📸", name: "360° CONTENT", desc: "" },
+      { icon: "🏗️", name: "CROSS PLATFORM EXPERIENCES", desc: "" }
+    ]
+  };
+</script>
+<script src="js/techgrid.js"></script>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     SECCIÓN FAQ
+     ─────────────────────────────────────────────────────────────
+     SE SUSTITUYÓ POR UN MODULO DE JAVASCRIPT, AQUÍ LLAMAMOS A ESE MODULO PARA QUE SE ADAPTE A LOS COLORES DE LA PÁGINA Y
+     EDITAR LOS TEXTOS Y EL LINNK PARA QUE SEA PERSONALIZADO DE CADA PÁGINA
+     ═══════════════════════════════════════════════════════════════ -->
+
+<div id="text-cards-dinamico"></div>
+<script>
+  window.textCardsConfig = {
+    label: "¡Integralo a tus proyectos!",
+    titleHtml: "¿POR QUÉ<span style='color: var(--color-seccion);'>EXPERIENCIAS INMERSIVAS?</span>",
+    subtitle: "Mejora la experiencia de tus clientes y gana una reputación innovadora para tu marca.",
+    items: [
+      { title: "MAYOR COMPRENSIÓN", text: "Permite entender y explorar espacios de manera más intuitiva." },
+      { title: "MAYOR ENGAGEMENT", text: "Las experiencias inmersivas incrementan atención y participación." },
+      { title: "MÁS IMPACTO EMOCIONAL", text: "La interacción genera experiencias más memorables." },
+      { title: "MEJORA TU DIFERENCIACIÓN", text: "yuda a marcas y proyectos a destacar visualmente." },
+      { title: "EXPERIENCIA MEMORABLE", text: "Quedate en la memoría de tus clientes con experiencias inugualables." },
+
+    ],
+    ctaBtn: {
+      text: "¡COMENCEMOS!",
+      url: "https://wa.me/524461328102?text=Hola%20OMH%20Estudio,%20me%20interesa%20solicitar%20un%20servicio.",
+      target: "_blank"
+    }
   };
 </script>
 
@@ -110,12 +181,12 @@
     padding: "5rem 0 5rem 0",     
     align: "center",              
     
-    tituloText: "¡HABLANOS DE TU PROYECTO!",
+    tituloText: "¡HÁBLANOS DE TU PROYECTO!",
     subtituloText: "", 
     
     botones: [
       { 
-        text: "COTIZAR AHORA →", 
+        text: "LET'S BUILD IT →", 
         url: "whatsapp",         // <--- Solo pones "whatsapp" y el JS jala el número de contacto.js
         msj: "¡Hola OMH Estudio! Me interesa solicitar una cotización para Realidad Virtual o Aumentada", // <--- Tu mensaje personalizado por subpágina
         type: "solido",          
@@ -149,8 +220,10 @@
 
 <script src="../js/navbar.js"></script>
 <script src="../js/hero.js"></script>
-<script src="../js/gridproyectos.js"></script>
+<script src="../js/columnas-divididas.js"></script>
 <script src="../js/youtubelink.js"></script>
+<script src="../js/techgrid.js"></script>
+<script src="../JS/text-cards.js"></script>
 <script src="../js/botonera.js"></script>
 <script src="../js/footer.js"></script>
 

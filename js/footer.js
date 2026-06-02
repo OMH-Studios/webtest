@@ -105,7 +105,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         <li><a href="${pagesPath}tours_360.html">Fotografía & Tours 360</a></li>
                         <li><a href="${pagesPath}escaneos.html">Escaneo 3D & Prop Tech</a></li>
                         <li><a href="${pagesPath}mkt.html">Marketing Digital (MKT)</a></li>
-                        <li><a href="${pagesPath}ia.html">IA Aplicada a Visual</a></li>
+                        <li><a href="${pagesPath}inmob.html">Tecnología Inmobiliaria</a></li>
                       </ul>
                     </div>
                     <div class="footer-col">

@@ -61,7 +61,7 @@
           }
           /* Estilo del texto pequeño superior */
           .marquee-title {
-            color: var(--rojo, #cc0000); 
+            color: var(--color-seccion); 
             font-family: 'Raleway', sans-serif; 
             font-size: 0.65rem; 
             font-weight: 700; 

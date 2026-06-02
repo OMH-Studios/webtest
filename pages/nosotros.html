@@ -49,7 +49,8 @@
     label: "MENTES CREATIVAS", 
     title: "HISTORIA &<br>FILOSOFÍA", 
     videoPath: "../assets/nosotros/nosotros_bg.mp4", 
-    overlayOpacity: 0.5
+    overlayOpacity: 0.5,
+    titleSize: "clamp(1.5rem, 3.5vw, 2.8rem)"
   };
 </script>
 
@@ -61,8 +62,8 @@
 
 <script>
   window.gridProyectosConfig = {
-    introTitle: "Impulsamos la <em>evolución visual</em> combinando arte y tecnología de vanguardia", 
-    introSubtitle: "Detrás de cada proyecto hay una constante búsqueda de innovación. <br>Conoce a las mentes dedicadas a materializar el futuro de la visualización digital.",
+    introTitle: "Creamos <em>experiencias visuales</em> donde convergen arte, tecnología e inovación.", 
+    introSubtitle: "Somos un estudio creativo enfocado en visualización digital, animación y producción impulsada por tecnología de vanguardia.<br><br>El equipo que da vida a cada experiencia visual:",
     
     proyectos: [
       {
@@ -91,11 +92,7 @@
     titleHtml: "Evolución <em>Interdisciplinaria</em>",
     bg: "negro", // Fondo gris oscuro para hacer juego
     padding: "3.5rem 0",
-    paragraphs: [
-      "Fundado en <strong>2022</strong>, OMH Estudio nació con una misión disruptiva: desafiar los límites de la representación digital. Desde nuestros inicios, entendimos que el futuro de las industrias creativas no pertenecía a una sola disciplina, sino a la <strong>convergencia perfecta entre el arte, la narrativa visual y la tecnología de última generación</strong>. Lo que comenzó como una búsqueda por perfeccionar la estética interactiva se ha convertido en un motor de innovación visual.",
-      "A lo largo de nuestra trayectoria, nos hemos consolidado como un estudio transmedia capaz de resolver retos de alta complejidad técnica y conceptual. Fusionamos herramientas en tiempo real, entornos inmersivos y metodologías avanzadas de postproducción para transformar ideas abstractas en realidades virtuales tangibles. No solo creamos imágenes; diseñamos la infraestructura digital de experiencias que cautivan, comunican y trascienden.",
-      "Hoy, impulsados por el ecosistema de innovación y respaldados por la confianza de marcas líderes y desarrolladores, seguimos rompiendo moldes. En <strong>OMH Estudio</strong>, cada proyecto es un manifiesto de precisión técnica y pasión artística, consolidándonos como el aliado estratégico ideal para quienes buscan liderar el mañana de la visualización digital."
-    ]
+    urlTexto: "../assets/nosotros/descripcion.txt" // 👈 Solo pones la ruta a tu bloc de notas
   };
 </script>
 
@@ -112,11 +109,34 @@
     bg: "gris", // Cambiado a gris para intercalar con los fondos de "Nosotros"
     padding: "4rem 0",
     items: [
-      { icon: "🚀", name: "Innovación Inmersiva", desc: "Exploramos el límite de las tecnologías en tiempo real y entornos WebAR." },
-      { icon: "📐", name: "Precisión Técnica", desc: "Ingeniería y arquitectura aplicadas meticulosamente al detalle digital." },
-      { icon: "🎨", name: "Narrativa Visual", desc: "No solo modelamos; contamos historias que generan una conexión con el cliente." },
-      { icon: "📽️", name: "Intención Cinematográfica", desc: "Queremos un estilo unico, que transmita y se sienta como en una sala de cine" }
+      { icon: "🚀", name: "Innovación Visual", desc: "Exploramos nuevas herramients y tecnologías para crear experiencias digitales inmersivas más dinámicas y memorables" },
+      { icon: "📐", name: "Precisión Técnica", desc: "Cada detalle importa. Combinamos sensibilidad visual con procesos técnicos sólidos para lograr resultados de alta calidad." },
+      { icon: "🎨", name: "Narrativa Visual", desc: "No solo mostramos proyectos: construimos imágenes y experiencias que comunican la identidad con emoción y propósito." },
+      { icon: "📽️", name: "Visión Cinematográfica", desc: "Buscamos una estética cuidada, atmosférica y contemporánea que eleve la percepción de cada proyecto." }
     ]
+  };
+</script>
+
+<!-- ===================================================================
+    FRASE DESTACADA
+     ===================================================================-->
+
+<div id="frase-destacada-dinamica"></div>
+
+<script>
+  window.fraseDestacadaConfig = {
+    // 📝 TEXTO: Usa ** para negritas, __ para itálicas y -- para subrayado
+    text: '"**Creemos** en la colaboración cercana, el detalle y la __experimentación constante__."',
+    
+    // 🎨 ESTILO Y COLOR
+    bg: "gris",               // "negro" o "gris"
+    highlightColor: "var(--rojo)", // Color para el texto que no es gris (puede ser var(--color-seccion))
+    
+    // 📐 TIPOGRAFÍA Y DISEÑO
+    fontFamily: "playfair",         // 👈 Cambias entre "raleway", "lexend" o "playfair"
+    align: "center",            // "left", "center" o "right"
+    fontSize: "2rem",        // Tamaño máximo en pantallas grandes
+    padding: "4rem 0"          // Espaciado arriba y abajo
   };
 </script>
 
@@ -182,6 +202,7 @@
 <script src="../js/gridproyectos.js"></script>
 <script src="../js/techgrid.js"></script>
 <script src="../js/textobloque.js"></script>
+<script src="../js/frasedestacada.js"></script>
 <script src="../js/clientesmarq.js"></script>
 <script src="../js/botonera.js"></script>
 <script src="../js/footer.js"></script>

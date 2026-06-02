@@ -62,3 +62,7 @@ body.page-mkt {
 body.page-ia {
   --color-seccion: #70a1ff; /* Azul IA */
 }
+
+body.page-inmob {
+  --color-seccion: #C5A059; /* Rosa Barragan */
+}

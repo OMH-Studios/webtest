@@ -52,6 +52,7 @@ const DEFAULTS = {
   defaultPhi:      1.2,    // Ángulo vertical inicial (radianes). 1.57 = ecuador
   defaultFov:      55,     // Campo de visión inicial en grados. 35=telefoto, 90=gran angular
   upVector:        [0, 1, 0], // Vector "arriba" del modelo. Usa [0,-1,0] si sale boca abajo
+  cameraTargetOffset: [0, 0, 0], // <-- NUEVO: Desplaza el centro de mirada [X, Y, Z]
 
   // ── AUTO-ROTACIÓN ────────────────────────────────────────────
   autoRotate:      false,   // true = empieza girando al cargar
@@ -71,6 +72,13 @@ const DEFAULTS = {
 
   // ── DESARROLLO ───────────────────────────────────────────────
   debug: true,   // false en producción para silenciar los logs de consola
+
+  // ── CÁMARA ───────────────────────────────────────────────────
+  defaultTheta:    0.5,    // Rotación horizontal inicial (radianes). 0 = frente
+  defaultPhi:      1.2,    // Ángulo vertical inicial (radianes). 1.57 = ecuador
+  defaultFov:      55,     // Campo de visión inicial en grados. 35=telefoto, 90=gran angular
+  upVector:        [0, 1, 0], // Vector "arriba" del modelo. Usa [0,-1,0] si sale boca abajo
+  cameraRadiusMultiplier: 2.0, // <-- NUEVO: Controla qué tan cerca inicia la cámara (menor = más cerca)
 };
 
 // ── Defaults específicos por modo ─────────────────────────────

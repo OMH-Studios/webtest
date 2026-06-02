@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>OMH Estudio | Anim & VFX</title>
+<title>OMH Estudio | IA Aplicada</title>
 
 <link rel="icon" type="image/png" href="../assets/logos/favicon_omh.png">
 <link href="https://fonts.googleapis.com/css2?family=Lexend+Tera:wght@400;700;900&family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Raleway:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -29,7 +29,7 @@
     -Modificar el color correspondiente a la página
      ===================================================================-->
 
-<body class="page-anim-vfx page-sub">
+<body class="page-ia page-sub">
 
 <!-- ===================================================================
     BARRA DE NAVEGACIÓN, LLAMADA A ARCHIVO JS PARA INSERTARLO EN LA PÁGINA
@@ -46,62 +46,14 @@
 <!-- AQUÍ EDITAMOS LOS TEXTOS, EL VIDEO Y LA OPACIDAD EL OVERLAY-->
 <script>
   window.heroConfig = {
-    label: "DE UNA IDEA... AL CINE", 
-    title: "ANIMACIÓN, VFX &<br>MOTION GRAPHICS", 
-    videoPath: "../assets/videos/vid_gallery02.mp4", 
+    label: "INTELIGENCIA ARTIFICIAL", 
+    title: "IA<br>APLICADA", 
+    videoPath: "../assets/ia/ia_bg.mp4", 
     overlayOpacity: 0.4
   };
 </script>
 
 <!-- ===================================================================
-    CARRUSEL 3D, LLAMADA A ARCHIVO JS PARA INSERTARLO EN LA PÁGINA
-     ===================================================================-->
-
-     <div id="carrusel-dinamico"></div>
-
-    <script>
-      window.carruselConfig = {
-        label: "Fotogramas y concepto",
-        titleHtml: "Visual <em>Breackdown</em>",
-        bg: "negro", 
-        padding: "4rem 0",
-        speed: 0.0008,
-        images: [ // <-- Asegúrate de usar 'images' exactamente como se mapea en el JS
-          "../assets/anim_vfx/vfx01.jpg",
-          "../assets/anim_vfx/vfx07.jpg",
-          "../assets/anim_vfx/vfx03.jpg",
-          "../assets/anim_vfx/vfx09.jpg",
-          "../assets/anim_vfx/vfx05.jpg",
-          "../assets/anim_vfx/vfx06.jpg",
-          "../assets/anim_vfx/vfx02.jpg",
-          "../assets/anim_vfx/vfx08.jpg",
-          "../assets/anim_vfx/vfx04.jpg",
-          "../assets/anim_vfx/vfx10.jpg",
-          "../assets/anim_vfx/vfx11.jpg"
-        ]
-      };
-    </script>
-
-<!-- ═══════════════════════════════════════════════════════════════
-     SECCIÓN YOUTUBE
-     ─────────────────────────────────────────────────────────────
-     SE SUSTITUYÓ POR UN MODULO DE JAVASCRIPT, AQUÍ LLAMAMOS A ESE MODULO PARA QUE SE ADAPTE A LOS COLORES DE LA PÁGINA Y
-     EDITAR LOS TEXTOS Y EL LINNK PARA QUE SEA PERSONALIZADO DE CADA PÁGINA
-     ═══════════════════════════════════════════════════════════════ -->
-
-  <div id="showreel-dinamico"></div>
-
-<script>
-  window.showreelConfig = {
-    label: "AN 3D ANIMATED SHORT-FILM",
-    titleHtml: "DAWN OF THE CAN <br><em>TEASER TRAILER</em>",
-    youtubeId: "oNcO-edUHRQ",
-    bottomText: "Un vistazo rápido al cortometraje animado",
-    bg: "gris-oscuro" // Aquí lo dejas en fondo puramente negro
-  };
-</script>
-
-    <!-- ===================================================================
     GRID DE PROYECTOS, UN PEQUEÑO TEXTO Y DOS IMAGENES, LLAMADA A ARCHIVO JS PARA INSERTARLO EN LA PÁGINA
      ===================================================================-->
 
@@ -109,23 +61,24 @@
 
 <script>
   window.gridProyectosConfig = {
-    introTitle: "Trabajamos en esta <em>sección para ti</em><br>Muy pronto", 
-    introSubtitle: "Cargando obra maestra",
+    introTitle: "Trabajamos en esta <em>sección para ti</em> <br>Muy pronto", 
+    introSubtitle: "Es efervecente...",
     
     proyectos: [
       {
-        category: "Pronostico actual...",
-        title: "Optimo",
+        category: "Pon un titulo aquí",
+        title: "Que se vea más humano",
         mediaPath: "../assets/images/img_02.jpg"
       },
       {
-        category: "Calabaza calabaza",
-        title: "Ya casi",
+        category: "Puedes resumir esto?",
+        title: "Gracias",
         mediaPath: "../assets/images/img_01.jpg"
       }
     ]
   };
 </script>
+
 
 <!-- ===================================================================
     BOTON DE REGRESAR AL INICIO
@@ -146,7 +99,7 @@
       { 
         text: "COTIZAR AHORA →", 
         url: "whatsapp",         // <--- Solo pones "whatsapp" y el JS jala el número de contacto.js
-        msj: "¡Hola OMH Estudio! Me interesa solicitar una cotización para animación o vfx", // <--- Tu mensaje personalizado por subpágina
+        msj: "¡Hola OMH Estudio! Me interesa solicitar una cotización para un proyecto con IA", // <--- Tu mensaje personalizado por subpágina
         type: "solido",          
         targetBlank: true 
       },
@@ -179,8 +132,6 @@
 <script src="../js/navbar.js"></script>
 <script src="../js/hero.js"></script>
 <script src="../js/gridproyectos.js"></script>
-<script src="../js/carrusel-3d.js"></script>
-<script src="../js/youtubelink.js"></script>
 <script src="../js/botonera.js"></script>
 <script src="../js/footer.js"></script>
 
