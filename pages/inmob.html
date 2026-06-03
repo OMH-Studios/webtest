@@ -123,7 +123,7 @@
           fase: 'ETAPA 1',
           titulo: 'Captación & Preventa',
           descripcion: 'Ayudamos a que los clientes visualicen un espacio antes de existir.',
-          videoPath: '../assets/inmob/etapa1.mp4', // Pon aquí la ruta de tu video
+          videoPath: '../assets/videos/vid_gallery01.mp4', // Pon aquí la ruta de tu video
           servicios: [
             { nombre: 'Render', url: 'archviz.html' },
             { nombre: 'Realidad Virtual y Aumentada', url: 'ar_vr.html' },
@@ -137,7 +137,7 @@
           fase: 'ETAPA 2',
           titulo: 'Construcción & Seguimiento',
           descripcion: 'Convertimos el proceso constructivo en una herramienta de comunicación y confianza.',
-          videoPath: '../assets/inmob/etapa2.mp4', 
+          videoPath: '../assets/videos/vid_gallery03.mp4', 
           servicios: [
             { nombre: 'Documentación de Obra', url: 'audiovisual.html' },
             { nombre: 'Visualización con IA', url: 'audiovisual.html' },
@@ -150,7 +150,7 @@
           fase: 'ETAPA 3',
           titulo: 'Comercialización Final',
           descripcion: 'Creamos experiencias visuales que ayudan a destacar propiedades en un mercado saturado.',
-          videoPath: '../assets/inmob/etapa3.mp4', 
+          videoPath: '../assets/videos/vid_gallery04.mp4', 
           servicios: [
             { nombre: 'Video Cinematográfico', url: 'audiovisual.html' },
             { nombre: 'Fotografía Profesional', url: 'audiovisual.html' },
@@ -163,6 +163,91 @@
       ]
     };
   </script>
+
+<!-- ===================================================================
+    FRASE DESTACADA
+     ===================================================================-->
+
+<div id="frase-destacada-dinamica"></div>
+
+<script>
+  window.fraseDestacadaConfig = {
+    // 📝 TEXTO: Usa ** para negritas, __ para itálicas y -- para subrayado
+    text: "**TU PROPIEDAD** PODRÍA VERSE ASÍ __EN EL MUNDO DIGITAL__.",
+    
+    // 🎨 ESTILO Y COLOR
+    bg: "negro",               // "negro" o "gris"
+    highlightColor: "var(--color-seccion)", // Color para el texto que no es gris (puede ser var(--color-seccion))
+    
+    // 📐 TIPOGRAFÍA Y DISEÑO
+    fontFamily: "lexend",         // 👈 Cambias entre "raleway", "lexend" o "playfair"
+    align: "center",            // "left", "center" o "right"
+    fontSize: "2rem",        // Tamaño máximo en pantallas grandes
+    padding: "3rem 0"          // Espaciado arriba y abajo
+  };
+</script>
+
+  <!-- VISOR PARA GAUSSIAN SPLAT Y VISOR 360 PARA RECORRIDO DE UN CARRO -->
+<div id="visor-splat-dinamico" style="padding: 2rem 5%;"></div>
+<div class="omh-360-widget" id="omh-360-interno" data-config="../js/tours/interior-jetta.js"></div>
+
+<!-- 2. Configuración -->
+<script>
+  window.visorSplatConfig = {
+    mode: "auto",
+    modelPath: "../assets/escaneos/bloque.ply",
+    title: "Escaneo en proceso...",
+    subtitle: "BLOQUE | Centro de innovación y tecnología",
+    height: "80vh",
+    tourUrl: "../js/tours/tour-bloque.html",
+    upVector: [0, -1, 0], // Mantiene la corrección de giro del auto
+    background: "#1f1f1f",      // Cambia el color del fondo aquí (puedes usar hex, rgb o var)
+    autoRotateSpeed: 2,      // Cambia la velocidad aquí (más alto es más rápido)
+
+    // NUEVAS VARIABLES DE FOV
+    fovDesktop: 35, 
+    fovMobile: 65,
+    
+    // CONTROL DE ENCUADRE INICIAL
+    cameraTargetOffset: [0, 1.2, 0],
+    cameraRadiusMultiplier: 1.5, // <--- AJUSTA ESTO (Intenta 1.0, 0.8 o 1.2 hasta que te guste)
+    
+    defaultTheta: -0.75, 
+    defaultPhi: 1.8,  
+    defaultFov: 35,
+    
+    cameraLimits: {
+      phiMin: 1.6,   // Ahora este es el límite de ABAJO (no dejes bajar más)
+      phiMax: 3.0,   // Ahora este es el límite de ARRIBA (no dejes subir más)
+      radiusMin: 20.0,  // Distancia mínima — ajustado para un carro de ~5m
+      radiusMax: 50.0, // Distancia máxima
+    },
+
+    infoHtml: `
+        <h3>BLOQUE | Centro de innovación y tecnología</h3>
+        <p><b>Contacto:</b> (442) 238 7748<br>
+        <b>Whatsapp</b> 442 987 6543<br>
+        <b>Ubicación</b>JHPG+V5, Francisco Villa 1580, 76140 Querétaro, Qro.<br>
+        <b></b>Municipio de Querétaro<br>
+        <p style="font-size:0.75rem; color:rgba(255,255,255,0.6); margin-top:10px;">
+          Escaneo tridimensional de alta fidelidad mediante Gaussian Splatting optimizado por OMH Estudio.
+        </p>
+      `,
+
+    // HOTSPOTS CON EMOJIS
+    hotspots: [
+      { 
+        id: "Ir al Lobby", 
+        position: [-8, 0, 0.1], 
+        label: "Interior 360°", 
+        icon: "../assets/tours/icon_circulo.png",
+        action: "interior", // <--- Este comando activa la transición
+        bg: false,
+        occlude: false
+      },
+    ]
+  };
+</script>
 
   <!-- ____________________________________________________________
  FORMULARIO DE CONTACTO CON FORMSPREE, AGREGADO POR OSCAR
@@ -251,6 +336,11 @@
 <script src="../js/grid-galeria2.js"></script>
 <script src="../js/clientesmarq.js"></script>
 <script src="../js/timeline-etapas01.js"></script>
+
+<script type="module" src="../js/visor-splat/index.js"></script>
+<script src="../js/viewer360.js"></script>
+
+<script src="../js/frasedestacada.js"></script>
 <script src="../js/botonera.js"></script>
 <script src="../js/footer.js"></script>
 
