@@ -56,13 +56,29 @@ const CSS = `
   @media (min-width: 769px) { .mobile-only { display: none !important; } }
 
   .omh-btn-rect { pointer-events: auto; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); border: 1px solid rgba(255,255,255,0.15); border-radius: 2px; color: rgba(255,255,255,0.6); font-family: 'Lexend Tera', sans-serif; font-size: 0.55rem; letter-spacing: 0.15em; font-weight: bold; padding: 10px 16px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s ease; text-transform: uppercase; white-space: nowrap; }
-  .omh-btn-rect svg { width: 14px; height: 14px; flex-shrink: 0; }
+  
+  /* Blindaje de SVGs para evitar colisiones con otros módulos */
+    .omh-btn-rect svg, .omh-btn-sq svg { 
+        display: block !important; 
+        stroke: currentColor !important; 
+        fill: none !important; 
+        visibility: visible !important; 
+    }
+    .omh-btn-rect svg { width: 14px !important; height: 14px !important; flex-shrink: 0; }
+    .omh-btn-sq svg { width: 16px !important; height: 16px !important; }
+
+    /* Protección de los trazos internos del SVG */
+    .omh-btn-rect svg path, .omh-btn-rect svg circle, .omh-btn-rect svg line, .omh-btn-rect svg polygon,
+    .omh-btn-sq svg path, .omh-btn-sq svg circle, .omh-btn-sq svg line, .omh-btn-sq svg polygon { 
+    stroke: currentColor !important; 
+    }
+
   .omh-btn-rect:hover { border-color: rgba(255,255,255,0.5); color: #fff; }
   .omh-btn-rect.active { color: #fff; border-color: rgba(255,255,255,0.5); background: rgba(255,255,255,0.05); }
   .omh-btn-rect.accent { border-color: var(--color-seccion); color: var(--color-seccion); }
   .omh-btn-rect.accent:hover { background: var(--color-seccion); color: #000; }
   .omh-btn-sq { pointer-events: auto; width: 38px; height: 38px; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); border: 1px solid rgba(255,255,255,0.15); border-radius: 2px; color: rgba(255,255,255,0.6); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s ease; flex-shrink: 0; }
-  .omh-btn-sq svg { width: 16px; height: 16px; }
+  
   .omh-btn-sq:hover { border-color: rgba(255,255,255,0.5); color: #fff; }
 
   /* ── MODO MÓVIL (Responsivo y textos) ── */
