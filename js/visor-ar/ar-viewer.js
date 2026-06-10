@@ -16,7 +16,6 @@ export function initOMHViewer(containerId, glbPath, usdzPath = null) {
 
     const iosAttr = usdzPath ? `ios-src="${usdzPath}"` : '';
 
-    // CORRECCIÓN AQUÍ: Apuntamos a visor-ar.html
     const baseUrl = window.location.origin + window.location.pathname.replace(/\/[^/]*$/, '/');
     const shareUrl = `${baseUrl}visor-ar.html?glb=${encodeURIComponent(glbPath)}${usdzPath ? '&usdz=' + encodeURIComponent(usdzPath) : ''}`;
 
@@ -28,7 +27,7 @@ export function initOMHViewer(containerId, glbPath, usdzPath = null) {
             ar 
             ar-modes="webxr scene-viewer quick-look" 
             camera-controls 
-            tone-mapping="neutral" 
+            disable-pan   tone-mapping="neutral" 
             shadow-intensity="1.5"
             exposure="1"
             autoplay>
@@ -46,13 +45,6 @@ export function initOMHViewer(containerId, glbPath, usdzPath = null) {
                 </svg>
                 VER EN TU ESPACIO
             </button>
-
-            <div class="omh-desktop-prompt">
-                <svg class="icon-mobile" viewBox="0 0 24 24">
-                    <path d="M17 1.01L7 1c-1.1 0-2 .9-2 2v18c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V3c0-1.1-.9-1.99-2-1.99zM17 19H7V5h10v14z"/>
-                </svg>
-                <span>AR disponible en móvil</span>
-            </div>
 
         </model-viewer>
     `;
