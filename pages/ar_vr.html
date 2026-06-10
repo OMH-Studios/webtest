@@ -9,6 +9,7 @@
 <link rel="icon" type="image/png" href="../assets/logos/favicon_omh.png">
 <link href="https://fonts.googleapis.com/css2?family=Lexend+Tera:wght@400;700;900&family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Raleway:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../css/colores.css">
+<link rel="stylesheet" href="../css/ar-viewer.css">
 
 <style>
   /* ─── ESTILOS EXCLUSIVOS DE LA SUBPÁGINA ─── */
@@ -87,6 +88,41 @@
     <div id="modulo-columnas-divididas"></div>
 
 </div>
+
+<div style="width: 100%; max-width: 1000px; margin: 4rem auto 2rem auto; padding: 0 20px; box-sizing: border-box;">
+    
+    <div style="display: flex; align-items: center; margin-bottom: 1.2rem;">
+        <div style="width: 30px; height: 2px; background-color: var(--color-seccion); margin-right: 15px;"></div>
+        <span style="font-family: 'Lexend Tera', sans-serif; font-size: 0.75rem; font-weight: 700; letter-spacing: 2px; color: var(--color-seccion); text-transform: uppercase;">
+            Visualización interactiva
+        </span>
+    </div>
+    
+    <h2 style="font-family: 'Lexend Tera', sans-serif; font-size: clamp(1.8rem, 3.5vw, 2.5rem); line-height: 1.2; font-weight: 900; color: var(--blanco); margin-bottom: 1rem; text-transform: uppercase;">
+        Explora el modelo <span style="color: var(--color-seccion);">en tu espacio</span>
+    </h2>
+    
+    <p style="font-family: 'Raleway', sans-serif; font-size: 1rem; line-height: 1.6; color: var(--gris-texto); max-width: 700px; margin-bottom: 0;">
+        Gira y acerca el modelo libremente en la pantalla para ver los detalles. Si nos visitas desde un dispositivo móvil, proyecta la pieza a escala real en tu entorno físico para tener una mejor perspectiva espacial.
+    </p>
+
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     SECCIÓN REALIDAD AUMENTADA
+     ─────────────────────────────────────────────────────────────
+     SE SUSTITUYÓ POR UN MODULO DE JAVASCRIPT, AQUÍ LLAMAMOS A ESE MODULO PARA QUE SE ADAPTE A LOS COLORES DE LA PÁGINA Y
+     EDITAR LOS TEXTOS Y EL LINNK PARA QUE SEA PERSONALIZADO DE CADA PÁGINA
+     ═══════════════════════════════════════════════════════════════ -->
+
+    <div id="visor-mazda" class="omh-visor-wrapper"></div>
+
+    <script type="module">
+        import { initOMHViewer } from '../js/visor-ar/ar-viewer.js';
+        
+        // Al omitir el tercer parámetro, el visor usa solo el GLB
+        initOMHViewer('visor-mazda', '../assets/ar_vr/mazda.glb');
+    </script>
 
 <!-- ═══════════════════════════════════════════════════════════════
      SECCIÓN YOUTUBE

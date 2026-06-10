@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visor Inmersivo | OMH Estudio</title>
+    
+    <link rel="icon" type="image/png" href="../assets/logos/favicon_omh.png">
+    <link href="https://fonts.googleapis.com/css2?family=Lexend+Tera:wght@400;700;900&family=Raleway:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/colores.css">
+    <link rel="stylesheet" href="../css/ar-viewer.css">
+
+    <style>
+        body { 
+            margin: 0; 
+            padding: 0; 
+            background-color: var(--negro); 
+            overflow: hidden; 
+        }
+        
+        /* Forzamos una variable por defecto para el botón si se abre directo */
+        :root { 
+            --color-seccion: var(--blanco); 
+        }
+
+        /* Logotipo flotante minimalista */
+        .omh-visor-logo {
+            position: absolute;
+            top: 25px;
+            left: 25px;
+            width: 100px;
+            z-index: 100;
+            pointer-events: none; /* Evita que estorbe al arrastrar el modelo 3D con el mouse */
+            opacity: 0.4; /* Tono sutil e integrado al diseño oscuro */
+            transition: opacity 0.3s ease;
+        }
+
+        /* Si el usuario interactúa cerca, el logo se vuelve más nítido */
+        body:hover .omh-visor-logo {
+            opacity: 0.7;
+        }
+    </style>
+</head>
+<body>
+
+    <img src="../assets/logos/favicon_omh.png" class="omh-visor-logo" alt="OMH Estudio">
+
+    <div id="visor-fullscreen" class="omh-visor-wrapper omh-visor-fullscreen"></div>
+
+    <script type="module">
+        // RUTA CORREGIDA: Apunta directo a la carpeta visor-ar
+        import { initOMHViewer } from '../js/visor-ar/ar-viewer.js';
+
+        const params = new URLSearchParams(window.location.search);
+        const glb = params.get('glb');
+        const usdz = params.get('usdz'); 
+
+        if (glb) {
+            initOMHViewer('visor-fullscreen', glb, usdz);
+        } else {
+            document.getElementById('visor-fullscreen').innerHTML = `
+                <div style="color: var(--gris-texto); font-family: 'Raleway', sans-serif; text-align: center; margin-top: 45vh; font-size: 14px; letter-spacing: 1px;">
+                    MODELO NO ESPECIFICADO
+                </div>`;
+        }
+    </script>
+
+</body>
+</html>
