@@ -135,16 +135,51 @@ export class SplatRenderer {
   }
 
   _parseSplat(buffer) {
-    const STRIDE = 32, count = Math.floor(buffer.byteLength / STRIDE);
+    const STRIDE = 32; 
+    const count = Math.floor(buffer.byteLength / STRIDE);
     if (count === 0) throw new Error("Archivo .splat vacío o corrupto.");
-    const dv = new DataView(buffer), pos = new Float32Array(count * 3), scale = new Float32Array(count * 3), color = new Float32Array(count * 4), rot = new Float32Array(count * 4);
+    
+    const dv = new DataView(buffer); 
+    const pos = new Float32Array(count * 3); 
+    const scale = new Float32Array(count * 3); 
+    const color = new Float32Array(count * 4); 
+    const rot = new Float32Array(count * 4);
+
     for (let i = 0; i < count; i++) {
       const b = i * STRIDE;
-      pos[i*3] = dv.getFloat32(b, true); pos[i*3+1] = dv.getFloat32(b+4, true); pos[i*3+2] = dv.getFloat32(b+8, true);
-      scale[i*3] = dv.getFloat32(b+12, true); scale[i*3+1] = dv.getFloat32(b+16, true); scale[i*3+2] = dv.getFloat32(b+20, true);
-      color[i*4] = dv.getUint8(b+24)/255; color[i*4+1] = dv.getUint8(b+25)/255; color[i*4+2] = dv.getUint8(b+26)/255; color[i*4+3] = dv.getUint8(b+27)/255;
-      rot[i*4] = (dv.getUint8(b+28)-128)/128; rot[i*4+1] = (dv.getUint8(b+29)-128)/128; rot[i*4+2] = (dv.getUint8(b+30)-128)/128; rot[i*4+3] = (dv.getUint8(b+31)-128)/128;
+
+      // 1. Posición (X, Y, Z)
+      pos[i*3]   = dv.getFloat32(b, true); 
+      pos[i*3+1] = dv.getFloat32(b+4, true); 
+      pos[i*3+2] = dv.getFloat32(b+8, true);
+
+      // 2. Escala (Le quitamos el Math.exp porque el .splat ya viene lineal)
+      scale[i*3]   = dv.getFloat32(b+12, true); 
+      scale[i*3+1] = dv.getFloat32(b+16, true); 
+      scale[i*3+2] = dv.getFloat32(b+20, true);
+
+      // 3. Color
+      color[i*4]   = dv.getUint8(b+24) / 255; 
+      color[i*4+1] = dv.getUint8(b+25) / 255; 
+      color[i*4+2] = dv.getUint8(b+26) / 255; 
+      color[i*4+3] = dv.getUint8(b+27) / 255;
+
+      // 4. Rotación (El secreto está aquí: SuperSplat guarda como W, X, Y, Z)
+      const qw = (dv.getUint8(b+28) - 128) / 128; 
+      const qx = (dv.getUint8(b+29) - 128) / 128; 
+      const qy = (dv.getUint8(b+30) - 128) / 128; 
+      const qz = (dv.getUint8(b+31) - 128) / 128;
+      
+      // Normalizamos la longitud para evitar deformaciones
+      const len = Math.sqrt(qx*qx + qy*qy + qz*qz + qw*qw) || 1;
+      
+      // Guardamos en el orden que tu Shader espera: X, Y, Z, W
+      rot[i*4]   = qx / len; 
+      rot[i*4+1] = qy / len; 
+      rot[i*4+2] = qz / len; 
+      rot[i*4+3] = qw / len;
     }
+    
     return { count, pos, scale, color, rot };
   }
 
@@ -270,8 +305,28 @@ export class SplatRenderer {
       const s01=w00*w10+w01*w11+w02*w12;
       const s11=w10*w10+w11*w11+w12*w12;
       
+      // ... código previo (cálculo de s00, s01, s11, vz, tz, J00, J11) ...
       const tz = -vz, J00 = fx * vpW / 2 / tz, J11 = fy * vpH / 2 / tz;
-      const c00 = J00 * J00 * s00, c01 = J00 * J11 * s01, c11 = J11 * J11 * s11, det = c00 * c11 - c01 * c01, tr = c00 + c11, disc = Math.max(0, tr * tr / 4 - det), l1 = tr / 2 + Math.sqrt(disc), l2 = Math.max(0, tr / 2 - Math.sqrt(disc));
+
+      // 1. Calculamos la matriz 2D original
+      let c00 = J00 * J00 * s00;
+      let c01 = J00 * J11 * s01;
+      let c11 = J11 * J11 * s11;
+
+      // 2. EL FILTRO DE SUAVIZADO (Anti-aliasing)
+      // Agregamos un valor base a la diagonal de la matriz.
+      // Si a la distancia se siguen viendo pelos, súbelo a 0.5. Si de cerca se ve muy borroso, bájalo a 0.15.
+      const blur = 0.5;
+      c00 += blur;
+      c11 += blur;
+
+      // 3. Continuamos con la matemática normal
+      const det = c00 * c11 - c01 * c01;
+      const tr = c00 + c11;
+      const disc = Math.max(0, tr * tr / 4 - det);
+      const l1 = tr / 2 + Math.sqrt(disc);
+      const l2 = Math.max(0, tr / 2 - Math.sqrt(disc));
+      // ... sigue tu código (let ax0, ay0...) ...
 
       let ax0, ay0;
       if (Math.abs(c01) > 0.0001) { const len0 = Math.sqrt((l1-c11)**2 + c01*c01) || 1; ax0 = (l1-c11) / len0; ay0 = c01 / len0; } else { ax0 = 1; ay0 = 0; }
