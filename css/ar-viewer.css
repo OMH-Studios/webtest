@@ -1,0 +1,169 @@
+/* =========================================
+   ESTILOS DEL VISOR AR - OMH ESTUDIO
+   ========================================= */
+
+/* 1. Contenedor principal */
+.omh-visor-wrapper {
+    width: 100%;
+    max-width: 1000px; 
+    height: 600px; 
+    margin: 4rem auto; 
+    position: relative;
+    border-radius: 8px; 
+    overflow: hidden;
+    background: radial-gradient(circle at center, var(--gris-suave) 0%, var(--negro) 100%);
+    border: 1px solid var(--gris-borde);
+    cursor: auto; 
+}
+
+/* 2. El modelo 3D */
+.omh-model-viewer {
+    width: 100%;
+    height: 100%;
+    --poster-color: transparent;
+    cursor: grab; 
+}
+
+.omh-model-viewer:active {
+    cursor: grabbing; 
+}
+
+/* 3. Botón AR nativo (Mobile) */
+.omh-btn-ar {
+    background-color: var(--color-seccion);
+    color: var(--negro); 
+    font-family: 'Lexend Tera', sans-serif; 
+    border: none;
+    border-radius: 50px;
+    padding: 16px 32px;
+    font-size: 11px; 
+    font-weight: 700;
+    letter-spacing: 1px;
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+    cursor: pointer; 
+    transition: transform 0.2s ease, filter 0.2s ease;
+}
+
+.omh-btn-ar:active {
+    transform: translateX(-50%) scale(0.95);
+    filter: brightness(0.8);
+}
+
+.omh-ar-icon { 
+    width: 18px; 
+    height: 18px; 
+    fill: var(--negro); 
+}
+
+/* 4. Mensaje minimalista para PC */
+.omh-desktop-prompt {
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(10, 10, 10, 0.6); 
+    color: var(--blanco);
+    font-family: 'Raleway', sans-serif; 
+    font-size: 11px; 
+    font-weight: 400;
+    letter-spacing: 0.5px;
+    padding: 10px 20px;
+    border-radius: 30px;
+    border: 1px solid rgba(255, 255, 255, 0.2); 
+    pointer-events: none;
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+}
+
+.icon-mobile {
+    width: 14px;
+    height: 14px;
+    fill: var(--blanco);
+    opacity: 0.8;
+}
+
+/* 5. Botón de Compartir */
+.omh-btn-share {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: rgba(10, 10, 10, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    backdrop-filter: blur(4px);
+    transition: all 0.2s ease;
+    z-index: 10;
+}
+
+.omh-btn-share:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: scale(1.05);
+}
+
+.omh-share-icon {
+    width: 18px;
+    height: 18px;
+    fill: var(--blanco);
+}
+
+.omh-share-tooltip {
+    position: absolute;
+    top: 70px;
+    right: 20px;
+    background: var(--blanco);
+    color: var(--negro);
+    font-family: 'Raleway', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 6px 12px;
+    border-radius: 4px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+}
+
+/* 6. Pantalla completa (Para la página visor.html) */
+.omh-visor-fullscreen {
+    width: 100vw;
+    height: 100vh;
+    max-width: none !important; /* <--- Esto quita el límite de los 1000px */
+    margin: 0 !important;       /* <--- Asegura que no se mueva */
+    border-radius: 0;
+    border: none;
+}
+
+/* =========================================
+   LÓGICA RESPONSIVE (MÓVIL / PC)
+   ========================================= */
+@media (min-width: 1024px) {
+    .omh-btn-ar { display: none !important; }
+}
+
+@media (max-width: 1023px) {
+    .omh-desktop-prompt { display: none !important; }
+    .omh-visor-wrapper { 
+        height: 60vh; 
+        margin: 2rem auto;
+        border-radius: 0; 
+        border-left: none;
+        border-right: none;
+    } 
+}
+
+:not(:defined) > * { display: none; }
