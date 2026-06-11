@@ -271,15 +271,28 @@ export class SplatRenderer {
     const FLOATS_PER_VERT = 13; 
     this._pendingSplats = { count, pos, scale, color, rot };
     this._data = new Float32Array(count * 6 * FLOATS_PER_VERT);
-    this.splatCount = count; this._geoNeedsRebuild = true;
+    this.splatCount = count; 
+    this._geoNeedsRebuild = true;
+    
+    // NUEVO: Pre-asignamos la memoria para el ordenamiento una sola vez
+    this._depthArray = new Float32Array(count);
+    this._orderArray = new Uint32Array(count);
+    for (let i = 0; i < count; i++) this._orderArray[i] = i;
   }
 
   _buildGeoWithView(view, vpW, vpH) {
     const { count, pos, scale, color, rot } = this._pendingSplats, VERTS = 6, FPV = 13, data = this._data;
-    const fov = this.camera.fov * Math.PI / 180, f = 1 / Math.tan(fov / 2), fx = f / (vpW / vpH), fy = f, uvs = [-1,-1, 1,-1, -1,1, 1,-1, 1,1, -1,1], depths = new Float32Array(count);
+    const fov = this.camera.fov * Math.PI / 180, f = 1 / Math.tan(fov / 2), fx = f / (vpW / vpH), fy = f, uvs = [-1,-1, 1,-1, -1,1, 1,-1, 1,1, -1,1];
     
-    for (let i = 0; i < count; i++) depths[i] = view[2]*pos[i*3] + view[6]*pos[i*3+1] + view[10]*pos[i*3+2] + view[14];
-    const order = Array.from({ length: count }, (_, i) => i).sort((a, b) => depths[a] - depths[b]);
+    // NUEVO: Usamos los arreglos reciclados en lugar de crear nuevos
+    const depths = this._depthArray;
+    const order = this._orderArray;
+    
+    for (let i = 0; i < count; i++) {
+        depths[i] = view[2]*pos[i*3] + view[6]*pos[i*3+1] + view[10]*pos[i*3+2] + view[14];
+    }
+
+    order.sort((a, b) => depths[a] - depths[b]);
 
     for (let ii = 0; ii < count; ii++) {
       const i = order[ii], px = pos[i*3], py = pos[i*3+1], pz = pos[i*3+2];

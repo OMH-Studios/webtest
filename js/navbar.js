@@ -20,7 +20,7 @@ document.addEventListener("DOMContentLoaded", () => {
         ` : '';
 
         // 2. El enlace de "Inicio" en el menú desplegable SOLO aparece en subpáginas
-        const inicioLink = isSubpage ? `<li><a href="${rootPath}index.html" class="menu-link"><span>🏠</span> Inicio</a></li>` : '';
+        const inicioLink = isSubpage ? `<li><a href="${rootPath}index.html" class="menu-link"><span>🔴</span> Inicio</a></li>` : '';
 
         // 3. Estructura del Dropdown (Ahora se carga en TODAS las páginas)
         const dropdownMenu = `
@@ -29,15 +29,16 @@ document.addEventListener("DOMContentLoaded", () => {
                     <p class="menu-subtitle">Conoce lo que hacemos</p>
                     <ul class="menu-nav-list">
                         ${inicioLink}
-                        <li><a href="${pagesPath}nosotros.html" class="menu-link"><span>👥</span> Nosotros / Estudio</a></li>
-                        <li><a href="${pagesPath}archviz.html" class="menu-link"><span>🏛️</span> Visualización Arquitectónica</a></li>
-                        <li><a href="${pagesPath}audiovisual.html" class="menu-link"><span>🎥</span> Producción Audiovisual</a></li>
-                        <li><a href="${pagesPath}anim_vfx.html" class="menu-link"><span>🎬</span> Animación & VFX</a></li>
-                        <li><a href="${pagesPath}ar_vr.html" class="menu-link"><span>🥽</span> Experiencias Inmersivas</a></li>
-                        <li><a href="${pagesPath}tours_360.html" class="menu-link"><span>📷</span> Fotografía & Tours 360</a></li>
-                        <li><a href="${pagesPath}escaneos.html" class="menu-link"><span>📡</span> Escaneo 3D & PropTech</a></li>
-                        <li><a href="${pagesPath}mkt.html" class="menu-link"><span>✦</span> Contenido Digital / MKT</a></li>
+                        <li><a href="${pagesPath}nosotros.html" class="menu-link"><span>👥</span> Nosotros</a></li>
                         <li><a href="${pagesPath}inmob.html" class="menu-link"><span>🏘️</span> Tecnología Inmobiliaria</a></li>
+                        <li><a href="${pagesPath}escaneos.html" class="menu-link"><span>🧬</span> Réplicas Virtuales</a></li>
+                        <li><a href="${pagesPath}ar_vr.html" class="menu-link"><span>🥽</span> Realidad Aumentada / Virtual</a></li> 
+                        <li><a href="${pagesPath}tours_360.html" class="menu-link"><span>📷</span> Tours 360</a></li>
+                        <li><a href="${pagesPath}anim_vfx.html" class="menu-link"><span>🎬</span> Animación & VFX</a></li>
+                        <li><a href="${pagesPath}archviz.html" class="menu-link"><span>🏛️</span> Archviz</a></li>
+                        <li><a href="${pagesPath}audiovisual.html" class="menu-link"><span>🎥</span> Producción Audiovisual</a></li>
+                        <li><a href="${pagesPath}mkt.html" class="menu-link"><span>📢</span> Marketing y Contenido</a></li>
+                        
                     </ul>
                 </div>
             </div>
@@ -63,6 +64,28 @@ document.addEventListener("DOMContentLoaded", () => {
                     border: 1px solid var(--color-seccion, #cc0000); border-radius: 50%; 
                     pointer-events: none; z-index: 9998; transform: translate(-50%, -50%); 
                     transition: transform 0.15s ease, border-color 0.2s; opacity: 0.5;
+                }
+
+                /* ─── ESTADO ACTIVO PARA LA PÁGINA ACTUAL ─── */
+                /* 1. Estilo para la página donde estamos actualmente */
+                .menu-link.active-page { 
+                    color: var(--color-secundario, #f4d431); 
+                    transform: translateX(12px); /* Desplazamiento más notorio */
+                    pointer-events: none; 
+                    opacity: 1 !important; /* Siempre brillante */
+                    border-left: 2px solid var(--color-secundario, #f4d431); /* Línea indicadora */
+                    padding-left: 12px;
+                }
+
+               /* 2. Atenuar sutilmente el resto de las opciones sin que parezcan deshabilitadas */
+                .menu-nav-list.has-active .menu-link:not(.active-page) {
+                    opacity: 0.65; /* Subimos la opacidad (antes 0.3) para que sean claramente legibles */
+                    /* Eliminamos el filter: grayscale para que los emojis conserven su color original */
+                }
+
+                /* 3. Iluminar las opciones al pasar el cursor */
+                .menu-nav-list.has-active .menu-link:not(.active-page):hover {
+                    opacity: 1; 
                 }
 
                 /* ─── ESTILOS ENCAPSULADOS DE NAVBAR Y COMPONENTES DE MENÚ ─── */
@@ -213,5 +236,18 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             });
         }
+
+        // ─── LÓGICA PARA RESALTAR LA PÁGINA ACTUAL EN EL MENÚ ───
+            const currentFileName = window.location.pathname.split('/').pop() || 'index.html';
+            const navList = document.querySelector('.menu-nav-list'); // Identificamos la lista completa
+
+            document.querySelectorAll(".menu-link").forEach(link => {
+                const linkFileName = link.getAttribute('href').split('/').pop();
+                
+                if (currentFileName === linkFileName) {
+                    link.classList.add("active-page");
+                    if (navList) navList.classList.add("has-active"); // Dispara el efecto de atenuado en los demás
+                }
+            });
     }
 });

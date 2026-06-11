@@ -147,59 +147,48 @@
   Narrativa, diseño y tecnología al servicio de tu marca"
 </p>
 
-<div id="showreel-dinamico"></div>
-<script>
-  window.showreelConfig = {
-    label: "Showreel",
-    titleHtml: "Nuestro <em>trabajo</em>",
-    youtubeId: "qUj9q0LFO7g",
-    bottomText: "PRODUCTION REEL 2026",
-    bg: "negro"
-  };
-</script>
-
 <div id="video-showcase-dinamico"></div>
 <script>
   window.videoShowcaseConfig = {
-    label: "Portafolio",
+    label: "Enterate de nuestras Novedades",
     titleHtml: "Showcase <span style='color: var(--color-secundario);'>OMH</span>",
     btnText: "Ver más en Instagram",
     btnUrl: "https://www.instagram.com/omh_estudio/",
     items: [
       { 
-        linkUrl: "/pages/archviz.html", /* 🔗 AQUÍ PONES TU ENLACE INTERNO O EXTERNO */
+        linkUrl: "/pages/escaneos.html", /* 🔗 AQUÍ PONES TU ENLACE INTERNO O EXTERNO */
         linkTarget: "_self",                   /* Usa "_blank" si quieres que abra en otra pestaña */
-        videoSrc: "../assets/videos/vid_gallery01.mp4", 
+        videoSrc: "../assets/escaneos/escaneos_bg.mp4", 
         catStatic: "", nameStatic: "", 
-        catHover: "Contenido digital e interactivo", nameHover: "Experiencias memorables" 
+        catHover: "Del mundo real al digital", nameHover: "Visita un Showroom Digitalizado" 
       },
       { 
-        linkUrl: "/pages/anim_vfx.html", /* 🔗 ENLACE EXTERNO DE EJEMPLO */
+        linkUrl: "https://www.youtube.com/watch?v=oNcO-edUHRQ", /* 🔗 ENLACE EXTERNO DE EJEMPLO */
         linkTarget: "_blank", 
         videoSrc: "../assets/videos/vid_gallery02.mp4", 
         catStatic: "", nameStatic: "", 
         catHover: "Ver Trailer", nameHover: "DAWN OF THE CAN | Animated Shortfilm" 
       },
       { 
+        linkUrl: "/pages/ar_vr.html", /* 🔗 ENLACE EXTERNO DE EJEMPLO */
+        linkTarget: "_self",
+        videoSrc: "../assets/ar_vr/ar_vr_bg.mp4", 
+        catStatic: "", nameStatic: "", 
+        catHover: "El mundo digital se mezcla con la realidad", nameHover: "Prueba la Realidad Aumentada" 
+      },
+      { 
+        linkUrl: "/pages/tours_360.html", /* 🔗 ENLACE EXTERNO DE EJEMPLO */
+        linkTarget: "_self",
+        videoSrc: "../assets/tours_360/tours360_bg.mp4", 
+        catStatic: "", nameStatic: "", 
+        catHover: "Explora cada espacio", nameHover: "Recorridos 360°" 
+      },
+      { 
         linkUrl: "/pages/audiovisual.html", /* 🔗 ENLACE EXTERNO DE EJEMPLO */
-        linkTarget: "_self",
-        videoSrc: "../assets/videos/vid_gallery03.mp4", 
-        catStatic: "", nameStatic: "", 
-        catHover: "Producción Audiovisual e IA aplicada", nameHover: "Documentación para situaciones reales" 
-      },
-      { 
-        linkUrl: "/pages/escaneos.html", /* 🔗 ENLACE EXTERNO DE EJEMPLO */
-        linkTarget: "_self",
-        videoSrc: "../assets/videos/vid_gallery04.mp4", 
-        catStatic: "", nameStatic: "", 
-        catHover: "Documentación y Captura 3D", nameHover: "Tecnología y perspectiva" 
-      },
-      { 
-        linkUrl: "/pages/nosotros.html", /* 🔗 ENLACE EXTERNO DE EJEMPLO */
         linkTarget: "_self",
         videoSrc: "../assets/videos/vid_gallery05.mp4", 
         catStatic: "", nameStatic: "", 
-        catHover: "Categoría 05", nameHover: "Nombre Proyecto 05" 
+        catHover: "Contenido que conecta", nameHover: "Producción Audiovisual" 
       }
     ]
   };
@@ -212,12 +201,78 @@
     titleHtml: "Nuestros<br><em style='color: var(--color-seccion); font-style: normal;'>Servicios</em>",
     subtitle: "Producción visual de alto impacto para marcas, espacios y proyectos que exigen excelencia creativa.",
     items: [
-      { icon: "🏛️", title: "Visualización Arquitectónica", desc: "Renders hiperrealistas, animaciones y recorridos que transforman planos en experiencias visuales memorables.", tags: ["Renders 3D", "Animación", "CGI", "IA"] },
-      { icon: "🎬", title: "Producción Audiovisual", desc: "Video comercial, fotografía de producto y dirección visual con identidad para marcas y espacios.", tags: ["Video", "Fotografía", "Dron"] },
-      { icon: "🥽", title: "Experiencias Inmersivas +360°", desc: "Realidad aumentada, realidad virtual y recorridos 360° que sumergen al usuario en tus espacios y productos.", tags: ["AR / VR", "XR", "360°"] },
-      { icon: "📡", title: "Escaneo 3D", desc: "Escaneo tridimensional de alta precisión para documentación: Prop-tech, productos y copias digitales de espacios reales.", tags: ["3D Scan", "Prop Tech", "Reallity Scan", "Gaussian Splatting"] },
-      { icon: "✦", title: "Contenido Digital para Marcas", desc: "Estrategia y producción de contenido visual B2B: desde identidad hasta campañas digitales completas.", tags: ["Branding", "B2B", "Digital", "MKT"] },
-      { icon: "🤖", title: "Animación y VFX", desc: "Animación digital, efectos visuales y motion graphics que combinan narrativa, técnica y estética para producciones de alto impacto.", tags: ["3D", "VFX", "MOTION", "COMPOSITING"] }
+      { 
+        icon: "🏘️", 
+        title: "Tecnología Inmobiliaría", 
+        desc: "Transformamos la manera de proyectar, construir y comercializar desarrollos inmobiliarios.", 
+        tags: ["VR", "AR", "IA", "360", "Render", "PropTech"],
+        linkUrl: "/pages/inmob.html",               // 👈 ENLACE A LA SUBPÁGINA
+        linkTarget: "_self",                          // 👈 ABRIR EN LA MISMA PESTAÑA
+        videoSrc: "assets/inmob/inmob_bg.mp4"   // 👈 RUTA AL VIDEO DE HOVER
+      },
+      { 
+        icon: "🧬", 
+        title: "Replicas Virtuales", 
+        desc: "Escaneo y digitalización. Llevamos el mundo real al virtual con interactividad y 100% personalizable.", 
+        tags: ["Reallity Capture", "3DGs", "Interactive", "Showrooms"],
+        linkUrl: "/pages/escaneos.html",               // 👈 ENLACE A LA SUBPÁGINA
+        linkTarget: "_self",                          // 👈 ABRIR EN LA MISMA PESTAÑA
+        videoSrc: "assets/escaneos/escaneos_bg.mp4"   // 👈 RUTA AL VIDEO DE HOVER
+      },
+      { 
+        icon: "🥽", 
+        title: "Realidad Virtual y Aumentada", 
+        desc: "Experiencias inmersivas e interactivas. Siente como el mundo digital se mezcla con la realidad", 
+        tags: ["VR", "VR", "XR", "+360°"],
+        linkUrl: "/pages/ar_vr.html",               // 👈 ENLACE A LA SUBPÁGINA
+        linkTarget: "_self",                          // 👈 ABRIR EN LA MISMA PESTAÑA
+        videoSrc: "assets/ar_vr/ar_vr_bg.mp4"   // 👈 RUTA AL VIDEO DE HOVER
+      },
+      { 
+        icon: "📷", 
+        title: "Tours 360°", 
+        desc: "Fotografía y video 360°, recorre y conoce cada rincon de un espacio de manera inmersiva.", 
+        tags: ["360°", "Interactive", "Street View", "Tour Interactivo"],
+        linkUrl: "/pages/tours_360.html",               // 👈 ENLACE A LA SUBPÁGINA
+        linkTarget: "_self",                          // 👈 ABRIR EN LA MISMA PESTAÑA
+        videoSrc: "assets/tours_360/tours360_bg.mp4"   // 👈 RUTA AL VIDEO DE HOVER
+      },
+      { 
+        icon: "🎬", 
+        title: "Animación y VFX", 
+        desc: "Animación digital, efectos visuales y motion graphics que combinan narrativa, técnica y estética para producciones de alto impacto.", 
+        tags: ["3D", "CGI", "MOTION GRAPHICS", "COMPOSITING"],
+        linkUrl: "/pages/anim_vfx.html",               // 👈 ENLACE A LA SUBPÁGINA
+        linkTarget: "_self",                          // 👈 ABRIR EN LA MISMA PESTAÑA
+        videoSrc: "../assets/videos/vid_gallery02.mp4"   // 👈 RUTA AL VIDEO DE HOVER
+      },
+      { 
+        icon: "🏛️", 
+        title: "Visualización Arquitectónica", 
+        desc: "Renders hiperrealistas, animaciones y recorridos que transforman planos en experiencias visuales memorables.", 
+        tags: ["ARCHVIZ", "RENDER", "ANIMATION", "IA"],
+        linkUrl: "/pages/archviz.html",               // 👈 ENLACE A LA SUBPÁGINA
+        linkTarget: "_self",                          // 👈 ABRIR EN LA MISMA PESTAÑA
+        videoSrc: "../assets/archviz/archviz_bg.mp4"   // 👈 RUTA AL VIDEO DE HOVER
+      },
+      { 
+        icon: "🎥", 
+        title: "Producción Audiovisual", 
+        desc: "Video comercial, fotografía de producto y dirección visual con identidad para marcas y espacios.", 
+        tags: ["VIDEO", "FOTOGRAFÍA", "DRON", "POSTPRODUCCION"],
+        linkUrl: "/pages/audiovisual.html",               // 👈 ENLACE A LA SUBPÁGINA
+        linkTarget: "_self",                          // 👈 ABRIR EN LA MISMA PESTAÑA
+        videoSrc: "../assets/audiovisual/audiovisual_bg.mp4"   // 👈 RUTA AL VIDEO DE HOVER
+      },
+      { 
+        icon: "📢", 
+        title: "Marketing y Contenido", 
+        desc: "Estrategia y producción de contenido visual B2B: desde identidad hasta campañas digitales completas.", 
+        tags: ["BRANDING", "B2B", "B2C", "MKT", "CONTENT"],
+        linkUrl: "/pages/mkt.html",               // 👈 ENLACE A LA SUBPÁGINA
+        linkTarget: "_self",                          // 👈 ABRIR EN LA MISMA PESTAÑA
+        videoSrc: "../assets/mkt/mkt_bg.mp4"   // 👈 RUTA AL VIDEO DE HOVER
+      },
     ]
   };
 </script>
@@ -229,6 +284,17 @@
     bg: "gris",
     padding: "3rem 0",
     mostrarBordes: true
+  };
+</script>
+
+<div id="showreel-dinamico"></div>
+<script>
+  window.showreelConfig = {
+    label: "Showreel",
+    titleHtml: "Nuestro <em>trabajo</em>",
+    youtubeId: "qUj9q0LFO7g",
+    bottomText: "PRODUCTION REEL 2026",
+    bg: "negro"
   };
 </script>
 

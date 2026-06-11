@@ -247,7 +247,11 @@ export class VisorControls {
   }
 
   _onResize() {
-    const dpr = window.devicePixelRatio || 1;
+    const isMobile = window.innerWidth <= 768;
+    // Topamos la resolución en móviles a 1.5 para salvar el rendimiento de la GPU
+    const maxDpr = isMobile ? 1.5 : 2.0; 
+    const dpr = Math.min(window.devicePixelRatio || 1, maxDpr);
+    
     this.els.canvas.width  = this.wrap.clientWidth * dpr;
     this.els.canvas.height = this.wrap.clientHeight * dpr;
     this._applyDynamicFOV(); 
@@ -306,15 +310,18 @@ export class VisorControls {
       this._prevT = t;
 
       if (this.autoRot) {
-        this.renderer.camera.theta +=
-          this.cfg.autoRotateSpeed * dt * 0.001 * (Math.PI / 180);
+        this.renderer.camera.theta += this.cfg.autoRotateSpeed * dt * 0.001 * (Math.PI / 180);
         this._markDirty();
       }
 
       this._applyLimits();
-      if (this.renderer.dirty) this.renderer.render();
-      this._updateHotspots();
-      this._drawGizmo();
+      
+      // NUEVO: Solo renderizamos y calculamos hotspots si la vista cambió
+      if (this.renderer.dirty) {
+        this.renderer.render();
+        this._updateHotspots();
+        this._drawGizmo();
+      }
     };
     requestAnimationFrame(loop);
   }
