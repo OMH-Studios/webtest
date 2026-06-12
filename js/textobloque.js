@@ -1,6 +1,7 @@
 /**
  * OMH Estudio - Componente Dinámico de Bloques de Texto Editorial
  * Autoejecutable. Carga texto plano desde archivos externos de forma automática.
+ * Versión: Márgenes alineados a Grid 1200px y Tipografía Responsiva
  */
 (function () {
   document.addEventListener("DOMContentLoaded", async () => {
@@ -49,11 +50,14 @@
             padding: ${config.padding};
             transition: background 0.3s ease;
           }
+          
+          /* CONTENEDOR AJUSTADO A 1200px (Igual que TechGrid y GridProyectos) */
           .text-block-container {
-            max-width: 900px;
+            max-width: 1200px;
             margin: 0 auto;
-            padding: 0 4rem;
+            padding: 0 4rem; 
           }
+
           .text-block-label {
             font-family: 'Raleway', sans-serif;
             font-size: 0.65rem;
@@ -73,25 +77,36 @@
             height: 1px;
             background: var(--color-seccion);
           }
+
+          /* TÍTULO RESPONSIVO PARA MÓVILES */
           .text-block-title {
             font-family: 'Lexend Tera', sans-serif;
-            font-size: clamp(2rem, 4vw, 3rem);
+            /* Se bajó el tamaño base de 2rem a 1.4rem para que palabras largas quepan en móvil */
+            font-size: clamp(1.4rem, 5vw, 3.5rem); 
             font-weight: 900;
-            line-height: 1.05;
+            line-height: 1.1;
             letter-spacing: -0.02em;
             text-transform: uppercase;
             margin-bottom: 3.5rem;
+            /* Propiedades clave para evitar que el texto desborde la pantalla */
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            hyphens: auto; 
           }
           .text-block-title em {
             color: var(--color-seccion);
             font-style: normal;
           }
+
           .text-block-body {
             font-family: 'Raleway', sans-serif;
             font-size: 1.05rem;
             color: var(--gris-texto);
             line-height: 1.8;
             font-weight: 300;
+            /* Limitamos el ancho del texto a 850px para mantener una lectura óptima, 
+               aunque el contenedor principal mida 1200px */
+            max-width: 850px; 
           }
           .text-block-body p {
             margin-bottom: 2rem;
@@ -103,9 +118,16 @@
             color: var(--blanco);
             font-weight: 600;
           }
+
+          /* MEDIA QUERIES IGUALADAS A TUS OTROS COMPONENTES */
           @media (max-width: 900px) {
-            .text-block-container { padding: 0 2rem; }
+            .text-block-container { padding: 0 1.5rem; }
             .text-block-section { padding: 5rem 0; }
+          }
+          
+          @media (max-width: 600px) {
+            .text-block-container { padding: 0 1.2rem; }
+            .text-block-title { margin-bottom: 2rem; } /* Menos espacio de separación en celular */
           }
         </style>
       `;

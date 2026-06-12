@@ -42,7 +42,6 @@ export function initOMHViewer(containerId, glbPath, usdzPath = null, options = n
         `;
     }
 
-    // EL ERROR ESTABA AQUÍ: Le quité el comentario HTML que rompía el código
     container.innerHTML = `
         <model-viewer 
             class="omh-model-viewer"
@@ -64,7 +63,18 @@ export function initOMHViewer(containerId, glbPath, usdzPath = null, options = n
             </button>
             <div class="omh-share-tooltip">¡Enlace copiado!</div>
 
+            <button class="omh-btn-fullscreen" title="Ver en pantalla completa">
+                <svg viewBox="0 0 24 24" fill="var(--blanco)"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
+            </button>
+
             ${materialPickerHtml}
+
+            <div slot="ar-prompt" class="omh-ar-prompt">
+                <div class="omh-prompt-content">
+                    <svg viewBox="0 0 24 24" width="24" height="24" fill="var(--color-seccion)"><path d="M17 1.01L7 1c-1.1 0-2 .9-2 2v18c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V3c0-1.1-.9-1.99-2-1.99zM17 19H7V5h10v14zm-5-2h2v-2h-2v2z"/></svg>
+                    <span>Apunta la cámara hacia un espacio libre en el piso y mueve el dispositivo lentamente.</span>
+                </div>
+            </div>
 
             <button slot="ar-button" class="omh-btn-ar">
                 <svg class="omh-ar-icon" viewBox="0 0 24 24"><path d="M19 12h-2v3H7v-3H5v5h14v-5zM12 9V5.41l1.29 1.3 1.42-1.42L12 2.58 9.29 5.29l1.42 1.42L12 5.41V9H5v2h14V9h-7z"/></svg>
@@ -73,6 +83,7 @@ export function initOMHViewer(containerId, glbPath, usdzPath = null, options = n
         </model-viewer>
     `;
 
+    // 1. Compartir
     const btnShare = container.querySelector('.omh-btn-share');
     const tooltip = container.querySelector('.omh-share-tooltip');
     btnShare.addEventListener('click', async () => {
@@ -86,6 +97,41 @@ export function initOMHViewer(containerId, glbPath, usdzPath = null, options = n
         }
     });
 
+    // 2. Pantalla Completa (Con soporte forzado para iPhone)
+    const btnFullscreen = container.querySelector('.omh-btn-fullscreen');
+    btnFullscreen.addEventListener('click', () => {
+        // Si ya estamos en falso fullscreen (iPhone), lo cerramos
+        if (container.classList.contains('omh-fake-fullscreen')) {
+            container.classList.remove('omh-fake-fullscreen');
+            return;
+        }
+
+        // Si el navegador soporta el fullscreen nativo real
+        if (container.requestFullscreen) {
+            if (!document.fullscreenElement) {
+                container.requestFullscreen().catch(() => {
+                    // Si falla por alguna restricción, aplicamos el falso
+                    container.classList.add('omh-fake-fullscreen');
+                });
+            } else {
+                document.exitFullscreen();
+            }
+        } 
+        // Soporte para Safari en Desktop
+        else if (container.webkitRequestFullscreen) {
+            if (!document.webkitFullscreenElement) {
+                container.webkitRequestFullscreen();
+            } else {
+                document.webkitExitFullscreen();
+            }
+        } 
+        // Si no soporta ninguna API (Ej. iPhone), aplicamos el falso fullscreen
+        else {
+            container.classList.add('omh-fake-fullscreen');
+        }
+    });
+
+    // 3. Materiales
     if (options && options.materialName && options.opciones) {
         const modelViewer = container.querySelector('model-viewer');
         const swatches = container.querySelectorAll('.omh-color-swatch');
@@ -97,7 +143,6 @@ export function initOMHViewer(containerId, glbPath, usdzPath = null, options = n
                 e.stopPropagation();
                 menuOpciones.classList.toggle('open');
             });
-
             document.addEventListener('mousedown', (e) => {
                 if (menuOpciones.classList.contains('open') && !menuOpciones.contains(e.target) && !toggleBtn.contains(e.target)) {
                     menuOpciones.classList.remove('open');
@@ -118,28 +163,18 @@ export function initOMHViewer(containerId, glbPath, usdzPath = null, options = n
                     const valor = e.target.getAttribute('data-val');
 
                     if (tipo === 'color') {
-                        if (material.pbrMetallicRoughness.baseColorTexture) {
-                            material.pbrMetallicRoughness.baseColorTexture.setTexture(null);
-                        }
+                        if (material.pbrMetallicRoughness.baseColorTexture) material.pbrMetallicRoughness.baseColorTexture.setTexture(null);
                         
                         let hex = valor.replace(/^#/, '');
                         if (hex.length === 3) hex = hex.split('').map(c => c + c).join('');
                         const bigint = parseInt(hex, 16);
-                        const colorArray = [
-                            ((bigint >> 16) & 255) / 255, 
-                            ((bigint >> 8) & 255) / 255,  
-                            (bigint & 255) / 255,         
-                            1                             
-                        ];
-                        
+                        const colorArray = [((bigint >> 16) & 255) / 255, ((bigint >> 8) & 255) / 255, (bigint & 255) / 255, 1];
                         material.pbrMetallicRoughness.setBaseColorFactor(colorArray);
                         
                     } else if (tipo === 'textura') {
                         material.pbrMetallicRoughness.setBaseColorFactor([1, 1, 1, 1]);
                         const texture = await modelViewer.createTexture(valor);
-                        if (material.pbrMetallicRoughness.baseColorTexture) {
-                            material.pbrMetallicRoughness.baseColorTexture.setTexture(texture);
-                        }
+                        if (material.pbrMetallicRoughness.baseColorTexture) material.pbrMetallicRoughness.baseColorTexture.setTexture(texture);
                     }
                 });
             });

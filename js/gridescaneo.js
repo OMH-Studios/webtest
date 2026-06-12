@@ -1,6 +1,6 @@
 // Archivo: js/gridescaneo.js
 // Componente de Tarjetas "Escáner" con Lightbox Integrado y Encabezado Dinámico
-// Ajuste: Enlaces del pie de foto configurados para abrirse siempre en una pestaña nueva (_blank)
+// Ajuste: Lógica de doble toque en móviles (Touch 1: Escaneo / Touch 2: Lightbox)
 
 document.addEventListener("DOMContentLoaded", () => {
     const gridContainer = document.getElementById("grid-escaneo-dinamico");
@@ -91,12 +91,19 @@ document.addEventListener("DOMContentLoaded", () => {
                     object-fit: cover; opacity: 0; z-index: 10; transition: opacity 0.5s ease;
                 }
 
-                /* Hover Effect */
-                .scanner-visuals:hover { border-color: var(--color-seccion); }
-                .scanner-visuals:hover .scanner-base {
+                /* Hover Effect (Escritorio) y Scan-Active (Móvil) */
+                .scanner-visuals:hover, 
+                .scanner-visuals.scan-active { 
+                    border-color: var(--color-seccion); 
+                }
+                .scanner-visuals:hover .scanner-base, 
+                .scanner-visuals.scan-active .scanner-base {
                     transform: scale(1.08); filter: grayscale(100%) brightness(40%);
                 }
-                .scanner-visuals:hover .scanner-overlay { opacity: 1; }
+                .scanner-visuals:hover .scanner-overlay, 
+                .scanner-visuals.scan-active .scanner-overlay { 
+                    opacity: 1; 
+                }
 
                 /* Pie de Foto */
                 .scanner-caption { text-align: left; }
@@ -176,18 +183,36 @@ document.addEventListener("DOMContentLoaded", () => {
             </div>
         `;
 
-        // ─── LÓGICA DEL LIGHTBOX ───
+        // ─── LÓGICA DEL LIGHTBOX Y DOBLE TOQUE (MÓVIL) ───
         const lightbox = document.getElementById("scan-lightbox-overlay");
         const lightboxTarget = document.getElementById("scan-lightbox-target");
         const closeBtn = document.getElementById("scan-lightbox-close");
         const visuals = gridContainer.querySelectorAll(".scanner-visuals");
 
         visuals.forEach(visual => {
-            visual.addEventListener("click", () => {
-                const baseSrc = visual.querySelector(".scanner-base").src;
-                const overSrc = visual.querySelector(".scanner-overlay").src;
+            visual.addEventListener("click", function(e) {
+                // Detectamos si es un dispositivo táctil
+                const isHoverable = window.matchMedia("(hover: hover)").matches;
 
-                // Inyectamos ambas imágenes en el lightbox, forzando el estado "Escaneado"
+                if (!isHoverable) {
+                    // Si NO tiene la clase activa, es el PRIMER toque
+                    if (!this.classList.contains("scan-active")) {
+                        e.preventDefault(); // Detenemos la apertura del Lightbox
+                        
+                        // Apagamos cualquier otra tarjeta que estuviera "escaneada"
+                        visuals.forEach(v => v.classList.remove("scan-active"));
+                        
+                        // Encendemos el efecto visual en esta tarjeta
+                        this.classList.add("scan-active");
+                        return; // Salimos de la función aquí
+                    }
+                    // Si YA tenía la clase, el código continúa y abre el Lightbox
+                }
+
+                // --- Lógica normal de apertura del Lightbox ---
+                const baseSrc = this.querySelector(".scanner-base").src;
+                const overSrc = this.querySelector(".scanner-overlay").src;
+
                 lightboxTarget.innerHTML = `
                     <img src="${baseSrc}" class="lb-base" alt="Base">
                     <img src="${overSrc}" class="lb-overlay" alt="Scan Overlay">
@@ -198,6 +223,7 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         });
 
+        // Función para cerrar el Lightbox
         const closeLightbox = () => {
             lightbox.classList.remove("active");
             document.body.style.overflow = "";

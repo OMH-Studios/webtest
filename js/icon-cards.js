@@ -1,4 +1,4 @@
-// js/icon-cards.js
+// Archivo: js/icon-cards.js
 document.addEventListener("DOMContentLoaded", () => {
     const container = document.getElementById("icon-cards-dinamico");
     if (!container || !window.iconCardsConfig) return;
@@ -11,12 +11,13 @@ document.addEventListener("DOMContentLoaded", () => {
         #servicios { background: var(--gris-oscuro); padding: 7rem 0; }
         .servicios-header { display:grid; grid-template-columns:1fr 1fr; gap:4rem; margin-bottom:5rem; align-items:end; }
         
-        /* AQUÍ ESTÁ LA MAGIA: Cambiamos a 4 columnas (repeat(4, 1fr)) */
+        /* Cuadrícula de 4 columnas */
         .servicios-grid { display:grid; grid-template-columns:repeat(4, 1fr); gap:1px; background:var(--gris-borde); border:1px solid var(--gris-borde); }
         
+        /* La tarjeta ahora es un enlace interactivo */
         .servicio-card { 
             background:var(--negro); 
-            padding:2.5rem 1.5rem; /* Reduje un poco el padding lateral para que 4 columnas respiren bien */
+            padding:2.5rem 1.5rem; 
             position:relative; 
             overflow:hidden; 
             transition:background 0.3s; 
@@ -25,8 +26,10 @@ document.addEventListener("DOMContentLoaded", () => {
             text-decoration: none; 
         }
         
+        /* El contenido se mantiene arriba del video */
         .servicio-card > * { position: relative; z-index: 2; transition: transform 0.3s ease; }
         
+        /* Configuración del video de fondo */
         .servicio-video-bg {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             object-fit: cover; z-index: 1; opacity: 0;
@@ -34,47 +37,53 @@ document.addEventListener("DOMContentLoaded", () => {
             pointer-events: none;
         }
 
+        /* Línea superior indicadora */
         .servicio-card::before {
             content:''; position:absolute; top:0; left:0; width:100%; height:2px;
             background:var(--color-seccion); transform:scaleX(0); transform-origin:left; transition:transform 0.3s; z-index: 3;
         }
 
+        /* Capa oscura para no perder legibilidad del texto */
         .servicio-overlay {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0, 0, 0, 0.65); z-index: 1; opacity: 0;
             transition: opacity 0.4s ease;
         }
         
-        .servicio-card:hover { background: var(--negro); }
-        .servicio-card:hover::before { transform: scaleX(1); }
-        .servicio-card:hover .servicio-video-bg { opacity: 1; transform: scale(1.05); }
-        .servicio-card:hover .servicio-overlay { opacity: 1; }
-        .servicio-card:hover > *:not(.servicio-video-bg):not(.servicio-overlay) { transform: translateY(-5px); }
+        /* Efectos HOVER y TOUCH */
+        .servicio-card:hover, .servicio-card.touch-active { background: var(--negro); }
+        .servicio-card:hover::before, .servicio-card.touch-active::before { transform: scaleX(1); }
         
+        .servicio-card:hover .servicio-video-bg, 
+        .servicio-card.touch-active .servicio-video-bg { opacity: 1; transform: scale(1.05); }
+        
+        .servicio-card:hover .servicio-overlay, 
+        .servicio-card.touch-active .servicio-overlay { opacity: 1; }
+        
+        .servicio-card:hover > *:not(.servicio-video-bg):not(.servicio-overlay),
+        .servicio-card.touch-active > *:not(.servicio-video-bg):not(.servicio-overlay) { 
+            transform: translateY(-5px); 
+        }
+        
+        /* Tipografía de las tarjetas */
         .servicio-num { font-family:'Lexend Tera',sans-serif; font-size:0.6rem; letter-spacing:0.2em; color:var(--color-seccion); margin-bottom:1.5rem; opacity:0.8; }
         .servicio-icon { font-size:2rem; margin-bottom:1.2rem; display:block; }
-        
-        /* Tamaño de fuente ligeramente menor para que los títulos largos quepan en 4 columnas */
         .servicio-titulo { font-family:'Lexend Tera',sans-serif; font-size:0.8rem; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:0.75rem; line-height:1.3; color: var(--blanco); }
         .servicio-desc { font-family:'Raleway',sans-serif; font-size:0.8rem; color:var(--blanco); line-height:1.6; opacity: 0.8; }
         
+        /* Etiquetas / Tags */
         .servicio-tags { margin-top:1.2rem; display:flex; flex-wrap:wrap; gap:0.4rem; }
         .tag-dinamico { font-size:0.55rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--color-secundario); border:1px solid var(--color-secundario); padding:0.2rem 0.5rem; background: rgba(0,0,0,0.5); backdrop-filter: blur(2px); }
         
         /* ─── RESPONSIVE OPTIMIZADO ─── */
-        /* Pantallas medianas (Laptops pequeñas / Tablets en horizontal) */
         @media (max-width: 1150px) {
-            .servicios-grid { grid-template-columns: repeat(2, 1fr); } /* Bajamos a 2 columnas para no apretar el texto */
+            .servicios-grid { grid-template-columns: repeat(2, 1fr); }
         }
-
-        /* Tablets en vertical */
         @media (max-width: 900px) {
             .servicios-header { grid-template-columns: 1fr; gap: 2rem; }
         }
-
-        /* Teléfonos móviles */
         @media (max-width: 600px) {
-            .servicios-grid { grid-template-columns: 1fr; } /* 1 sola columna */
+            .servicios-grid { grid-template-columns: 1fr; }
             .servicio-card { padding: 2rem 1.5rem; }
         }
     `;
@@ -84,8 +93,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const cardsHTML = config.items.map((item, index) => {
         const linkUrl = item.linkUrl || "#";
         const linkTarget = item.linkTarget || "_self";
-        // Si hay un video configurado, inyectamos la etiqueta
-        const videoHTML = item.videoSrc ? `<video class="servicio-video-bg" src="${item.videoSrc}" muted loop playsinline></video><div class="servicio-overlay"></div>` : `<div class="servicio-overlay" style="background: var(--gris-suave);"></div>`;
+        const videoHTML = item.videoSrc 
+            ? `<video class="servicio-video-bg" src="${item.videoSrc}" muted loop playsinline></video><div class="servicio-overlay"></div>` 
+            : `<div class="servicio-overlay" style="background: var(--gris-suave);"></div>`;
 
         return `
             <a href="${linkUrl}" target="${linkTarget}" class="servicio-card">
@@ -135,20 +145,21 @@ document.addEventListener("DOMContentLoaded", () => {
     }, { threshold: 0.12 });
     reveals.forEach(el => observer.observe(el));
 
-    // 4. LÓGICA DE CURSOR INTERACTIVO Y REPRODUCCIÓN DE VIDEO
+    // 4. LÓGICA DE CURSOR INTERACTIVO, REPRODUCCIÓN DE VIDEO Y TÁCTIL
     const cursor = document.getElementById('cursor');
     const ring = document.getElementById('cursor-ring');
     
     container.querySelectorAll('.servicio-card').forEach(el => {
-        const video = el.querySelector('video'); // Busca si la tarjeta tiene video
+        const video = el.querySelector('video'); 
         
+        // --- Lógica para Escritorio (Mouse) ---
         el.addEventListener('mouseenter', () => {
             if(cursor && ring) {
                 cursor.style.transform = 'translate(-50%,-50%) scale(2)';
                 ring.style.borderColor = 'var(--color-secundario)';
             }
-            // Si hay video, lo reproducimos al poner el cursor encima
-            if(video) {
+            // Solo reproducir si el dispositivo tiene cursor (hover soportado)
+            if(video && window.matchMedia("(hover: hover)").matches) {
                 video.play().catch(error => console.log("Auto-play prevenido:", error));
             }
         });
@@ -158,11 +169,50 @@ document.addEventListener("DOMContentLoaded", () => {
                 cursor.style.transform = 'translate(-50%,-50%) scale(1)';
                 ring.style.borderColor = 'rgba(204,0,0,0.4)';
             }
-            // Si hay video, lo pausamos y regresamos al inicio al quitar el cursor
-            if(video) {
+            if(video && window.matchMedia("(hover: hover)").matches) {
                 video.pause();
                 video.currentTime = 0;
             }
         });
+
+        // --- Lógica para Móviles (Doble Toque basado en gridescaneo.js) ---
+        el.addEventListener('click', function(e) {
+            const isHoverable = window.matchMedia("(hover: hover)").matches;
+
+            if (!isHoverable) {
+                // Si la tarjeta NO tiene la clase activa, es el PRIMER toque
+                if (!this.classList.contains('touch-active')) {
+                    e.preventDefault(); // Detenemos la redirección del enlace
+                    
+                    // Apagamos cualquier otra tarjeta que estuviera activa
+                    container.querySelectorAll('.servicio-card').forEach(card => {
+                        card.classList.remove('touch-active');
+                        const v = card.querySelector('video');
+                        if (v) { v.pause(); v.currentTime = 0; }
+                    });
+
+                    // Activamos esta tarjeta
+                    this.classList.add('touch-active');
+                    if (video) {
+                        video.play().catch(err => console.log("Auto-play prevenido:", err));
+                    }
+                    return; // Salimos de la función para que no abra el enlace
+                }
+                // Si YA tenía la clase 'touch-active', el código ignora el if de arriba, 
+                // no previene el default, y el enlace te redirige normalmente (Segundo toque).
+            }
+        });
+    });
+
+    // Resetear las tarjetas si se toca fuera de ellas en pantallas táctiles
+    document.addEventListener('click', (e) => {
+        const isHoverable = window.matchMedia("(hover: hover)").matches;
+        if (!isHoverable && !e.target.closest('.servicio-card')) {
+            container.querySelectorAll('.servicio-card').forEach(card => {
+                card.classList.remove('touch-active');
+                const v = card.querySelector('video');
+                if (v) { v.pause(); v.currentTime = 0; }
+            });
+        }
     });
 });
