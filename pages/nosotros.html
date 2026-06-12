@@ -55,29 +55,32 @@
 </script>
 
 <!-- ===================================================================
-    GRID DE PROYECTOS, UN PEQUEÑO TEXTO Y DOS IMAGENES, LLAMADA A ARCHIVO JS PARA INSERTARLO EN LA PÁGINA
+    GRID DE PERFILES (CON LIGHTBOX Y PIE DE FOTO)
      ===================================================================-->
-
-<div id="grid-proyectos-dinamico"></div>
+<div id="grid-escaneo-dinamico"></div>
 
 <script>
-  window.gridProyectosConfig = {
-    introTitle: "Creamos <em>experiencias visuales</em> donde convergen arte, tecnología e inovación.", 
-    introSubtitle: "Somos un estudio creativo enfocado en visualización digital, animación y producción impulsada por tecnología de vanguardia.<br><br>El equipo que da vida a cada experiencia visual:",
-    
-    proyectos: [
-      {
-        category: "Co-founder",
-        title: "Arq. Miriam E. Cuevas Huerta",
-        mediaPath: "../assets/nosotros/grid_nosotros01.jpg"
-      },
-      {
-        category: "Co-founder",
-        title: "Ing. Oscar Muñoz Hdz",
-        mediaPath: "../assets/nosotros/grid_nosotros02.jpg"
-      }
-    ]
-  };
+    window.gridEscaneoConfig = {
+        label: "NUESTRO EQUIPO",
+        titleHtml: "Directores <em>Creativos</em>",
+        desc: "Somos un estudio creativo multidisciplinario. Nuestro equipo combina sensibilidad visual técnica y arquitectura para dar vida a cada experiencia inmersiva.",
+        items: [
+            {
+                title: "Arq. Miriam E. C. Huerta",
+                subtitle: "COO & Cofounder →",
+                baseImg: "../assets/nosotros/miri_base.jpg",  
+                overlayImg: "../assets/nosotros/miri_ov.png", 
+                link: "https://www.linkedin.com/in/miriam-cuevas-omh/"        
+            },
+            {
+                title: "Ing. Oscar Muñoz Hernández",
+                subtitle: "Director & Cofounder →",
+                baseImg: "../assets/nosotros/k_base.jpg",
+                overlayImg: "../assets/nosotros/k_ov.png",
+                link: "https://www.linkedin.com/in/oscar-munoz-omh/" /* Aquí pones la ruta a tu perfil o LinkedIn */
+            }
+        ]
+    };
 </script>
 
 <!-- ===================================================================
@@ -199,7 +202,7 @@
 
 <script src="../js/navbar.js"></script>
 <script src="../js/hero.js"></script>
-<script src="../js/gridproyectos.js"></script>
+<script src="../js/gridescaneo.js"></script>
 <script src="../js/techgrid.js"></script>
 <script src="../js/textobloque.js"></script>
 <script src="../js/frasedestacada.js"></script>

@@ -94,7 +94,7 @@
     <div style="display: flex; align-items: center; margin-bottom: 1.2rem;">
         <div style="width: 30px; height: 2px; background-color: var(--color-seccion); margin-right: 15px;"></div>
         <span style="font-family: 'Lexend Tera', sans-serif; font-size: 0.75rem; font-weight: 700; letter-spacing: 2px; color: var(--color-seccion); text-transform: uppercase;">
-            Visualización interactiva
+            Realidad Aumentada
         </span>
     </div>
     
@@ -115,14 +115,65 @@
      EDITAR LOS TEXTOS Y EL LINNK PARA QUE SEA PERSONALIZADO DE CADA PÁGINA
      ═══════════════════════════════════════════════════════════════ -->
 
+<div class="omh-visores-grid">
+    
     <div id="visor-mazda" class="omh-visor-wrapper"></div>
 
-    <script type="module">
-        import { initOMHViewer } from '../js/visor-ar/ar-viewer.js';
-        
-        // Al omitir el tercer parámetro, el visor usa solo el GLB
-        initOMHViewer('visor-mazda', '../assets/ar_vr/mazda.glb');
-    </script>
+    <div id="visor-mueble" class="omh-visor-wrapper"></div>
+
+</div>
+
+<script type="module">
+    // 1. Importamos la función maestra una sola vez
+    import { initOMHViewer } from '../js/visor-ar/ar-viewer.js';
+    
+    // ==========================================
+    // CONFIGURACIÓN 1: MAZDA
+    // ==========================================
+    const opcionesMazda = {
+        materialName: "CaarPaint",
+        opciones: [
+            { tipo: "color", hex: "#cc0000" }, // Rojo OMH
+            { tipo: "color", hex: "#ffffff" }, // Blanco
+            { tipo: "color", hex: "#111111" }, // Negro
+            { tipo: "color", hex: "#0055ff" }, // Azul Rey
+            { tipo: "color", hex: "#00ff00" }  // Verde Neón
+        ]
+    };
+    
+    // Iniciamos el visor del Mazda
+    initOMHViewer('visor-mazda', '../assets/ar_vr/mazda.glb', null, opcionesMazda);
+
+
+    // ==========================================
+    // CONFIGURACIÓN 2: MUEBLE DE SKETCHUP
+    // ==========================================
+    const opcionesMueble = {
+        materialName: "mob_madera", // El material que detectaste en SketchUp
+        opciones: [
+            // Opción A: Un color sólido (por ejemplo, pintura negra para madera)
+            { tipo: "color", hex: "#1a1a1a" },
+            
+            // Opción B: Textura de Madera 1 (Asegúrate de tener la imagen en tus carpetas)
+            { 
+              tipo: "textura", 
+              url: "../assets/ar_vr/madera_1.jpg", // La textura que forrará el mueble
+              thumbnail: "../assets/ar_vr/,madera_1.jpg" // La imagen que se verá en el botón redondo
+            },
+            
+            // Opción C: Textura de Madera 2
+            { 
+              tipo: "textura", 
+              url: "../assets/ar_vr/madera_2.jpg", 
+              thumbnail: "../assets/ar_vr/madera_2.jpg" 
+            }
+        ]
+    };
+    
+    // Iniciamos el visor del Mueble
+    initOMHViewer('visor-mueble', '../assets/ar_vr/mueble.glb', null, opcionesMueble);
+
+</script>
 
 <!-- ═══════════════════════════════════════════════════════════════
      SECCIÓN YOUTUBE
