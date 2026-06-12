@@ -55,7 +55,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 cursor:none; 
             }
             
-            /* LA MAGIA DE TU CÓDIGO ORIGINAL RESTAURADA */
             .proyecto-card:first-child { 
                 grid-column: span 2; 
                 aspect-ratio: 8/5; /* Tarjeta horizontal doble */
@@ -82,9 +81,12 @@ document.addEventListener("DOMContentLoaded", () => {
             .proyecto-cat { font-size:0.6rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--color-seccion); margin-bottom:0.4rem; }
             .proyecto-nombre { font-family:'Lexend Tera',sans-serif; font-size:0.9rem; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; color: var(--blanco); }
             
-            .proyecto-label-static { position:absolute; bottom:1.5rem; left:1.5rem; z-index:3; pointer-events:none; }
+            .proyecto-label-static { position:absolute; bottom:1.5rem; left:1.5rem; z-index:3; pointer-events:none; transition: opacity 0.3s; }
             .proyecto-cat-static { font-size:0.55rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--color-seccion); margin-bottom:0.3rem; opacity: 0.5; }
             .proyecto-nombre-static { font-family:'Lexend Tera',sans-serif; font-size:0.75rem; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; color:rgba(255,255,255,0.4); }
+            
+            /* Ocultar las etiquetas estáticas al hacer hover en escritorio */
+            .proyecto-card:hover .proyecto-label-static { opacity: 0; }
 
             .btn-showcase {
                 display: inline-block;
@@ -103,11 +105,23 @@ document.addEventListener("DOMContentLoaded", () => {
             }
             .btn-showcase:hover { border-color: var(--color-seccion); color: var(--color-seccion); }
 
+            /* ─── LÓGICA TÁCTIL (SIN HOVER) ─── */
+            @media (hover: none) {
+                /* Forzamos a que el texto final siempre esté encendido */
+                .proyecto-overlay {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+                /* Apagamos el texto estático para que no se sobrepongan las letras */
+                .proyecto-label-static {
+                    display: none;
+                }
+            }
+
             /* MEDIA QUERIES PARA CELULARES Y TABLETS */
             @media (max-width: 900px) {
                 .proyectos-grid { grid-template-columns:1fr 1fr; }
                 .proyecto-card:first-child { grid-column:span 2; }
-                /* En móvil/tablet regresamos la segunda tarjeta a 4/3 para que no descuadre con la tercera */
                 .proyecto-card:nth-child(2) { aspect-ratio: 4/3; }
             }
             @media (max-width: 600px) {
@@ -120,7 +134,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // 2. CONSTRUIR EL GRID DE PROYECTOS
     const cardsHTML = config.items.map(item => {
-        // Validación para el Link
         const linkHref = item.linkUrl ? item.linkUrl : 'javascript:void(0)';
         const linkTarget = item.linkTarget ? `target="${item.linkTarget}"` : '';
         
