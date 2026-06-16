@@ -365,38 +365,24 @@
 
 </script>
 
-  <!-- ____________________________________________________________
- FORMULARIO DE CONTACTO CON FORMSPREE, AGREGADO POR OSCAR
- ___________________________________________________________________-->
+<!-- ═══════════════════════════════════════════════════════════════
+     SECCIÓN YOUTUBE
+     ─────────────────────────────────────────────────────────────
+     SE SUSTITUYÓ POR UN MODULO DE JAVASCRIPT, AQUÍ LLAMAMOS A ESE MODULO PARA QUE SE ADAPTE A LOS COLORES DE LA PÁGINA Y
+     EDITAR LOS TEXTOS Y EL LINNK PARA QUE SEA PERSONALIZADO DE CADA PÁGINA
+     ═══════════════════════════════════════════════════════════════ -->
 
-<section id="contacto" style="padding: 80px 20px; max-width: 900px; margin: 0 auto; border-top: 1px solid #222;">
-    <h2 style="color: #fff; font-family: sans-serif; font-size: 1.5rem; letter-spacing: 2px; text-align: center; margin-bottom: 40px;">
-        ¿DUDAS? <span style="color: #C5A059;">¡PONTE EN CONTACTO!</span>
-    </h2>
-    
-    <form action="https://formspree.io/f/mojrgdvj" method="POST" style="display: flex; flex-direction: column; gap: 15px;">
-        
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-            <input type="text" name="nombre" placeholder="NOMBRE" required 
-                   style="background: transparent; border: 1px solid #333; color: #fff; padding: 15px; font-family: sans-serif; font-size: 0.8rem;">
-            
-            <input type="email" name="_replyto" placeholder="TU EMAIL" required 
-                   style="background: transparent; border: 1px solid #333; color: #fff; padding: 15px; font-family: sans-serif; font-size: 0.8rem;">
-        </div>
+  <div id="showreel-dinamico"></div>
 
-        <input type="text" name="asunto" placeholder="ASUNTO" required 
-               style="background: transparent; border: 1px solid #333; color: #fff; padding: 15px; font-family: sans-serif; font-size: 0.8rem;">
-
-        <textarea name="mensaje" placeholder="¿EN QUE TE PODEMOS AYUDAR?" rows="4" required 
-                  style="background: transparent; border: 1px solid #333; color: #fff; padding: 15px; font-family: sans-serif; font-size: 0.8rem; resize: none;"></textarea>
-
-        <input type="hidden" name="_subject" value="Nuevo contacto desde la web OMH">
-
-        <button type="submit" style="background: #fff; color: #000; border: none; padding: 15px; font-weight: bold; letter-spacing: 2px; cursor: pointer; transition: 0.3s; margin-top: 10px;">
-            ENVIAR<span>♥</span>
-        </button>
-    </form>
-</section>
+<script>
+  window.showreelConfig = {
+    label: "Recorridos inmersivos para presentación comercial y experiencia interactiva",
+    titleHtml: "REALIDAD VIRTUAL <em>INMOBILIARIA</em>",
+    youtubeId: "lCC0Zkx-8SU",
+    bottomText: "EXPERIENCIAS INMERSIVAS E INTERACTIVAS",
+    bg: "gris-oscuro" // Aquí lo dejas en fondo puramente negro
+  };
+</script>
 
 <!-- ===================================================================
     BOTON DE REGRESAR AL INICIO
@@ -457,6 +443,7 @@
 <script src="../js/viewer360.js"></script>
 
 <script src="../js/frasedestacada.js"></script>
+<script src="../js/youtubelink.js"></script>
 <script src="../js/botonera.js"></script>
 <script src="../js/footer.js"></script>
 
