@@ -132,9 +132,24 @@
 
     <script type="module">
         import { initOMHViewer } from '../js/visor-ar/ar-viewer.js';
+
+        const opcionesRobot = {
+      // 1. CÁMARA (Opcional): "horizontal vertical zoom"
+        // Ej: 0deg ve el modelo totalmente de frente. 90deg de altura lo ve a ras de piso.
+        cameraOrbit: "0deg 90deg 120%", 
+        
+        // 2. LÍMITE DE PISO (Opcional)
+        // Puedes cambiar el 90deg si el modelo requiere ver un poco más abajo
+        maxCameraOrbit: "auto 90deg auto",
+
+        // 3. ENTORNO HDRI (Opcional)
+        // Colocará una imagen 360 de fondo y la usará para los reflejos e iluminación.
+        // Soporta .hdr o incluso un .jpg panorámico
+        hdri: "../assets/inmob/txt/studio.hdr",
+    };
         
         // Al omitir el tercer parámetro, el visor usa solo el GLB
-        initOMHViewer('visor-mazda', '../assets/anim_vfx/robotdoc.glb');
+        initOMHViewer('visor-mazda', '../assets/anim_vfx/robotdoc.glb',null, opcionesRobot);
     </script>
 
     <div id="botonera-anim-medio"></div>

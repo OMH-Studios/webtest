@@ -9,6 +9,7 @@
 <link rel="icon" type="image/png" href="../assets/logos/favicon_omh.png">
 <link href="https://fonts.googleapis.com/css2?family=Lexend+Tera:wght@400;700;900&family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Raleway:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../css/colores.css">
+<link rel="stylesheet" href="../css/ar-viewer.css">
 
 <style>
   /* ─── ESTILOS EXCLUSIVOS DE LA SUBPÁGINA ─── */
@@ -123,7 +124,7 @@
           fase: 'ETAPA 1',
           titulo: 'Captación & Preventa',
           descripcion: 'Ayudamos a que los clientes visualicen un espacio antes de existir.',
-          videoPath: '../assets/videos/vid_gallery01.mp4', // Pon aquí la ruta de tu video
+          videoPath: '../assets/inmob/etapa1.mp4', // Pon aquí la ruta de tu video
           servicios: [
             { nombre: 'Render', url: 'archviz.html' },
             { nombre: 'Realidad Virtual y Aumentada', url: 'ar_vr.html' },
@@ -137,7 +138,7 @@
           fase: 'ETAPA 2',
           titulo: 'Construcción & Seguimiento',
           descripcion: 'Convertimos el proceso constructivo en una herramienta de comunicación y confianza.',
-          videoPath: '../assets/videos/vid_gallery03.mp4', 
+          videoPath: '../assets/inmob/etapa2.mp4', 
           servicios: [
             { nombre: 'Documentación de Obra', url: 'audiovisual.html' },
             { nombre: 'Visualización con IA', url: 'audiovisual.html' },
@@ -150,7 +151,7 @@
           fase: 'ETAPA 3',
           titulo: 'Comercialización Final',
           descripcion: 'Creamos experiencias visuales que ayudan a destacar propiedades en un mercado saturado.',
-          videoPath: '../assets/videos/vid_gallery04.mp4', 
+          videoPath: '../assets/inmob/etapa3.mp4', 
           servicios: [
             { nombre: 'Video Cinematográfico', url: 'audiovisual.html' },
             { nombre: 'Fotografía Profesional', url: 'audiovisual.html' },
@@ -247,6 +248,121 @@
       },
     ]
   };
+</script>
+
+<!-- TITULO PARA AR -->
+
+<div style="width: 100%; max-width: 1000px; margin: 4rem auto 2rem auto; padding: 0 20px; box-sizing: border-box;">
+    
+    <div style="display: flex; align-items: center; margin-bottom: 1.2rem;">
+        <div style="width: 30px; height: 2px; background-color: var(--color-seccion); margin-right: 15px;"></div>
+        <span style="font-family: 'Lexend Tera', sans-serif; font-size: 0.75rem; font-weight: 700; letter-spacing: 2px; color: var(--color-seccion); text-transform: uppercase;">
+            Realidad Aumentada
+        </span>
+    </div>
+    
+    <h2 style="font-family: 'Lexend Tera', sans-serif; font-size: clamp(1.8rem, 3.5vw, 2.5rem); line-height: 1.2; font-weight: 900; color: var(--blanco); margin-bottom: 1rem; text-transform: uppercase;">
+        Explora el modelo <span style="color: var(--color-seccion);">en tu espacio</span>
+    </h2>
+    
+    <p style="font-family: 'Raleway', sans-serif; font-size: 1rem; line-height: 1.6; color: var(--gris-texto); max-width: 700px; margin-bottom: 0;">
+        Gira y acerca el modelo libremente en la pantalla para ver los detalles. Si nos visitas desde un dispositivo móvil, proyecta la pieza a escala real en tu entorno físico para tener una mejor perspectiva espacial.
+    </p>
+
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     SECCIÓN REALIDAD AUMENTADA
+     ─────────────────────────────────────────────────────────────
+     SE SUSTITUYÓ POR UN MODULO DE JAVASCRIPT, AQUÍ LLAMAMOS A ESE MODULO PARA QUE SE ADAPTE A LOS COLORES DE LA PÁGINA Y
+     EDITAR LOS TEXTOS Y EL LINNK PARA QUE SEA PERSONALIZADO DE CADA PÁGINA
+     ═══════════════════════════════════════════════════════════════ -->
+
+<div class="omh-visores-grid">
+    
+    <div id="visor-mazda" class="omh-visor-wrapper"></div>
+
+    <div id="visor-mueble" class="omh-visor-wrapper"></div>
+
+</div>
+
+<script type="module">
+    // 1. Importamos la función maestra una sola vez
+    import { initOMHViewer } from '../js/visor-ar/ar-viewer.js';
+
+    const opcionesModelo = {
+
+      mostrarFondoHdri: false, // Si está en false (o no lo pones), oculta la foto del fondo
+      bgColor: "#090909",      // Si el HDRI está oculto, pinta el fondo de este color sólido. 
+
+      hdri: "../assets/inmob/txt/studio.hdr",
+
+      cameraOrbit: "-45deg 80deg 85%",
+
+      
+    };
+    
+    // Iniciamos el visor del Mazda
+    initOMHViewer('visor-mazda', '../assets/inmob/house.glb', null, opcionesModelo);
+
+
+    // ==========================================
+    // CONFIGURACIÓN 2: MUEBLE DE SKETCHUP
+    // ==========================================
+    const opcionesMueble = {
+
+      // FONDOS (Ambos son opcionales)
+        mostrarFondoHdri: false, // Si está en false (o no lo pones), oculta la foto del fondo
+        bgColor: "#e5e5e5",      // Si el HDRI está oculto, pinta el fondo de este color sólido. 
+                                 // (Si borras esta línea bgColor, usará el degradado negro de tu CSS).
+
+      // 1. CÁMARA (Opcional): "horizontal vertical zoom"
+        // Ej: 0deg ve el modelo totalmente de frente. 90deg de altura lo ve a ras de piso.
+        cameraOrbit: "0deg 80deg 100%", 
+        
+        // 2. LÍMITE DE PISO (Opcional)
+        // Puedes cambiar el 90deg si el modelo requiere ver un poco más abajo
+        maxCameraOrbit: "auto 90deg auto",
+
+        // 3. ENTORNO HDRI (Opcional)
+        // Colocará una imagen 360 de fondo y la usará para los reflejos e iluminación.
+        // Soporta .hdr o incluso un .jpg panorámico
+        hdri: "../assets/inmob/txt/studio.hdr",
+
+        materialName: "m_piedra", // El material que detectaste en SketchUp
+        opciones: [
+            // Opción A: Piedra 1
+            { 
+              tipo: "textura", 
+              url: "../assets/inmob/txt/rock01.jpg", // La textura que forrará el mueble
+              thumbnail: "../assets/inmob/txt/rock01.jpg" // La imagen que se verá en el botón redondo
+             },
+            
+            // Opción B: Piedra 2
+            { 
+              tipo: "textura", 
+              url: "../assets/inmob/txt/rock02.jpg", // La textura que forrará el mueble
+              thumbnail: "../assets/inmob/txt/rock02.jpg" // La imagen que se verá en el botón redondo
+            },
+            
+            // Opción C: Piedra 3
+            { 
+              tipo: "textura", 
+              url: "../assets/inmob/txt/rock03.jpg", 
+              thumbnail: "../assets/inmob/txt/rock03.jpg" 
+            },
+            // Opción D: Piedra 4
+            { 
+              tipo: "textura", 
+              url: "../assets/inmob/txt/rock04.jpg", 
+              thumbnail: "../assets/inmob/txt/rock04.jpg" 
+            }
+        ]
+    };
+    
+    // Iniciamos el visor del Mueble
+    initOMHViewer('visor-mueble', '../assets/inmob/kitch.glb', null, opcionesMueble);
+
 </script>
 
   <!-- ____________________________________________________________
