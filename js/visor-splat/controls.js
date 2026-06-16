@@ -250,17 +250,23 @@ export class VisorControls {
     const isMobile = window.innerWidth <= 768;
     // Topamos la resolución en móviles a 1.5 para salvar el rendimiento de la GPU
     const maxDpr = isMobile ? 1.5 : 2.0; 
-    const dpr = Math.min(window.devicePixelRatio || 1, maxDpr);
     
-    this.els.canvas.width  = this.wrap.clientWidth * dpr;
-    this.els.canvas.height = this.wrap.clientHeight * dpr;
+    // NUEVO: Guardamos el dpr calculado en "this.dpr" para usarlo en los hotspots
+    this.dpr = Math.min(window.devicePixelRatio || 1, maxDpr);
+    
+    this.els.canvas.width  = this.wrap.clientWidth * this.dpr;
+    this.els.canvas.height = this.wrap.clientHeight * this.dpr;
     this._applyDynamicFOV(); 
     this._markDirty();
   }
 
   _updateHotspots() {
     if (!this.cfg.hotspots || !this.renderer.splatCount) return;
-    const dpr = window.devicePixelRatio || 1;
+    
+    // ELIMINAR ESTO: const dpr = window.devicePixelRatio || 1;
+    // USAR ESTO: Usamos el dpr exacto que calculó el canvas
+    const currentDpr = this.dpr || 1; 
+    
     const eye = this.renderer._eye(); 
 
     this.cfg.hotspots.forEach(hs => {
@@ -293,8 +299,9 @@ export class VisorControls {
 
       if (screenPos) {
         el.style.display = "flex";
-        el.style.left = (screenPos.x / dpr) + "px";
-        el.style.top  = (screenPos.y / dpr) + "px";
+        // Dividimos exactamente entre el mismo currentDpr
+        el.style.left = (screenPos.x / currentDpr) + "px";
+        el.style.top  = (screenPos.y / currentDpr) + "px";
       } else {
         el.style.display = "none";
       }
