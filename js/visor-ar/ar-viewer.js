@@ -15,6 +15,30 @@ export function initOMHViewer(containerId, glbPath, usdzPath = null, options = n
     const baseUrl = window.location.origin + window.location.pathname.replace(/\/[^/]*$/, '/');
     const shareUrl = `${baseUrl}visor-ar.html?glb=${encodeURIComponent(glbPath)}${usdzPath ? '&usdz=' + encodeURIComponent(usdzPath) : ''}`;
 
+    const initialOrbit = (options && options.cameraOrbit) ? options.cameraOrbit : "-45deg 75deg 85%";
+    const maxOrbit = (options && options.maxCameraOrbit) ? options.maxCameraOrbit : "auto 90deg auto";
+    
+    // ─── CONTROL DE HDRI Y FONDOS ───
+    let environmentAttr = "";
+    let backgroundStyle = "";
+
+    if (options) {
+        // 1. Si hay HDRI, lo usamos para ILUMINAR (reflejos y luces)
+        if (options.hdri) {
+            environmentAttr += `environment-image="${options.hdri}" `;
+            
+            // 2. Solo lo ponemos de fondo si tú lo pides explícitamente
+            if (options.mostrarFondoHdri) {
+                environmentAttr += `skybox-image="${options.hdri}" `;
+            }
+        }
+        
+        // 3. Si no mostramos el HDRI de fondo, revisamos si pediste un color especial
+        if (!options.mostrarFondoHdri && options.bgColor) {
+            backgroundStyle = `style="background: ${options.bgColor};"`;
+        }
+    }
+
     let materialPickerHtml = '';
     if (options && options.opciones && options.opciones.length > 0) {
         const botonesHtml = options.opciones.map((opt, i) => {
@@ -47,15 +71,17 @@ export function initOMHViewer(containerId, glbPath, usdzPath = null, options = n
             class="omh-model-viewer"
             src="${glbPath}" 
             ${iosAttr}
+            ${backgroundStyle}
             ar 
             ar-modes="webxr scene-viewer quick-look" 
             camera-controls 
-            camera-orbit="-45deg 75deg 85%"
-            max-camera-orbit="auto 90deg auto"
+            camera-orbit="${initialOrbit}"
+            max-camera-orbit="${maxOrbit}"
+            ${environmentAttr}
             disable-pan 
             tone-mapping="neutral" 
             shadow-intensity="1.5"
-            exposure="1"
+            shadow-softness="1" exposure="1"
             autoplay>
             
             <button class="omh-btn-share" title="Compartir modelo">
@@ -83,7 +109,6 @@ export function initOMHViewer(containerId, glbPath, usdzPath = null, options = n
         </model-viewer>
     `;
 
-    // 1. Compartir
     const btnShare = container.querySelector('.omh-btn-share');
     const tooltip = container.querySelector('.omh-share-tooltip');
     btnShare.addEventListener('click', async () => {
@@ -97,27 +122,20 @@ export function initOMHViewer(containerId, glbPath, usdzPath = null, options = n
         }
     });
 
-    // 2. Pantalla Completa (Con soporte forzado para iPhone)
     const btnFullscreen = container.querySelector('.omh-btn-fullscreen');
     btnFullscreen.addEventListener('click', () => {
-        // Si ya estamos en falso fullscreen (iPhone), lo cerramos
         if (container.classList.contains('omh-fake-fullscreen')) {
             container.classList.remove('omh-fake-fullscreen');
             return;
         }
 
-        // Si el navegador soporta el fullscreen nativo real
         if (container.requestFullscreen) {
             if (!document.fullscreenElement) {
-                container.requestFullscreen().catch(() => {
-                    // Si falla por alguna restricción, aplicamos el falso
-                    container.classList.add('omh-fake-fullscreen');
-                });
+                container.requestFullscreen().catch(() => container.classList.add('omh-fake-fullscreen'));
             } else {
                 document.exitFullscreen();
             }
         } 
-        // Soporte para Safari en Desktop
         else if (container.webkitRequestFullscreen) {
             if (!document.webkitFullscreenElement) {
                 container.webkitRequestFullscreen();
@@ -125,13 +143,11 @@ export function initOMHViewer(containerId, glbPath, usdzPath = null, options = n
                 document.webkitExitFullscreen();
             }
         } 
-        // Si no soporta ninguna API (Ej. iPhone), aplicamos el falso fullscreen
         else {
             container.classList.add('omh-fake-fullscreen');
         }
     });
 
-    // 3. Materiales
     if (options && options.materialName && options.opciones) {
         const modelViewer = container.querySelector('model-viewer');
         const swatches = container.querySelectorAll('.omh-color-swatch');
