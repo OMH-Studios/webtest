@@ -9,6 +9,7 @@
 <link rel="icon" type="image/png" href="../assets/logos/favicon_omh.png">
 <link href="https://fonts.googleapis.com/css2?family=Lexend+Tera:wght@400;700;900&family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Raleway:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../css/colores.css">
+<link rel="stylesheet" href="../css/ar-viewer.css">
 
 <style>
   /* ─── ESTILOS EXCLUSIVOS DE LA SUBPÁGINA ─── */
@@ -92,7 +93,7 @@
 <script>
   window.textBloqueConfig = {
     label: "Nuestra Trayectoria",
-    titleHtml: "Evolución <em>Interdisciplinaria</em>",
+    titleHtml: "Nuestra <em>Evolución</em>",
     bg: "negro", // Fondo gris oscuro para hacer juego
     padding: "3.5rem 0",
     urlTexto: "../assets/nosotros/descripcion.txt" // 👈 Solo pones la ruta a tu bloc de notas
@@ -157,6 +158,72 @@
     mostrarBordes: true
   };
 </script>
+
+<div style="width: 100%; max-width: 1000px; margin: 4rem auto 2rem auto; padding: 0 20px; box-sizing: border-box;">
+    
+    <div style="display: flex; align-items: center; margin-bottom: 1.2rem;">
+        <div style="width: 30px; height: 2px; background-color: var(--color-seccion); margin-right: 15px;"></div>
+        <span style="font-family: 'Lexend Tera', sans-serif; font-size: 0.75rem; font-weight: 700; letter-spacing: 2px; color: var(--color-seccion); text-transform: uppercase;">
+            OMH EN COMUNIDAD
+        </span>
+    </div>
+    
+    <h2 style="font-family: 'Lexend Tera', sans-serif; font-size: clamp(1.8rem, 3.5vw, 2.5rem); line-height: 1.2; font-weight: 900; color: var(--blanco); margin-bottom: 1rem; text-transform: uppercase;">
+        COMUNIDAD <span style="color: var(--color-seccion);">BLOQUERS</span>
+    </h2>
+    
+    <p style="font-family: 'Raleway', sans-serif; font-size: 1rem; line-height: 1.6; color: var(--gris-texto); max-width: 700px; margin-bottom: 0;">
+        Somos parte de la comunidad de emprendimiento, 'BLOQUERS'. Parte del ecosistema de emprendimiento con sede en el BLOQUE | Centro de Innovación y Tecnología.
+    </p>
+
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     SECCIÓN REALIDAD AUMENTADA
+     ─────────────────────────────────────────────────────────────
+     SE SUSTITUYÓ POR UN MODULO DE JAVASCRIPT, AQUÍ LLAMAMOS A ESE MODULO PARA QUE SE ADAPTE A LOS COLORES DE LA PÁGINA Y
+     EDITAR LOS TEXTOS Y EL LINNK PARA QUE SEA PERSONALIZADO DE CADA PÁGINA
+     ═══════════════════════════════════════════════════════════════ -->
+
+    <div id="visor-mazda" class="omh-visor-wrapper"></div>
+
+    <script type="module">
+        import { initOMHViewer } from '../js/visor-ar/ar-viewer.js';
+
+        const opcionesRobot = {
+      // 1. CÁMARA (Opcional): "horizontal vertical zoom"
+        // Ej: 0deg ve el modelo totalmente de frente. 90deg de altura lo ve a ras de piso.
+        cameraOrbit: "0deg 90deg 90%", 
+        
+        // 2. LÍMITE DE PISO (Opcional)
+        // Puedes cambiar el 90deg si el modelo requiere ver un poco más abajo
+        maxCameraOrbit: "auto 90deg auto",
+
+        // 3. ENTORNO HDRI (Opcional)
+        // Colocará una imagen 360 de fondo y la usará para los reflejos e iluminación.
+        // Soporta .hdr o incluso un .jpg panorámico
+        hdri: "../assets/anim_vfx/room.hdr",
+    };
+        
+        // Al omitir el tercer parámetro, el visor usa solo el GLB
+        initOMHViewer('visor-mazda', '../assets/anim_vfx/bloquersmodel.glb', '../assets/anim_vfx/bloquersmodel.usdz', opcionesRobot);
+    </script>
+
+    <div id="botonera-anim-medio"></div>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            renderBotonera('botonera-anim-medio', {
+                bg: "negro",                   
+                padding: "2rem 0",     
+                align: "center",              
+                tituloText: "¿Quieres ver más en Realidad Aumentada?",
+                botones: [
+                    { text: "CONOCER MÁS →", url: "../pages/ar_vr.html", type: "solido", targetBlank: true }
+                ]
+            });
+        });
+    </script>
+
 
 <!-- ===================================================================
     BOTON DE REGRESAR AL INICIO
