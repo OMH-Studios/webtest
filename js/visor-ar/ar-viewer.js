@@ -13,27 +13,24 @@ export function initOMHViewer(containerId, glbPath, usdzPath = null, options = n
 
     const iosAttr = usdzPath ? `ios-src="${usdzPath}"` : '';
     const baseUrl = window.location.origin + window.location.pathname.replace(/\/[^/]*$/, '/');
-    const shareUrl = `${baseUrl}visor-ar.html?glb=${encodeURIComponent(glbPath)}${usdzPath ? '&usdz=' + encodeURIComponent(usdzPath) : ''}`;
+    
+    // Compartir guarda la posición de la cámara
+    let shareUrl = `${baseUrl}visor-ar.html?glb=${encodeURIComponent(glbPath)}${usdzPath ? '&usdz=' + encodeURIComponent(usdzPath) : ''}`;
+    if (options && options.cameraOrbit) {
+        shareUrl += `&orbit=${encodeURIComponent(options.cameraOrbit)}`;
+    }
 
-    const initialOrbit = (options && options.cameraOrbit) ? options.cameraOrbit : "-45deg 75deg 85%";
+    const initialOrbit = (options && options.cameraOrbit) ? options.cameraOrbit : "0deg 75deg 85%";
     const maxOrbit = (options && options.maxCameraOrbit) ? options.maxCameraOrbit : "auto 90deg auto";
     
-    // ─── CONTROL DE HDRI Y FONDOS ───
     let environmentAttr = "";
     let backgroundStyle = "";
 
     if (options) {
-        // 1. Si hay HDRI, lo usamos para ILUMINAR (reflejos y luces)
         if (options.hdri) {
             environmentAttr += `environment-image="${options.hdri}" `;
-            
-            // 2. Solo lo ponemos de fondo si tú lo pides explícitamente
-            if (options.mostrarFondoHdri) {
-                environmentAttr += `skybox-image="${options.hdri}" `;
-            }
+            if (options.mostrarFondoHdri) environmentAttr += `skybox-image="${options.hdri}" `;
         }
-        
-        // 3. Si no mostramos el HDRI de fondo, revisamos si pediste un color especial
         if (!options.mostrarFondoHdri && options.bgColor) {
             backgroundStyle = `style="background: ${options.bgColor};"`;
         }
@@ -57,7 +54,7 @@ export function initOMHViewer(containerId, glbPath, usdzPath = null, options = n
             <div class="omh-material-dropdown">
                 <button class="omh-material-toggle" id="omh-btn-toggle-${containerId}">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="var(--blanco)"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9c.83 0 1.5-.67 1.5-1.5 0-.39-.15-.74-.39-1.01-.23-.26-.38-.61-.38-.99 0-.83.67-1.5 1.5-1.5H16c2.76 0 5-2.24 5-5 0-4.42-4.03-8-9-8zm-5.5 9c-.83 0-1.5-.67-1.5-1.5S5.67 9 6.5 9 8 9.67 8 10.5 7.33 12 6.5 12zm3-4C8.67 8 8 7.33 8 6.5S8.67 5 9.5 5s1.5.67 1.5 1.5S10.33 8 9.5 8zm5 0c-.83 0-1.5-.67-1.5-1.5S13.67 5 14.5 5s1.5.67 1.5 1.5S15.33 8 14.5 8zm3 4c-.83 0-1.5-.67-1.5-1.5S16.67 9 17.5 9s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>
-                    PERSONALIZAR MODELO
+                    PERSONALIZAR
                 </button>
                 <div class="omh-material-menu" id="omh-menu-opciones-${containerId}">
                     ${botonesHtml}
@@ -74,6 +71,7 @@ export function initOMHViewer(containerId, glbPath, usdzPath = null, options = n
             ${backgroundStyle}
             ar 
             ar-modes="webxr scene-viewer quick-look" 
+            ar-scale="fixed" 
             camera-controls 
             camera-orbit="${initialOrbit}"
             max-camera-orbit="${maxOrbit}"
@@ -81,7 +79,8 @@ export function initOMHViewer(containerId, glbPath, usdzPath = null, options = n
             disable-pan 
             tone-mapping="neutral" 
             shadow-intensity="1.5"
-            shadow-softness="1" exposure="1"
+            shadow-softness="1"
+            exposure="1"
             autoplay>
             
             <button class="omh-btn-share" title="Compartir modelo">
@@ -95,19 +94,74 @@ export function initOMHViewer(containerId, glbPath, usdzPath = null, options = n
 
             ${materialPickerHtml}
 
-            <div slot="ar-prompt" class="omh-ar-prompt">
-                <div class="omh-prompt-content">
-                    <svg viewBox="0 0 24 24" width="24" height="24" fill="var(--color-seccion)"><path d="M17 1.01L7 1c-1.1 0-2 .9-2 2v18c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V3c0-1.1-.9-1.99-2-1.99zM17 19H7V5h10v14zm-5-2h2v-2h-2v2z"/></svg>
-                    <span>Apunta la cámara hacia un espacio libre en el piso y mueve el dispositivo lentamente.</span>
-                </div>
-            </div>
+            <div id="ar-loading-toast-${containerId}" class="omh-ar-toast"></div>
 
-            <button slot="ar-button" class="omh-btn-ar">
+            <div slot="ar-button" style="display: none;"></div>
+
+            <button class="omh-btn-ar omh-btn-pre-ar" id="btn-pre-ar-${containerId}">
                 <svg class="omh-ar-icon" viewBox="0 0 24 24"><path d="M19 12h-2v3H7v-3H5v5h14v-5zM12 9V5.41l1.29 1.3 1.42-1.42L12 2.58 9.29 5.29l1.42 1.42L12 5.41V9H5v2h14V9h-7z"/></svg>
                 VER EN TU ESPACIO
             </button>
+
+            <div slot="ar-prompt" class="omh-ar-prompt">
+                <div class="omh-prompt-content">
+                    <svg viewBox="0 0 24 24" width="24" height="24" fill="var(--color-seccion)"><path d="M17 1.01L7 1c-1.1 0-2 .9-2 2v18c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V3c0-1.1-.9-1.99-2-1.99zM17 19H7V5h10v14zm-5-2h2v-2h-2v2z"/></svg>
+                    <span>Escaneando el entorno... Mueve tu dispositivo.</span>
+                </div>
+            </div>
+
+            <div class="omh-pre-ar-overlay" id="overlay-${containerId}">
+                <div class="omh-pre-ar-card">
+                    <div class="omh-pre-ar-icon">📱</div>
+                    <div class="omh-pre-ar-text">Para una mejor experiencia, ubícate en un espacio bien iluminado y apunta al suelo despejado.</div>
+                    <button class="omh-btn-real-ar" id="btn-real-${containerId}">
+                        ENTENDIDO, ABRIR CÁMARA
+                    </button>
+                    <button class="omh-btn-cancel-ar" id="btn-cancel-${containerId}">Cancelar</button>
+                </div>
+            </div>
+
         </model-viewer>
     `;
+
+    const modelViewer = container.querySelector('model-viewer');
+    const toast = container.querySelector(`#ar-loading-toast-${containerId}`);
+
+    modelViewer.addEventListener('ar-status', (event) => {
+        if (event.detail.status === 'session-started') {
+            container.classList.add('omh-in-ar'); 
+            if(toast) {
+                toast.innerHTML = "⏳ Calculando entorno y escala...";
+                toast.style.color = "var(--blanco)";
+                toast.style.borderColor = "var(--color-seccion)";
+                toast.classList.add('show');
+            }
+        } else if (event.detail.status === 'object-placed') {
+            container.classList.add('omh-in-ar'); 
+            if(toast) {
+                toast.style.color = "#4ade80"; 
+                toast.style.borderColor = "#4ade80";
+                toast.innerHTML = "✅ Modelo colocado a escala real";
+                setTimeout(() => toast.classList.remove('show'), 3500);
+            }
+        } else if (event.detail.status === 'not-presenting') {
+            container.classList.remove('omh-in-ar'); 
+            if(toast) { toast.classList.remove('show'); }
+        }
+    });
+
+    const btnPreAr = container.querySelector(`#btn-pre-ar-${containerId}`);
+    const overlay = container.querySelector(`#overlay-${containerId}`);
+    const btnCancel = container.querySelector(`#btn-cancel-${containerId}`);
+    const btnRealAr = container.querySelector(`#btn-real-${containerId}`);
+
+    btnPreAr.addEventListener('click', () => overlay.classList.add('active'));
+    btnCancel.addEventListener('click', () => overlay.classList.remove('active'));
+    
+    btnRealAr.addEventListener('click', () => {
+        overlay.classList.remove('active');
+        modelViewer.activateAR(); 
+    });
 
     const btnShare = container.querySelector('.omh-btn-share');
     const tooltip = container.querySelector('.omh-share-tooltip');
@@ -128,28 +182,16 @@ export function initOMHViewer(containerId, glbPath, usdzPath = null, options = n
             container.classList.remove('omh-fake-fullscreen');
             return;
         }
-
         if (container.requestFullscreen) {
-            if (!document.fullscreenElement) {
-                container.requestFullscreen().catch(() => container.classList.add('omh-fake-fullscreen'));
-            } else {
-                document.exitFullscreen();
-            }
-        } 
-        else if (container.webkitRequestFullscreen) {
-            if (!document.webkitFullscreenElement) {
-                container.webkitRequestFullscreen();
-            } else {
-                document.webkitExitFullscreen();
-            }
-        } 
-        else {
-            container.classList.add('omh-fake-fullscreen');
-        }
+            if (!document.fullscreenElement) { container.requestFullscreen().catch(() => container.classList.add('omh-fake-fullscreen')); } 
+            else { document.exitFullscreen(); }
+        } else if (container.webkitRequestFullscreen) {
+            if (!document.webkitFullscreenElement) { container.webkitRequestFullscreen(); } 
+            else { document.webkitExitFullscreen(); }
+        } else { container.classList.add('omh-fake-fullscreen'); }
     });
 
     if (options && options.materialName && options.opciones) {
-        const modelViewer = container.querySelector('model-viewer');
         const swatches = container.querySelectorAll('.omh-color-swatch');
         const toggleBtn = container.querySelector(`#omh-btn-toggle-${containerId}`);
         const menuOpciones = container.querySelector(`#omh-menu-opciones-${containerId}`);
@@ -180,7 +222,6 @@ export function initOMHViewer(containerId, glbPath, usdzPath = null, options = n
 
                     if (tipo === 'color') {
                         if (material.pbrMetallicRoughness.baseColorTexture) material.pbrMetallicRoughness.baseColorTexture.setTexture(null);
-                        
                         let hex = valor.replace(/^#/, '');
                         if (hex.length === 3) hex = hex.split('').map(c => c + c).join('');
                         const bigint = parseInt(hex, 16);

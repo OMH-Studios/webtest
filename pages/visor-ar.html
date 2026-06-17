@@ -2,67 +2,43 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Visor Inmersivo | OMH Estudio</title>
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>OMH Estudio | Visor AR</title>
     <link rel="icon" type="image/png" href="../assets/logos/favicon_omh.png">
-    <link href="https://fonts.googleapis.com/css2?family=Lexend+Tera:wght@400;700;900&family=Raleway:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Lexend+Tera:wght@400;700;900&family=Raleway:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../css/colores.css">
+    
     <link rel="stylesheet" href="../css/ar-viewer.css">
-
+    
     <style>
-        body { 
-        margin: 0; 
-        padding: 0; 
-        background-color: var(--negro); 
-        width: 100%;
-        height: 100dvh; /* Agregado */
-        overflow: hidden; 
-        }
-        /* Forzamos una variable por defecto para el botón si se abre directo */
-        :root { 
-            --color-seccion: var(--blanco); 
-        }
-
-        /* Logotipo flotante minimalista */
-        .omh-visor-logo {
-            position: absolute;
-            top: 25px;
-            left: 25px;
-            width: 100px;
-            z-index: 100;
-            pointer-events: none; /* Evita que estorbe al arrastrar el modelo 3D con el mouse */
-            opacity: 0.4; /* Tono sutil e integrado al diseño oscuro */
-            transition: opacity 0.3s ease;
-        }
-
-        /* Si el usuario interactúa cerca, el logo se vuelve más nítido */
-        body:hover .omh-visor-logo {
-            opacity: 0.7;
-        }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: var(--negro); overflow: hidden; }
     </style>
 </head>
 <body>
 
-    <img src="../assets/logos/favicon_omh.png" class="omh-visor-logo" alt="OMH Estudio">
-
-    <div id="visor-fullscreen" class="omh-visor-wrapper omh-visor-fullscreen"></div>
+    <div id="visor-independiente" class="omh-visor-wrapper omh-visor-standalone"></div>
 
     <script type="module">
-        // RUTA CORREGIDA: Apunta directo a la carpeta visor-ar
         import { initOMHViewer } from '../js/visor-ar/ar-viewer.js';
 
+        // 1. Leemos los parámetros que vienen en el link (glb y orbit)
         const params = new URLSearchParams(window.location.search);
         const glb = params.get('glb');
         const usdz = params.get('usdz'); 
+        const orbit = params.get('orbit');
 
+        // 2. Si el link trae una posición de cámara guardada, la aplicamos
+        let opciones = null;
+        if (orbit) {
+            opciones = { cameraOrbit: orbit };
+        }
+
+        // 3. Iniciamos el visor
         if (glb) {
-            initOMHViewer('visor-fullscreen', glb, usdz);
+            initOMHViewer('visor-independiente', glb, usdz, opciones);
         } else {
-            document.getElementById('visor-fullscreen').innerHTML = `
-                <div style="color: var(--gris-texto); font-family: 'Raleway', sans-serif; text-align: center; margin-top: 45vh; font-size: 14px; letter-spacing: 1px;">
-                    MODELO NO ESPECIFICADO
-                </div>`;
+            document.getElementById('visor-independiente').innerHTML = '<p style="color:white; text-align:center; margin-top:40vh; font-family:Raleway;">Modelo no encontrado en la URL.</p>';
         }
     </script>
 

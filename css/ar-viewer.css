@@ -2,12 +2,11 @@
    ESTILOS DEL VISOR AR - OMH ESTUDIO
    ========================================= */
 
-/* 1. Contenedor principal */
 .omh-visor-wrapper {
     width: 100%;
     max-width: 1000px; 
     height: 600px; 
-    margin: 0 auto 5rem auto; /* Margen superior 0 para pegarse al título */
+    margin: 0 auto 5rem auto; 
     position: relative;
     border-radius: 8px; 
     overflow: hidden;
@@ -16,7 +15,6 @@
     cursor: auto; 
 }
 
-/* 2. El modelo 3D */
 .omh-model-viewer {
     width: 100%;
     height: 100%;
@@ -24,11 +22,9 @@
     cursor: grab; 
 }
 
-.omh-model-viewer:active {
-    cursor: grabbing; 
-}
+.omh-model-viewer:active { cursor: grabbing; }
 
-/* 3. Botón AR nativo */
+/* Botones AR de OMH */
 .omh-btn-ar {
     background-color: var(--color-seccion);
     color: var(--negro); 
@@ -51,298 +47,138 @@
     transition: transform 0.2s ease, filter 0.2s ease;
 }
 
-.omh-btn-ar:active {
-    transform: translateX(-50%) scale(0.95);
-    filter: brightness(0.8);
-}
+.omh-btn-ar:active { transform: translateX(-50%) scale(0.95); filter: brightness(0.8); }
+.omh-ar-icon { width: 18px; height: 18px; fill: var(--negro); }
 
-.omh-ar-icon { 
-    width: 18px; 
-    height: 18px; 
-    fill: var(--negro); 
-}
-
-/* 4. Botón de Compartir */
+/* Compartir */
 .omh-btn-share {
-    position: absolute;
-    top: 20px;
-    right: 20px;
+    position: absolute; top: 20px; right: 20px;
     background: rgba(10, 10, 10, 0.6);
     border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-    backdrop-filter: blur(4px);
-    transition: all 0.2s ease;
-    z-index: 10;
+    border-radius: 50%; width: 40px; height: 40px;
+    display: flex; justify-content: center; align-items: center;
+    cursor: pointer; backdrop-filter: blur(4px); transition: all 0.2s ease; z-index: 10;
 }
-
-.omh-btn-share:hover {
-    background: rgba(255, 255, 255, 0.1);
-    transform: scale(1.05);
-}
-
-.omh-share-icon {
-    width: 18px;
-    height: 18px;
-    fill: var(--blanco);
-}
+.omh-btn-share:hover { background: rgba(255, 255, 255, 0.1); transform: scale(1.05); }
+.omh-share-icon { width: 18px; height: 18px; fill: var(--blanco); }
 
 .omh-share-tooltip {
-    position: absolute;
-    top: 70px;
-    right: 20px;
-    background: var(--blanco);
-    color: var(--negro);
-    font-family: 'Raleway', sans-serif;
-    font-size: 11px;
-    font-weight: 600;
-    padding: 6px 12px;
-    border-radius: 4px;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.3s;
+    position: absolute; top: 70px; right: 20px; background: var(--blanco); color: var(--negro);
+    font-family: 'Raleway', sans-serif; font-size: 11px; font-weight: 600; padding: 6px 12px;
+    border-radius: 4px; opacity: 0; pointer-events: none; transition: opacity 0.3s;
 }
 
-/* 5. Pantalla completa (Para la página visor-ar.html) */
-.omh-visor-fullscreen {
-    width: 100%;
-    height: 100dvh; /* Cambiado de 100vh a 100dvh */
-    max-width: none !important; 
-    margin: 0 !important;       
-    border-radius: 0;
-    border: none;
-}
-
-/* =========================================
-   LÓGICA RESPONSIVE SÓLO PARA TAMAÑO DE CONTENEDOR
-   ========================================= */
-@media (max-width: 900px) {
-    .omh-visor-wrapper { 
-        height: 60vh; 
-        margin: 2rem auto;
-        border-radius: 0; 
-        border-left: none;
-        border-right: none;
-    } 
-}
-
-/* =========================================
-   7. MENÚ DE MATERIALES (Desplegable Top-Left)
-   ========================================= */
-.omh-material-dropdown {
-    position: absolute;
-    top: 20px;
-    left: 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start; /* Alinea los elementos a la izquierda */
-    gap: 12px;
-    z-index: 20;
-}
-
-.omh-material-toggle {
-    background: rgba(10, 10, 10, 0.85);
-    color: var(--blanco);
-    font-family: 'Raleway', sans-serif;
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    padding: 10px 22px;
-    border-radius: 30px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    backdrop-filter: blur(8px);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    transition: all 0.3s ease;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.5);
-}
-
-.omh-material-toggle:hover {
-    background: rgba(30, 30, 30, 0.95);
-    border-color: var(--color-seccion);
-    transform: translateY(2px);
-}
-
-.omh-material-menu {
-    display: flex;
-    flex-wrap: wrap;
-    max-width: 250px; /* Por si pones muchos colores, que bajen a otra línea */
-    gap: 14px;
-    background: rgba(10, 10, 10, 0.75);
-    padding: 12px 20px;
-    border-radius: 20px;
-    backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    box-shadow: 0 10px 30px rgba(0,0,0,0.6);
-    align-items: center;
-    
-    /* Estado inicial: Oculto y retraído hacia arriba a la izquierda */
-    opacity: 0;
-    transform: translateY(-15px) scale(0.95);
-    pointer-events: none;
-    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-    transform-origin: top left;
-}
-
-.omh-material-menu.open {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-    pointer-events: auto;
-}
-
-.omh-color-swatch {
-    width: 32px;  
-    height: 32px;
-    border-radius: 50%;
-    border: 2px solid rgba(255, 255, 255, 0.2);
-    cursor: pointer;
-    transition: all 0.2s ease;
-    background-size: cover; 
-    background-position: center;
-}
-
-.omh-color-swatch:hover,
-.omh-color-swatch.active {
-    transform: scale(1.15);
-    border-color: var(--blanco);
-    box-shadow: 0 0 15px rgba(255, 255, 255, 0.4);
-}
-
-/* Ajustes mínimos para celular */
-@media (max-width: 900px) {
-    .omh-material-dropdown { top: 15px; left: 15px; }
-}
-
-/* =========================================
-   8. GRID DE VISORES (Uno al lado del otro)
-   ========================================= */
-.omh-visores-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr; /* Crea dos columnas exactamente iguales */
-    gap: 3rem; /* Espacio de separación entre los visores */
-    width: 100%;
-    max-width: 1400px; /* Un poco más ancho para que quepan bien los dos */
-    margin: 0 auto 5rem auto;
-    padding: 0 5%;
-    box-sizing: border-box;
-}
-
-/* Evitamos que los visores individuales intenten centrarse o empujarse entre ellos */
-.omh-visores-grid .omh-visor-wrapper {
-    margin: 0;
-    width: 100%;
-    height: 600px; /* Puedes ajustar esta altura si los ves muy estirados */
-}
-
-/* Lógica para Tablets y Celulares (Se apilan uno sobre otro automáticamente) */
-@media (max-width: 1000px) {
-    .omh-visores-grid {
-        grid-template-columns: 1fr; /* Pasa a ser una sola columna */
-        gap: 4rem;
-    }
-    
-    .omh-visores-grid .omh-visor-wrapper {
-        height: 60vh;
-    }
-}
-
-/* =========================================
-   9. NUEVOS CONTROLES (Fullscreen y AR Prompt)
-   ========================================= */
-
-/* Botón Pantalla Completa (Ubicado abajo a la derecha) */
+/* Pantalla Completa Web */
 .omh-btn-fullscreen {
-    position: absolute;
-    bottom: 20px;
-    right: 20px;
-    background: rgba(10, 10, 10, 0.6);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-    backdrop-filter: blur(4px);
-    transition: all 0.2s ease;
-    z-index: 10;
+    position: absolute; bottom: 20px; right: 20px;
+    background: rgba(10, 10, 10, 0.6); border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 50%; width: 40px; height: 40px;
+    display: flex; justify-content: center; align-items: center;
+    cursor: pointer; backdrop-filter: blur(4px); transition: all 0.2s ease; z-index: 10;
 }
-
 .omh-btn-fullscreen svg { width: 20px; height: 20px; }
 .omh-btn-fullscreen:hover { background: rgba(255, 255, 255, 0.15); transform: scale(1.05); }
 
-/* Cartel de Instrucciones AR */
+/* Clase STANDALONE (Ocupar toda la pantalla obligatoriamente) */
+.omh-visor-standalone {
+    width: 100vw !important;
+    height: 100dvh !important; 
+    max-width: none !important; 
+    margin: 0 !important;       
+    border-radius: 0 !important;
+    border: none !important;
+}
+
+/* Responsive: Celulares */
+@media (max-width: 900px) {
+    /* ✨ LA CLAVE: Achica el visor inyectado, pero NO afecta a standalone */
+    .omh-visor-wrapper:not(.omh-visor-standalone) { 
+        height: 60vh; 
+        margin: 2rem auto;
+        border-radius: 0; 
+        border-left: none; border-right: none;
+    } 
+}
+
+/* Menú Materiales */
+.omh-material-dropdown { position: absolute; top: 20px; left: 20px; display: flex; flex-direction: column; align-items: flex-start; gap: 12px; z-index: 20; }
+.omh-material-toggle {
+    background: rgba(10, 10, 10, 0.85); color: var(--blanco); font-family: 'Raleway', sans-serif;
+    font-size: 11px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase;
+    padding: 10px 22px; border-radius: 30px; border: 1px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(8px); cursor: pointer; display: flex; align-items: center; gap: 10px;
+    transition: all 0.3s ease; box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+}
+.omh-material-toggle:hover { background: rgba(30, 30, 30, 0.95); border-color: var(--color-seccion); transform: translateY(2px); }
+
+.omh-material-menu {
+    display: flex; flex-wrap: wrap; max-width: 250px; gap: 14px;
+    background: rgba(10, 10, 10, 0.75); padding: 12px 20px; border-radius: 20px;
+    backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.15); box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+    align-items: center; opacity: 0; transform: translateY(-15px) scale(0.95); pointer-events: none;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); transform-origin: top left;
+}
+.omh-material-menu.open { opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
+
+.omh-color-swatch { width: 32px; height: 32px; border-radius: 50%; border: 2px solid rgba(255, 255, 255, 0.2); cursor: pointer; transition: all 0.2s ease; background-size: cover; background-position: center; }
+.omh-color-swatch:hover, .omh-color-swatch.active { transform: scale(1.15); border-color: var(--blanco); box-shadow: 0 0 15px rgba(255, 255, 255, 0.4); }
+
+@media (max-width: 900px) { .omh-material-dropdown { top: 15px; left: 15px; } }
+
+/* Grid Visores Inyectados */
+.omh-visores-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; width: 100%; max-width: 1400px; margin: 0 auto 5rem auto; padding: 0 5%; box-sizing: border-box; }
+.omh-visores-grid .omh-visor-wrapper { margin: 0; width: 100%; height: 600px; }
+@media (max-width: 1000px) {
+    .omh-visores-grid { grid-template-columns: 1fr; gap: 4rem; }
+    .omh-visores-grid .omh-visor-wrapper { height: 60vh; }
+}
+
+/* Prompt dentro de cámara (Escaneando...) */
 .omh-ar-prompt {
-    position: absolute;
-    bottom: 15%;
-    left: 50%;
-    transform: translateX(-50%);
-    background: rgba(10, 10, 10, 0.85);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    padding: 15px 25px;
-    border-radius: 12px;
-    backdrop-filter: blur(8px);
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-    width: 85%;
-    max-width: 320px;
-    /* Animación de pulso suave para llamar la atención */
+    position: absolute; bottom: 15%; left: 50%; transform: translateX(-50%);
+    background: rgba(10, 10, 10, 0.85); border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 15px 25px; border-radius: 12px; backdrop-filter: blur(8px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5); width: 85%; max-width: 320px;
     animation: omh-pulse-prompt 2s infinite ease-in-out;
 }
+.omh-prompt-content { display: flex; flex-direction: column; align-items: center; gap: 10px; color: var(--blanco); font-family: 'Raleway', sans-serif; font-size: 13px; text-align: center; line-height: 1.4; }
+@keyframes omh-pulse-prompt { 0% { transform: translateX(-50%) scale(1); } 50% { transform: translateX(-50%) scale(1.02); } 100% { transform: translateX(-50%) scale(1); } }
 
-.omh-prompt-content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-    color: var(--blanco);
-    font-family: 'Raleway', sans-serif;
-    font-size: 13px;
-    text-align: center;
-    line-height: 1.4;
+/* Tarjeta negra PREVIA a la cámara */
+.omh-pre-ar-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(10px); z-index: 50; display: flex; justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
+.omh-pre-ar-overlay.active { opacity: 1; pointer-events: auto; }
+.omh-pre-ar-card { background: rgba(20, 20, 20, 0.9); border: 1px solid rgba(255, 255, 255, 0.15); padding: 30px 25px; border-radius: 20px; text-align: center; width: 85%; max-width: 320px; transform: translateY(20px); transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+.omh-pre-ar-overlay.active .omh-pre-ar-card { transform: translateY(0); }
+.omh-pre-ar-icon { font-size: 40px; margin-bottom: 15px; display: inline-block; animation: omh-scan-phone 2s infinite ease-in-out; }
+@keyframes omh-scan-phone { 0% { transform: rotate(0deg) translateX(0); } 25% { transform: rotate(-15deg) translateX(-5px); } 75% { transform: rotate(15deg) translateX(5px); } 100% { transform: rotate(0deg) translateX(0); } }
+.omh-pre-ar-text { color: var(--blanco); font-size: 14px; line-height: 1.5; margin-bottom: 25px; font-family: 'Raleway', sans-serif;}
+
+/* Botones reales y de cancelar */
+.omh-btn-real-ar { background-color: var(--color-seccion); color: var(--negro); border: none; font-family: 'Raleway', sans-serif; font-weight: 700; font-size: 12px; letter-spacing: 1px; padding: 14px 20px; border-radius: 30px; width: 100%; cursor: pointer; margin-bottom: 10px; }
+.omh-btn-cancel-ar { background: transparent; color: rgba(255,255,255,0.6); border: none; font-family: 'Raleway', sans-serif; font-size: 12px; text-decoration: underline; cursor: pointer; padding: 10px; }
+
+/* Falsa Pantalla Completa (iPhone Desktop) */
+.omh-fake-fullscreen { position: fixed !important; top: 0 !important; left: 0 !important; width: 100vw !important; height: 100vh !important; max-width: none !important; margin: 0 !important; z-index: 99999 !important; border-radius: 0 !important; background: var(--negro) !important; }
+
+/* Ocultar botones Web estando en AR */
+.omh-visor-wrapper.omh-in-ar .omh-btn-share,
+.omh-visor-wrapper.omh-in-ar .omh-share-tooltip,
+.omh-visor-wrapper.omh-in-ar .omh-btn-fullscreen,
+.omh-visor-wrapper.omh-in-ar .omh-material-dropdown,
+.omh-visor-wrapper.omh-in-ar .omh-btn-pre-ar { display: none !important; }
+
+/* Ocultar Botón en Computadoras (Solo se muestra en táctiles) */
+.omh-btn-pre-ar { display: flex !important; }
+@media (hover: hover) and (pointer: fine) {
+    .omh-btn-pre-ar { display: none !important; }
 }
 
-@keyframes omh-pulse-prompt {
-    0% { transform: translateX(-50%) scale(1); }
-    50% { transform: translateX(-50%) scale(1.02); }
-    100% { transform: translateX(-50%) scale(1); }
+/* Indicador TOAST de carga (Calculando escala...) */
+.omh-ar-toast {
+    position: absolute; top: 20px; left: 50%; transform: translateX(-50%) translateY(-20px);
+    background: rgba(10, 10, 10, 0.9); color: var(--blanco); padding: 10px 20px;
+    border-radius: 30px; font-size: 12px; font-family: 'Raleway', sans-serif; font-weight: 600;
+    border: 1px solid var(--color-seccion); opacity: 0; pointer-events: none;
+    transition: all 0.3s ease; z-index: 100; box-shadow: 0 4px 15px rgba(0,0,0,0.5);
 }
-
-/* =========================================
-   10. MODO INMERSIVO (OCULTAR UI EN AR)
-   ========================================= 
-   Esta es la magia: model-viewer añade automáticamente
-   el atributo ar-status="session-started" al abrir la cámara.
-   Usamos esto para desaparecer los botones de la web.
-*/
-model-viewer[ar-status="session-started"] .omh-btn-share,
-model-viewer[ar-status="session-started"] .omh-share-tooltip,
-model-viewer[ar-status="session-started"] .omh-material-dropdown,
-model-viewer[ar-status="session-started"] .omh-btn-fullscreen {
-    display: none !important;
-}
-
-/* =========================================
-   11. FALSO FULLSCREEN (Para iPhone / iPad)
-   ========================================= */
-.omh-fake-fullscreen {
-    position: fixed !important;
-    top: 0 !important;
-    left: 0 !important;
-    width: 100vw !important;
-    height: 100vh !important;
-    max-width: none !important;
-    margin: 0 !important;
-    z-index: 99999 !important;
-    border-radius: 0 !important;
-    background: var(--negro) !important;
-}
-:not(:defined) > * { display: none; }
+.omh-ar-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
