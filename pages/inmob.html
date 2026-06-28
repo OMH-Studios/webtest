@@ -90,81 +90,6 @@
   };
 </script>
 
-<!--===================================================================
-    SECCIÓN DE NUESTROS ALIADOS / CLIENTES
-    Agregar logos para que la barra se esté moviendo
-    continuamente, los logos se nombran como
-    logo1.png , logo2.png, etc
-    ===================================================================-->
-
-<div id="marquee-clientes-dinamico"></div>
-
-<script>
-  window.clientesMarqConfig = {
-    title: "Empresas que confían en nosotros",
-    bg: "negro",
-    padding: "4rem 0",
-    mostrarBordes: false
-  };
-</script>
-
- <!-- ══════════════════════════════════════════════════════
-       MÓDULO TIMELINE (Scroll-Driven)
-       ══════════════════════════════════════════════════════ -->
-  <div id="timeline-dinamico"></div>
- 
-  <script>
-    window.timelineConfig = {
-      anclaId: 'timeline-dinamico',
-      totalRotation: -240, 
-      numerosOpacity: 0.25,
-      etapas: [
-        {
-          numero: '01',
-          fase: 'ETAPA 1',
-          titulo: 'Captación & Preventa',
-          descripcion: 'Ayudamos a que los clientes visualicen un espacio antes de existir.',
-          videoPath: '../assets/inmob/etapa1.mp4', // Pon aquí la ruta de tu video
-          servicios: [
-            { nombre: 'Render', url: 'archviz.html' },
-            { nombre: 'Realidad Virtual y Aumentada', url: 'ar_vr.html' },
-            { nombre: 'Animación 3D', url: 'anim_vfx.html' },
-            { nombre: 'Recorridos Virtuales', url: 'ar_vr.html' },
-            { nombre: 'Tours 360°', url: 'tours_360.html' }
-          ]
-        },
-        {
-          numero: '02',
-          fase: 'ETAPA 2',
-          titulo: 'Construcción & Seguimiento',
-          descripcion: 'Convertimos el proceso constructivo en una herramienta de comunicación y confianza.',
-          videoPath: '../assets/inmob/etapa2.mp4', 
-          servicios: [
-            { nombre: 'Documentación de Obra', url: 'audiovisual.html' },
-            { nombre: 'Visualización con IA', url: 'audiovisual.html' },
-            { nombre: 'Mixed Reallity', url: 'escaneos.html' },
-            { nombre: 'Tours 360° con IA', url: 'tours_360.html' },
-          ]
-        },
-        {
-          numero: '03',
-          fase: 'ETAPA 3',
-          titulo: 'Comercialización Final',
-          descripcion: 'Creamos experiencias visuales que ayudan a destacar propiedades en un mercado saturado.',
-          videoPath: '../assets/inmob/etapa3.mp4', 
-          servicios: [
-            { nombre: 'Video Cinematográfico', url: 'audiovisual.html' },
-            { nombre: 'Fotografía Profesional', url: 'audiovisual.html' },
-            { nombre: 'Captura 3D / Splatting', url: 'escaneos.html' },
-            { nombre: 'Tours 360°', url: 'escaneos.html' },
-            { nombre: 'Street View Integration', url: 'escaneos.html' },
-            { nombre: 'PropTech Marketing', url: 'mkt.html' }
-          ]
-        }
-      ]
-    };
-  </script>
-
 <!-- ===================================================================
     FRASE DESTACADA
      ===================================================================-->
@@ -189,8 +114,40 @@
 </script>
 
   <!-- VISOR PARA GAUSSIAN SPLAT Y VISOR 360 PARA RECORRIDO DE UN CARRO -->
-<div id="visor-splat-dinamico" style="padding: 2rem 5%;"></div>
-<div class="omh-360-widget" id="omh-360-interno" data-config="../js/tours/interior-jetta.js"></div>
+<style>
+  .splat-viewers-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    padding: 0 5% 4rem 5%;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+  @media (min-width: 900px) {
+    .splat-viewers-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  .splat-item-container {
+    width: 100%;
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+    background: #1f1f1f;
+  }
+  .splat-item-container iframe {
+    display: block;
+    width: 100%;
+    height: 100%;
+    min-height: 60vh;
+  }
+</style>
+
+<div class="splat-viewers-grid">
+  <div class="splat-item-container">
+    <div id="visor-splat-dinamico" style="width: 100%; height: 100%;"></div>
+    <div class="omh-360-widget" id="omh-360-interno" data-config="../js/tours/interior-jetta.js"></div>
+  </div>
 
 <!-- 2. Configuración -->
 <script>
@@ -199,7 +156,7 @@
     modelPath: "../assets/escaneos/bloque.ply",
     title: "Escaneo en proceso...",
     subtitle: "BLOQUE | Centro de innovación y tecnología",
-    height: "80vh",
+    height: "60vh",
     tourUrl: "../js/tours/tour-bloque.html",
     upVector: [0, -1, 0], // Mantiene la corrección de giro del auto
     background: "#1f1f1f",      // Cambia el color del fondo aquí (puedes usar hex, rgb o var)
@@ -249,6 +206,15 @@
     ]
   };
 </script>
+
+  <div class="splat-item-container">
+    <iframe 
+      src="https://omh-gsviewer.netlify.app/gs-viewer.html?url=models%2Fexamples%2Fcafe%2Fcafe.splat&nav=models%2Fexamples%2Fcafe%2Fcollision.glb&bg=models%2Fexamples%2Fcafe%2Fcafebg.jpg"
+      allow="cross-origin-isolated"
+      style="border: none;"
+    ></iframe>
+  </div>
+</div>
 
 <!-- TITULO PARA AR -->
 
@@ -364,6 +330,82 @@
     initOMHViewer('visor-mueble', '../assets/inmob/kitch.glb', null, opcionesMueble);
 
 </script>
+
+<!--===================================================================
+    SECCIÓN DE NUESTROS ALIADOS / CLIENTES
+    Agregar logos para que la barra se esté moviendo
+    continuamente, los logos se nombran como
+    logo1.png , logo2.png, etc
+    ===================================================================-->
+
+<div id="marquee-clientes-dinamico"></div>
+
+<script>
+  window.clientesMarqConfig = {
+    title: "Empresas que confían en nosotros",
+    bg: "negro",
+    padding: "4rem 0",
+    mostrarBordes: false
+  };
+</script>
+
+ <!-- ══════════════════════════════════════════════════════
+       MÓDULO TIMELINE (Scroll-Driven)
+       ══════════════════════════════════════════════════════ -->
+  <div id="timeline-dinamico"></div>
+ 
+  <script>
+    window.timelineConfig = {
+      anclaId: 'timeline-dinamico',
+      totalRotation: -240, 
+      numerosOpacity: 0.25,
+      etapas: [
+        {
+          numero: '01',
+          fase: 'ETAPA 1',
+          titulo: 'Captación & Preventa',
+          descripcion: 'Ayudamos a que los clientes visualicen un espacio antes de existir.',
+          videoPath: '../assets/inmob/etapa1.mp4', // Pon aquí la ruta de tu video
+          servicios: [
+            { nombre: 'Render', url: 'archviz.html' },
+            { nombre: 'Realidad Virtual y Aumentada', url: 'ar_vr.html' },
+            { nombre: 'Animación 3D', url: 'anim_vfx.html' },
+            { nombre: 'Recorridos Virtuales', url: 'ar_vr.html' },
+            { nombre: 'Tours 360°', url: 'tours_360.html' }
+          ]
+        },
+        {
+          numero: '02',
+          fase: 'ETAPA 2',
+          titulo: 'Construcción & Seguimiento',
+          descripcion: 'Convertimos el proceso constructivo en una herramienta de comunicación y confianza.',
+          videoPath: '../assets/inmob/etapa2.mp4', 
+          servicios: [
+            { nombre: 'Documentación de Obra', url: 'audiovisual.html' },
+            { nombre: 'Visualización con IA', url: 'audiovisual.html' },
+            { nombre: 'Mixed Reallity', url: 'escaneos.html' },
+            { nombre: 'Tours 360° con IA', url: 'tours_360.html' },
+          ]
+        },
+        {
+          numero: '03',
+          fase: 'ETAPA 3',
+          titulo: 'Comercialización Final',
+          descripcion: 'Creamos experiencias visuales que ayudan a destacar propiedades en un mercado saturado.',
+          videoPath: '../assets/inmob/etapa3.mp4', 
+          servicios: [
+            { nombre: 'Video Cinematográfico', url: 'audiovisual.html' },
+            { nombre: 'Fotografía Profesional', url: 'audiovisual.html' },
+            { nombre: 'Captura 3D / Splatting', url: 'escaneos.html' },
+            { nombre: 'Tours 360°', url: 'escaneos.html' },
+            { nombre: 'Street View Integration', url: 'escaneos.html' },
+            { nombre: 'PropTech Marketing', url: 'mkt.html' }
+          ]
+        }
+      ]
+    };
+  </script>
+
 
 <!-- ═══════════════════════════════════════════════════════════════
      SECCIÓN YOUTUBE
